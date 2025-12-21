@@ -1,0 +1,179 @@
+/* CUSTOM VARIABLES */
+
+:root {
+  --clr-red-400: #ff0000;
+  --clr-red-600: #940000;
+  --clr-red-800: #440101;
+  --clr-neutral-400: #a5a5a5;
+  --clr-neutral-600: #5e605f;
+  --clr-neutral-800: #262626;
+  --clr-neutral-900: #000000;
+  --clr-olive-800: #5c814e;
+  --clr-green-400: #00ff00;
+  --clr-green-500: #00bb00;
+  --clr-green-700: #005e00;
+  --clr-green-900: #093300;
+  --clr-blue-400: #0000ff;
+  --clr-blue-500: #0000b8;
+  --clr-blue-700: #000077;
+  --clr-blue-900: #000047;
+
+  --ff-primary: "Pixelify Sans", sans-serif;
+
+  --fw-400: 400;
+  --fw-700: 700;
+}
+
+/* RESET */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* GENERAL STYLES */
+
+body {
+  background: var(--clr-blue-900);
+  font-family: var(--ff-primary);
+}
+
+/* UTILITIES */
+
+.bg-metal-brushed {
+  background: repeating-linear-gradient(
+      transparent 0%,
+      transparent 3%,
+      hsla(0, 0%, 50%, 0.1) 4.5%
+    ),
+    repeating-linear-gradient(
+      transparent 0%,
+      transparent 2%,
+      hsla(0, 0%, 0%, 0.03) 2.5%
+    ),
+    repeating-linear-gradient(
+      transparent 0%,
+      transparent 0.6%,
+      hsla(0, 0%, 50%, 0.15) 1.2%
+    ),
+    linear-gradient(
+      90deg,
+      var(--clr-neutral-800),
+      var(--clr-neutral-600),
+      var(--clr-neutral-800)
+    );
+}
+
+/* UI ELEMENTS */
+
+.decoration-type-a {
+  background: var(--clr-green-700);
+  box-shadow: 0.075em 0.05em 0em var(--clr-green-900) inset;
+}
+
+.decoration-type-b {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 12.5%,
+    var(--clr-red-600) 12.5%,
+    var(--clr-red-600) 25%,
+    transparent 25%,
+    transparent 37.5%,
+    var(--clr-red-600) 37.5%,
+    var(--clr-red-600) 62.5%,
+    transparent 62.5%,
+    transparent 75%,
+    var(--clr-red-600) 75%,
+    var(--clr-red-600) 87.5%,
+    transparent 87.5%,
+    transparent 100%
+  );
+}
+
+/* UI COMPONENTS */
+
+/* Item Slot */
+
+.item-slot {
+  background: linear-gradient(
+    135deg,
+    var(--clr-blue-500),
+    var(--clr-blue-700),
+    var(--clr-blue-900)
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.item-slot::after {
+  content: "18";
+  color: var(--clr-green-400);
+  font-size: 1em;
+  font-family: var(--ff-primary);
+  text-shadow: 0.05em 0.05em 0em var(--clr-green-700);
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+}
+
+.item-slot img {
+  width: 3em;
+}
+
+/* Weapon Slot */
+
+.weapon-slot {
+  display: grid;
+  grid-template-areas:
+    "label decoration"
+    "label slot";
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: 0.15em 1fr;
+  padding: 0.25em 0.5em 0.25em 0em;
+  gap: 0.25em;
+  width: 9em;
+  font-size: 3rem; /* Controls size */
+}
+
+.weapon-slot > p {
+  grid-area: label;
+}
+.weapon-slot > .decoration {
+  grid-area: decoration;
+}
+.weapon-slot > .item-slot {
+  grid-area: slot;
+}
+
+.weapon-slot > p {
+  writing-mode: sideways-lr;
+  color: var(--clr-green-700);
+  font-family: var(--ff-primary);
+  font-weight: var(--fw-700);
+  text-align: center;
+  text-shadow: 0.075em 0.075em 0em var(--clr-neutral-800);
+}
+
+.weapon-slot > div:first-of-type {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 1fr;
+}
