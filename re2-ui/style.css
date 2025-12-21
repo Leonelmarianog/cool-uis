@@ -177,3 +177,52 @@ body {
   display: grid;
   grid-template-columns: 1fr 0.5fr 1fr;
 }
+
+/* Health Status */
+
+.health-status {
+  width: 9em;
+  height: 4em;
+  padding: 0.25em 0.5em 0em 0.5em;
+  font-size: 3rem; /* Controls size */
+  clip-path: polygon(0 0, 0 100%, 57% 100%, 65% 85%, 100% 85%, 100% 0);
+  display: flex;
+  flex-direction: column;
+}
+
+.health-status > div {
+  flex: 1;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 8.5%,
+    var(--clr-green-700) 8.5%,
+    var(--clr-green-700) 9.5%
+  );
+  background-color: var(--clr-neutral-900);
+  border: 0.1em solid var(--clr-green-700);
+  position: relative;
+}
+
+.health-status > div > p {
+  color: var(--clr-green-500);
+  background: var(--clr-neutral-900);
+  text-align: center;
+  text-shadow: 0.05em 0.05em 0em var(--clr-green-700);
+  line-height: 0.95em; /* Update to modify font vertical whitespace */
+  height: 1.1em; /* Update modify font vertical whitespace  */
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 45%;
+}
+
+.health-status > p {
+  color: var(--clr-green-700);
+  text-shadow: 0.075em 0.075em 0em var(--clr-neutral-800);
+  font-size: 0.85em;
+  font-weight: var(--fw-700);
+  line-height: 0.95em; /* Update to modify font vertical whitespace */
+  height: 1em; /* Update to modify font vertical whitespace  */
+  margin-left: 0.1em;
+}
