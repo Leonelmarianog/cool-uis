@@ -9,6 +9,7 @@
   --clr-neutral-800: #262626;
   --clr-neutral-900: #000000;
   --clr-olive-800: #5c814e;
+  --clr-olive-900: #405836;
   --clr-green-400: #00ff00;
   --clr-green-500: #00bb00;
   --clr-green-700: #005e00;
@@ -225,4 +226,25 @@ body {
   line-height: 0.95em; /* Update to modify font vertical whitespace */
   height: 1em; /* Update to modify font vertical whitespace  */
   margin-left: 0.1em;
+}
+
+/* Character Portrait */
+
+.character-portrait {
+  width: min-content;
+  padding: 0.25em 0.25em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  font-size: 3rem; /* Controls size */
+}
+
+.character-portrait p {
+  color: var(--clr-olive-800);
+  text-transform: uppercase;
+  text-shadow: 0.05em 0.05em 0em var(--clr-olive-900);
+  line-height: 0.95em; /* Update to modify font vertical whitespace */
+  height: 1em; /* Update to modify font vertical whitespace  */
+  background: var(--clr-blue-900);
+  padding: 0 0.5em;
 }
