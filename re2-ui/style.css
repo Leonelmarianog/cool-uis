@@ -184,9 +184,9 @@ body {
   grid-template-columns: 1fr 0.5fr 1fr;
 }
 
-/* Health Status */
+/* Health Monitor */
 
-.health-status {
+.health-monitor {
   --height-base: 4em;
   --height-notch: 0.6em;
   --height-total: calc(var(--height-base) + var(--height-notch));
@@ -207,7 +207,7 @@ body {
   gap: 0.1em;
 }
 
-.health-status > div {
+.health-monitor > div {
   height: 3.5em;
   background-image: repeating-linear-gradient(
     to bottom,
@@ -221,7 +221,7 @@ body {
   position: relative;
 }
 
-.health-status > div > p {
+.health-monitor > div > p {
   color: var(--clr-green-500);
   background: var(--clr-neutral-900);
   font-family: var(--ff-tiny5);
@@ -234,7 +234,7 @@ body {
   left: 45%;
 }
 
-.health-status > img {
+.health-monitor > img {
   height: 0.6em;
   width: 4.75em;
   filter: brightness(0) saturate(100%) invert(8%) sepia(8%) saturate(1389%)
