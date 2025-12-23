@@ -146,9 +146,9 @@ body {
   width: 3.5em;
 }
 
-/* Weapon Slot */
+/* Equipment Slot */
 
-.weapon-slot {
+.equipment-slot {
   width: 9em;
   height: 4em;
   padding: 0.25em 0.5em 0.25em 0.15em;
@@ -161,17 +161,17 @@ body {
   gap: 0.25em 0.1em;
 }
 
-.weapon-slot > img {
+.equipment-slot > img {
   grid-area: label;
 }
-.weapon-slot > div {
+.equipment-slot > div {
   grid-area: decoration;
 }
-.weapon-slot > .item-slot {
+.equipment-slot > .item-slot {
   grid-area: slot;
 }
 
-.weapon-slot > img {
+.equipment-slot > img {
   height: 100%;
   width: 0.75em;
   filter: brightness(0) saturate(100%) invert(8%) sepia(8%) saturate(1389%)
@@ -179,7 +179,7 @@ body {
     drop-shadow(0.01em 0.01em 0em var(--clr-neutral-400));
 }
 
-.weapon-slot > div:first-of-type {
+.equipment-slot > div:first-of-type {
   display: grid;
   grid-template-columns: 1fr 0.5fr 1fr;
 }
