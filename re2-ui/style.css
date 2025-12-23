@@ -5,21 +5,23 @@
   --clr-red-600: #940000;
   --clr-red-800: #440101;
   --clr-neutral-400: #a5a5a5;
-  --clr-neutral-600: #5e605f;
-  --clr-neutral-800: #262626;
+  --clr-neutral-600: #555555;
+  --clr-neutral-700: #363636;
+  --clr-neutral-800: #202020;
   --clr-neutral-900: #000000;
   --clr-olive-800: #5c814e;
   --clr-olive-900: #405836;
   --clr-green-400: #00ff00;
-  --clr-green-500: #00bb00;
+  --clr-green-500: #009100;
   --clr-green-700: #005e00;
-  --clr-green-900: #093300;
-  --clr-blue-400: #0000ff;
-  --clr-blue-500: #0000b8;
-  --clr-blue-700: #000077;
-  --clr-blue-900: #000047;
+  --clr-green-800: #214219;
+  --clr-green-900: #0d1a0a;
+  --clr-blue-400: #0b0088;
+  --clr-blue-500: #07004b;
+  --clr-blue-600: #00002b;
 
-  --ff-primary: "Pixelify Sans", sans-serif;
+  --ff-pixelify: "Pixelify Sans", sans-serif;
+  --ff-tiny5: "Tiny5", sans-serif;
 
   --fw-400: 400;
   --fw-700: 700;
@@ -51,8 +53,8 @@ img {
 /* GENERAL STYLES */
 
 body {
-  background: var(--clr-blue-900);
-  font-family: var(--ff-primary);
+  background: var(--clr-blue-600);
+  font-size: 2rem;
 }
 
 /* UTILITIES */
@@ -73,19 +75,14 @@ body {
       transparent 0.6%,
       hsla(0, 0%, 50%, 0.15) 1.2%
     ),
-    linear-gradient(
-      90deg,
-      var(--clr-neutral-800),
-      var(--clr-neutral-600),
-      var(--clr-neutral-800)
-    );
+    linear-gradient(to right, var(--clr-neutral-700), var(--clr-neutral-600));
 }
 
 /* UI ELEMENTS */
 
 .decoration-type-a {
-  background: var(--clr-green-700);
-  box-shadow: 0.075em 0.05em 0em var(--clr-green-900) inset;
+  background: var(--clr-green-800);
+  box-shadow: 0.125em 0.1em 0em var(--clr-green-900) inset;
 }
 
 .decoration-type-b {
@@ -123,10 +120,9 @@ body {
 
 .item-slot {
   background: linear-gradient(
-    135deg,
-    var(--clr-blue-500),
-    var(--clr-blue-700),
-    var(--clr-blue-900)
+    to bottom right,
+    var(--clr-blue-400) 0%,
+    var(--clr-blue-500) 50%
   );
   display: flex;
   justify-content: center;
@@ -136,51 +132,51 @@ body {
 
 .item-slot::after {
   content: "18";
-  color: var(--clr-green-400);
-  font-size: 1em;
-  font-family: var(--ff-primary);
-  text-shadow: 0.05em 0.05em 0em var(--clr-green-700);
+  color: var(--clr-green-500);
+  font-size: 1.25em;
+  font-family: var(--ff-pixelify);
+  text-shadow: 0.025em 0.075em 0em var(--clr-green-700);
   position: absolute;
-  bottom: 0;
+  bottom: -2.5%;
   left: 25%;
+  letter-spacing: 0.1em;
 }
 
 .item-slot img {
-  width: 3em;
+  width: 3.5em;
 }
 
 /* Weapon Slot */
 
 .weapon-slot {
+  width: 9em;
+  height: 4em;
+  padding: 0.25em 0.5em 0.25em 0.15em;
   display: grid;
   grid-template-areas:
     "label decoration"
     "label slot";
-  grid-template-columns: min-content 1fr;
-  grid-template-rows: 0.15em 1fr;
-  padding: 0.25em 0.5em 0.25em 0em;
-  gap: 0.25em;
-  width: 9em;
-  font-size: 3rem; /* Controls size */
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 0.2em 1fr;
+  gap: 0.25em 0.1em;
 }
 
-.weapon-slot > p {
+.weapon-slot > img {
   grid-area: label;
 }
-.weapon-slot > .decoration {
+.weapon-slot > div {
   grid-area: decoration;
 }
 .weapon-slot > .item-slot {
   grid-area: slot;
 }
 
-.weapon-slot > p {
-  writing-mode: sideways-lr;
-  color: var(--clr-green-700);
-  font-family: var(--ff-primary);
-  font-weight: var(--fw-700);
-  text-align: center;
-  text-shadow: 0.075em 0.075em 0em var(--clr-neutral-800);
+.weapon-slot > img {
+  height: 100%;
+  width: 0.75em;
+  filter: brightness(0) saturate(100%) invert(8%) sepia(8%) saturate(1389%)
+    hue-rotate(131deg) brightness(99%) contrast(91%)
+    drop-shadow(0.01em 0.01em 0em var(--clr-neutral-400));
 }
 
 .weapon-slot > div:first-of-type {
@@ -191,69 +187,82 @@ body {
 /* Health Status */
 
 .health-status {
-  width: 9em;
-  height: 4em;
-  padding: 0.25em 0.5em 0em 0.5em;
-  font-size: 3rem; /* Controls size */
-  clip-path: polygon(0 0, 0 100%, 57% 100%, 65% 85%, 100% 85%, 100% 0);
+  --height-base: 4em;
+  --height-notch: 0.6em;
+  --height-total: calc(var(--height-base) + var(--height-notch));
+
+  width: 9.25em;
+  height: var(--height-total);
+  padding: 0.3em 0.7em 0em 0.7em;
+  clip-path: polygon(
+    0% 0%,
+    0% var(--height-total),
+    63% var(--height-total),
+    70% var(--height-base),
+    100% var(--height-base),
+    100% 0%
+  );
   display: flex;
   flex-direction: column;
+  gap: 0.1em;
 }
 
 .health-status > div {
-  flex: 1;
+  height: 3.5em;
   background-image: repeating-linear-gradient(
     to bottom,
     transparent 0%,
     transparent 8.5%,
-    var(--clr-green-700) 8.5%,
-    var(--clr-green-700) 9.5%
+    var(--clr-green-800) 8.5%,
+    var(--clr-green-800) 9.5%
   );
   background-color: var(--clr-neutral-900);
-  border: 0.1em solid var(--clr-green-700);
+  border: 0.115em solid var(--clr-green-800);
   position: relative;
 }
 
 .health-status > div > p {
   color: var(--clr-green-500);
   background: var(--clr-neutral-900);
+  font-family: var(--ff-tiny5);
   text-align: center;
-  text-shadow: 0.05em 0.05em 0em var(--clr-green-700);
-  line-height: 0.95em; /* Update to modify font vertical whitespace */
-  height: 1.1em; /* Update modify font vertical whitespace  */
+  text-shadow: 0.025em 0.075em 0em var(--clr-green-800);
+  letter-spacing: 0.1em;
   position: absolute;
   bottom: 0;
   right: 0;
   left: 45%;
 }
 
-.health-status > p {
-  color: var(--clr-green-700);
-  text-shadow: 0.075em 0.075em 0em var(--clr-neutral-800);
-  font-size: 0.85em;
-  font-weight: var(--fw-700);
-  line-height: 0.95em; /* Update to modify font vertical whitespace */
-  height: 1em; /* Update to modify font vertical whitespace  */
-  margin-left: 0.1em;
+.health-status > img {
+  height: 0.6em;
+  width: 4.75em;
+  filter: brightness(0) saturate(100%) invert(8%) sepia(8%) saturate(1389%)
+    hue-rotate(131deg) brightness(99%) contrast(91%)
+    drop-shadow(0.01em 0.01em 0em var(--clr-neutral-400));
 }
 
 /* Character Portrait */
 
 .character-portrait {
-  width: min-content;
-  padding: 0.25em 0.25em;
+  width: 4em;
+  height: 6em;
+  padding: 0.35em 0.35em;
   display: flex;
   flex-direction: column;
-  gap: 0.15em;
-  font-size: 3rem; /* Controls size */
+  gap: 0.2em;
 }
 
-.character-portrait p {
+.character-portrait > p {
   color: var(--clr-olive-800);
-  text-transform: uppercase;
-  text-shadow: 0.05em 0.05em 0em var(--clr-olive-900);
-  line-height: 0.95em; /* Update to modify font vertical whitespace */
-  height: 1em; /* Update to modify font vertical whitespace  */
-  background: var(--clr-blue-900);
+  background: var(--clr-blue-600);
   padding: 0 0.5em;
+  font-family: var(--ff-tiny5);
+  text-transform: uppercase;
+  text-shadow: 0.025em 0.075em 0em var(--clr-olive-900);
+  text-align: center;
+}
+
+.character-portrait > img {
+  height: 100%;
 }
