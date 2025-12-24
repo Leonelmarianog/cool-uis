@@ -1,0 +1,38 @@
+body {
+  background: var(--clr-blue-600);
+  font-size: 2rem;
+}
+
+.decoration-type-a {
+  background: var(--clr-green-800);
+  box-shadow: 0.125em 0.1em 0em var(--clr-green-900) inset;
+}
+
+.decoration-type-b {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 12.5%,
+    var(--clr-red-600) 12.5%,
+    var(--clr-red-600) 25%,
+    transparent 25%,
+    transparent 37.5%,
+    var(--clr-red-600) 37.5%,
+    var(--clr-red-600) 62.5%,
+    transparent 62.5%,
+    transparent 75%,
+    var(--clr-red-600) 75%,
+    var(--clr-red-600) 87.5%,
+    transparent 87.5%,
+    transparent 100%
+  );
+}
+
+.decoration-type-c {
+  background: linear-gradient(
+    to bottom,
+    var(--clr-neutral-900),
+    var(--clr-neutral-600),
+    var(--clr-neutral-900)
+  );
+}

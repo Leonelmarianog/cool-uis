@@ -1,0 +1,22 @@
+.character-portrait {
+  width: 4em;
+  height: 6em;
+  padding: 0.35em 0.35em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.character-portrait > p {
+  color: var(--clr-olive-800);
+  background: var(--clr-blue-600);
+  padding: 0 0.5em;
+  font-family: var(--ff-tiny5);
+  text-transform: uppercase;
+  text-shadow: 0.025em 0.075em 0em var(--clr-olive-900);
+  text-align: center;
+}
+
+.character-portrait > img {
+  height: 100%;
+}

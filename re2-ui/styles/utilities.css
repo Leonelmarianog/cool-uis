@@ -1,0 +1,18 @@
+.bg-metal-brushed {
+  background: repeating-linear-gradient(
+      transparent 0%,
+      transparent 3%,
+      hsla(0, 0%, 50%, 0.1) 4.5%
+    ),
+    repeating-linear-gradient(
+      transparent 0%,
+      transparent 2%,
+      hsla(0, 0%, 0%, 0.03) 2.5%
+    ),
+    repeating-linear-gradient(
+      transparent 0%,
+      transparent 0.6%,
+      hsla(0, 0%, 50%, 0.15) 1.2%
+    ),
+    linear-gradient(to right, var(--clr-neutral-700), var(--clr-neutral-600));
+}
