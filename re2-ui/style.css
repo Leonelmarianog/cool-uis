@@ -19,9 +19,12 @@
   --clr-blue-400: #0b0088;
   --clr-blue-500: #07004b;
   --clr-blue-600: #00002b;
+  --clr-darkred-400: #9c4a4a;
+  --clr-darkred-900: #190808;
 
   --ff-pixelify: "Pixelify Sans", sans-serif;
   --ff-tiny5: "Tiny5", sans-serif;
+  --ff-noticia: "Noticia Text", sans-serif;
 
   --fw-400: 400;
   --fw-700: 700;
@@ -48,6 +51,12 @@ img {
   display: block;
   max-width: 100%;
   height: auto;
+}
+
+ul[class],
+ol[class] {
+  margin: 0;
+  list-style: none;
 }
 
 /* GENERAL STYLES */
@@ -279,4 +288,63 @@ body {
 
 .character-portrait > img {
   height: 100%;
+}
+
+/* TOP MENU */
+
+.top-menu {
+  padding: 0.1em 0.25em;
+  width: 19em;
+  height: 1.15em;
+}
+
+.top-menu > ul {
+  height: 100%;
+  padding: 0;
+  display: flex;
+  gap: 0.2em;
+}
+
+.top-menu > ul > li {
+  --corner-step: 0.075em;
+
+  flex: 1;
+  background: var(--clr-neutral-900);
+  padding: 0.1em 0.5em;
+  clip-path: polygon(
+    0em calc(100% - var(--corner-step)),
+    var(--corner-step) calc(100% - var(--corner-step)),
+    var(--corner-step) 100%,
+    calc(100% - var(--corner-step)) 100%,
+    calc(100% - var(--corner-step)) calc(100% - var(--corner-step)),
+    100% calc(100% - var(--corner-step)),
+    100% var(--corner-step),
+    calc(100% - var(--corner-step)) var(--corner-step),
+    calc(100% - var(--corner-step)) 0em,
+    var(--corner-step) 0em,
+    var(--corner-step) var(--corner-step),
+    0em var(--corner-step)
+  );
+  cursor: pointer;
+}
+
+.top-menu > ul > li > img {
+  height: 100%;
+  width: 100%;
+}
+
+.top-menu > ul > li:hover {
+  background: var(--clr-neutral-800);
+}
+.top-menu > ul > li:hover > img {
+  filter: brightness(0) saturate(100%) invert(72%) sepia(36%) saturate(0%)
+    hue-rotate(180deg) brightness(84%) contrast(72%);
+}
+
+.top-menu > ul > li:active {
+  background: var(--clr-darkred-900);
+}
+.top-menu > ul > li:active > img {
+  filter: brightness(0) saturate(100%) invert(36%) sepia(11%) saturate(2674%)
+    hue-rotate(314deg) brightness(92%) contrast(83%);
 }
