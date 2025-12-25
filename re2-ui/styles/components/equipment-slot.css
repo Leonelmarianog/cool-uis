@@ -1,0 +1,36 @@
+.equipment-slot {
+  width: 9em;
+  height: 4em;
+  padding: 0.25em 0.5em 0.25em 0.15em;
+  display: grid;
+  grid-template-areas:
+    "label decoration"
+    "label slot";
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 0.2em 1fr;
+  gap: 0.25em 0.1em;
+}
+
+.equipment-slot > img {
+  grid-area: label;
+}
+.equipment-slot > div {
+  grid-area: decoration;
+}
+.equipment-slot > .item-slot {
+  grid-area: slot;
+}
+
+.equipment-slot > img {
+  height: 100%;
+  width: 0.75em;
+  filter: brightness(0) saturate(100%) invert(8%) sepia(8%) saturate(1389%)
+    hue-rotate(131deg) brightness(99%) contrast(91%)
+    drop-shadow(0.02em 0.02em 0em var(--clr-neutral-400))
+    drop-shadow(-0.02em -0.02em var(--clr-neutral-900));
+}
+
+.equipment-slot > div:first-of-type {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 1fr;
+}

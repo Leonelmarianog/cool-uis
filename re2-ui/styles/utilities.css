@@ -1,0 +1,74 @@
+.bg-metal-brushed {
+  background: repeating-linear-gradient(
+      transparent 0%,
+      transparent 3%,
+      hsla(0, 0%, 50%, 0.1) 4.5%
+    ),
+    repeating-linear-gradient(
+      transparent 0%,
+      transparent 2%,
+      hsla(0, 0%, 0%, 0.03) 2.5%
+    ),
+    repeating-linear-gradient(
+      transparent 0%,
+      transparent 0.6%,
+      hsla(0, 0%, 50%, 0.15) 1.2%
+    ),
+    linear-gradient(to right, var(--clr-neutral-700), var(--clr-neutral-600));
+}
+
+.bg-chrome-light {
+  --line-thickness: 7%;
+
+  background: linear-gradient(
+    to bottom,
+    var(--clr-neutral-900) 0%,
+    var(--clr-neutral-900) var(--line-thickness),
+    var(--clr-neutral-850) var(--line-thickness),
+    var(--clr-neutral-850) calc(var(--line-thickness) * 2),
+    var(--clr-neutral-800) calc(var(--line-thickness) * 2),
+    var(--clr-neutral-800) calc(var(--line-thickness) * 3),
+    var(--clr-neutral-700) calc(var(--line-thickness) * 3),
+    var(--clr-neutral-700) calc(var(--line-thickness) * 4),
+    var(--clr-neutral-600) calc(var(--line-thickness) * 4),
+    var(--clr-neutral-600) calc(var(--line-thickness) * 5),
+    var(--clr-neutral-500) calc(var(--line-thickness) * 5),
+    var(--clr-neutral-500) calc(var(--line-thickness) * 6),
+    var(--clr-neutral-400) calc(var(--line-thickness) * 6),
+    var(--clr-neutral-400) calc(100% - (var(--line-thickness) * 6)),
+    var(--clr-neutral-500) calc(100% - (var(--line-thickness) * 6)),
+    var(--clr-neutral-500) calc(100% - (var(--line-thickness) * 5)),
+    var(--clr-neutral-600) calc(100% - (var(--line-thickness) * 5)),
+    var(--clr-neutral-600) calc(100% - (var(--line-thickness) * 4)),
+    var(--clr-neutral-700) calc(100% - (var(--line-thickness) * 4)),
+    var(--clr-neutral-700) calc(100% - (var(--line-thickness) * 3)),
+    var(--clr-neutral-800) calc(100% - (var(--line-thickness) * 3)),
+    var(--clr-neutral-800) calc(100% - (var(--line-thickness) * 2)),
+    var(--clr-neutral-850) calc(100% - (var(--line-thickness) * 2)),
+    var(--clr-neutral-850) calc(100% - var(--line-thickness)),
+    var(--clr-neutral-900) calc(100% - var(--line-thickness)),
+    var(--clr-neutral-900) 100%
+  );
+}
+
+.bg-chrome-dark {
+  --line-thickness: 14.28%;
+
+  background: linear-gradient(
+    to bottom,
+    var(--clr-neutral-850) 0%,
+    var(--clr-neutral-850) var(--line-thickness),
+    var(--clr-neutral-800) var(--line-thickness),
+    var(--clr-neutral-800) calc(var(--line-thickness) * 2),
+    var(--clr-neutral-700) calc(var(--line-thickness) * 2),
+    var(--clr-neutral-700) calc(var(--line-thickness) * 3),
+    var(--clr-neutral-600) calc(var(--line-thickness) * 3),
+    var(--clr-neutral-600) calc(100% - (var(--line-thickness) * 3)),
+    var(--clr-neutral-700) calc(100% - (var(--line-thickness) * 3)),
+    var(--clr-neutral-700) calc(100% - (var(--line-thickness) * 2)),
+    var(--clr-neutral-800) calc(100% - (var(--line-thickness) * 2)),
+    var(--clr-neutral-800) calc(100% - var(--line-thickness)),
+    var(--clr-neutral-850) calc(100% - var(--line-thickness)),
+    var(--clr-neutral-850) 100%
+  );
+}

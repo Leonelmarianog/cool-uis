@@ -1,0 +1,29 @@
+:root {
+  --clr-red-400: #ff0000;
+  --clr-red-600: #940000;
+  --clr-red-800: #440101;
+  --clr-neutral-400: #a5a5a5;
+  --clr-neutral-600: #555555;
+  --clr-neutral-700: #363636;
+  --clr-neutral-800: #202020;
+  --clr-neutral-900: #000000;
+  --clr-olive-800: #5c814e;
+  --clr-olive-900: #405836;
+  --clr-green-400: #00ff00;
+  --clr-green-500: #009100;
+  --clr-green-700: #005e00;
+  --clr-green-800: #214219;
+  --clr-green-900: #0d1a0a;
+  --clr-blue-400: #0b0088;
+  --clr-blue-500: #07004b;
+  --clr-blue-600: #00002b;
+  --clr-darkred-400: #9c4a4a;
+  --clr-darkred-900: #190808;
+
+  --ff-pixelify: "Pixelify Sans", sans-serif;
+  --ff-tiny5: "Tiny5", sans-serif;
+  --ff-noticia: "Noticia Text", sans-serif;
+
+  --fw-400: 400;
+  --fw-700: 700;
+}
