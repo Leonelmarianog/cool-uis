@@ -2,9 +2,9 @@
   --clr-text-bg: #0c0c19;
   --clr-text: #cecebd;
 
-  padding: 0.5em;
-  height: 6.5em;
-  width: 19.5em;
+  padding: 0.4em;
+  height: 5.65em;
+  width: 19em;
 }
 
 .description-box > div {
@@ -20,8 +20,8 @@
 
   color: var(--clr-text);
   font-family: var(--ff-noticia);
-  font-size: 1.5em;
-  line-height: 1.15em;
+  font-size: 1.45em;
+  line-height: 1em;
   letter-spacing: 0.1em;
   text-shadow: var(--stroke-width) var(--stroke-width) 0 var(--stroke-color),
     var(--neg-stroke) var(--neg-stroke) 0 var(--stroke-color),
