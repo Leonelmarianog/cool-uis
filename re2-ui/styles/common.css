@@ -1,6 +1,10 @@
 body {
   background: var(--clr-blue-600);
-  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: clamp(1rem, 3vw, 2.5rem);
 }
 
 .decoration-type-a {

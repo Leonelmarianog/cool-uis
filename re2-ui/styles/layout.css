@@ -5,7 +5,6 @@
   grid-column-gap: 0.2em;
   position: relative;
   background: var(--clr-blue-600);
-  padding: 1.5em 0 0 0;
 }
 .inventory-screen > .navigation-panel {
   grid-area: 1 / 1 / 2 / 3;
