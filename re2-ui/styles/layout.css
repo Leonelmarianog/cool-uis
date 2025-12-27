@@ -1,0 +1,72 @@
+.inventory-screen {
+  display: grid;
+  grid-template-columns: repeat(2, min-content);
+  grid-template-rows: 1.325em repeat(4, min-content);
+  grid-column-gap: 0.2em;
+  position: relative;
+  background: var(--clr-blue-600);
+  padding: 1.5em 0 0 0;
+}
+.inventory-screen > .navigation-panel {
+  grid-area: 1 / 1 / 2 / 3;
+  justify-self: end;
+}
+.inventory-screen > .player-status-panel {
+  grid-area: 1 / 1 / 3 / 2;
+}
+.inventory-screen > .inventory-panel {
+  grid-area: 2 / 2 / 5 / 3;
+}
+.inventory-screen > .item-description-panel {
+  grid-area: 4 / 1 / 6 / 3;
+}
+
+.player-status-panel {
+  display: grid;
+  grid-template-columns: 0.65em auto 0.65em auto 1fr;
+  grid-template-rows: 1fr;
+}
+.player-status-panel > div:nth-child(1) {
+  grid-area: 1 / 1 / 2 / 2;
+}
+.player-status-panel > div:nth-child(2) {
+  grid-area: 1 / 2 / 2 / 3;
+}
+.player-status-panel > div:nth-child(3) {
+  grid-area: 1 / 3 / 2 / 4;
+  align-self: end;
+  margin-bottom: 0.85em;
+}
+.player-status-panel > div:nth-child(4) {
+  grid-area: 1 / 4 / 2 / 5;
+  align-self: end;
+}
+
+.inventory-panel {
+  display: grid;
+  grid-template-columns: repeat(2, min-content);
+  grid-template-rows: min-content;
+  grid-column-gap: 5.375em;
+}
+.inventory-panel > div:nth-child(1) {
+  grid-area: 1 / 1 / 2 / 3;
+}
+.inventory-panel > div:nth-child(2) {
+  grid-area: 1 / 2 / 2 / 3;
+}
+
+.item-description-panel {
+  display: grid;
+  grid-template-columns: min-content auto;
+  grid-template-rows: min-content;
+}
+.item-description-panel > div:nth-child(1) {
+  grid-area: 1 / 1 / 2 / 2;
+  margin-left: 0.65em;
+  margin-top: 0.25em;
+}
+.item-description-panel > div:nth-child(2) {
+  grid-area: 1 / 2 / 2 / 3;
+  align-self: end;
+  margin-bottom: 0.25em;
+}
