@@ -1,10 +1,10 @@
 .character-portrait {
-  width: 4em;
-  height: 6em;
-  padding: 0.35em 0.35em;
+  width: 4.15em;
+  height: 5.85em;
+  padding: 0.4em 0.4em;
   display: flex;
   flex-direction: column;
-  gap: 0.2em;
+  gap: 0.25em;
 }
 
 .character-portrait > p {
