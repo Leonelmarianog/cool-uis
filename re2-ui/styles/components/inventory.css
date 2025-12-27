@@ -1,11 +1,11 @@
 .inventory {
-  --height-total: 19.75em;
-  --width-total: 10em;
+  --height-total: 16.5em;
+  --width-total: 8.1em;
 
   --cutout-height: calc((var(--height-total) / 5) + 0.75em);
   --cutout-width: calc((var(--width-total) / 2) - 0.5em);
 
-  padding: 0.25em 0.5em 0.5em 0.5em;
+  padding: 0.2em 0.45em 0.3em 0.45em;
   height: var(--height-total);
   width: var(--width-total);
   clip-path: polygon(
@@ -18,7 +18,7 @@
   );
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 0.2em 0.25em 1fr 0.25em 0.2em 0.5em repeat(4, 1fr);
+  grid-template-rows: 0.2em 0.2em 1fr 0.15em 0.2em 0.5em repeat(4, 1fr);
 }
 
 .inventory > div:nth-child(1),
