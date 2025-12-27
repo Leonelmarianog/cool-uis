@@ -2,6 +2,7 @@
 @import "reset.css";
 @import "common.css";
 @import "utilities.css";
+@import "layout.css";
 
 @import "components/item-slot.css";
 @import "components/equipment-slot.css";

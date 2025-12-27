@@ -1,16 +1,16 @@
 .health-monitor {
-  --height-base: 4em;
-  --height-notch: 0.6em;
+  --height-base: 3.8em;
+  --height-notch: 0.725em;
   --height-total: calc(var(--height-base) + var(--height-notch));
 
-  width: 9.25em;
+  width: 8.85em;
   height: var(--height-total);
-  padding: 0.3em 0.7em 0em 0.7em;
+  padding: 0.3em 0.6em 0em 0.6em;
   clip-path: polygon(
     0% 0%,
     0% var(--height-total),
-    63% var(--height-total),
-    70% var(--height-base),
+    62.5% var(--height-total),
+    72.5% var(--height-base),
     100% var(--height-base),
     100% 0%
   );
@@ -20,7 +20,7 @@
 }
 
 .health-monitor > div {
-  height: 3.5em;
+  height: 3.35em;
   background-image: url("../../assets/health-monitor-display-bg.png");
   background-size: cover;
   background-repeat: no-repeat;
@@ -43,8 +43,8 @@
 }
 
 .health-monitor > img {
-  height: 0.6em;
-  width: 4.75em;
+  height: 0.65em;
+  width: 4.65em;
   filter: brightness(0) saturate(100%) invert(8%) sepia(8%) saturate(1389%)
     hue-rotate(131deg) brightness(99%) contrast(91%)
     drop-shadow(0.02em 0.02em 0em var(--clr-neutral-400))

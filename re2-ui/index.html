@@ -13,105 +13,141 @@
     <link rel="stylesheet" href="styles/index.css" />
   </head>
   <body>
-    <div class="cylinder-group cylinder-group--dense">
-      <div class="bg-chrome-light"></div>
-      <div class="bg-chrome-light"></div>
-      <div class="bg-chrome-light"></div>
-    </div>
-
-    <br />
-
-    <div class="cylinder-group cylinder-group--sparse">
-      <div class="bg-chrome-dark"></div>
-      <div class="bg-chrome-dark"></div>
-    </div>
-
-    <br />
-
-    <div class="piston-arm">
-      <div class="bg-chrome-light"></div>
-      <div class="bg-chrome-dark"></div>
-    </div>
-
-    <br />
-
-    <!--  Inventory -->
-    <div class="inventory bg-metal-brushed">
-      <div class="decoration-type-a"></div>
-      <div></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-      <div></div>
-      <div class="decoration-type-a"></div>
-      <div></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-      <div class="item-slot"><img src="assets/vp90-sm.png" alt="" /></div>
-    </div>
-    <!--  /Inventory -->
-
-    <br />
-
-    <!--  Character Portrait -->
-    <div class="character-portrait bg-metal-brushed">
-      <p>Leon</p>
-      <img src="assets/leon-portrait.png" alt="" />
-    </div>
-    <!-- /Character Portrait -->
-
-    <br />
-
-    <!-- Health Monitor -->
-    <div class="health-monitor bg-metal-brushed">
-      <div>
-        <img src="assets/health-monitor-display-fg.png" alt="" />
-        <p>Fine</p>
+    <div class="inventory-screen">
+      <div class="navigation-panel">
+        <!-- Top Menu -->
+        <div class="top-menu bg-metal-brushed">
+          <ul class="">
+            <li><img src="assets/FILE.svg" alt="" /></li>
+            <li><img src="assets/MAP.svg" alt="" /></li>
+            <li><img src="assets/ITEM.svg" alt="" /></li>
+            <li><img src="assets/EXIT.svg" alt="" /></li>
+          </ul>
+        </div>
+        <!-- /Top Menu -->
       </div>
-      <img src="assets/CONDITION.svg" alt="" />
-    </div>
-    <!-- /Health Monitor-->
 
-    <br />
+      <div class="player-status-panel">
+        <!--  Cylinder Group -->
+        <div class="cylinder-group cylinder-group--dense">
+          <div class="bg-chrome-light"></div>
+          <div class="bg-chrome-light"></div>
+          <div class="bg-chrome-light"></div>
+        </div>
+        <!--  /Cylinder Group -->
 
-    <!-- Equipment Slot -->
-    <div class="equipment-slot bg-metal-brushed">
-      <img src="assets/EQUIP.svg" alt="" />
-      <div>
-        <div class="decoration-type-a"></div>
-        <div class="decoration-type-b"></div>
-        <div class="decoration-type-a"></div>
+        <!--  Character Portrait -->
+        <div class="character-portrait bg-metal-brushed">
+          <p>Leon</p>
+          <img src="assets/leon-portrait.png" alt="" />
+        </div>
+        <!-- /Character Portrait -->
+
+        <!--  Cylinder Group -->
+        <div class="cylinder-group cylinder-group--sparse">
+          <div class="bg-chrome-dark"></div>
+          <div class="bg-chrome-dark"></div>
+        </div>
+        <!--  /Cylinder Group -->
+
+        <!-- Health Monitor -->
+        <div class="health-monitor bg-metal-brushed">
+          <div>
+            <img src="assets/health-monitor-display-fg.png" alt="" />
+            <p>Fine</p>
+          </div>
+          <img src="assets/CONDITION.svg" alt="" />
+        </div>
+        <!-- /Health Monitor-->
       </div>
-      <div class="item-slot">
-        <img src="assets/vp90-sm.png" alt="" />
+
+      <div class="inventory-panel">
+        <!-- Equipment Slot -->
+        <div class="equipment-slot bg-metal-brushed">
+          <img src="assets/EQUIP.svg" alt="" />
+          <div>
+            <div class="decoration-type-a"></div>
+            <div class="decoration-type-b"></div>
+            <div class="decoration-type-a"></div>
+          </div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+        </div>
+        <!-- /Equipment Slot -->
+
+        <!--  Inventory -->
+        <div class="inventory bg-metal-brushed">
+          <div class="decoration-type-a"></div>
+          <div></div>
+          <div class="item-slot">
+            <img src="assets/vp90-sm.png" alt="" />
+          </div>
+          <div></div>
+          <div class="decoration-type-a"></div>
+          <div></div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+          <div class="item-slot">
+            <div>
+              <img src="assets/vp90-sm.png" alt="" />
+            </div>
+          </div>
+        </div>
+        <!--  /Inventory -->
+      </div>
+
+      <div class="item-description-panel">
+        <!-- Description Box -->
+        <div class="description-box bg-metal-brushed">
+          <div>
+            <p>Hand Gun</p>
+          </div>
+        </div>
+        <!-- /Description Box-->
+
+        <!-- Piston Arm -->
+        <div class="piston-arm">
+          <div class="bg-chrome-light"></div>
+          <div class="bg-chrome-dark"></div>
+        </div>
+        <!-- /Piston Arm-->
       </div>
     </div>
-    <!-- /Equipment Slot -->
-
-    <br />
-
-    <!-- Top Menu -->
-    <div class="top-menu bg-metal-brushed">
-      <ul class="">
-        <li><img src="assets/FILE.svg" alt="" /></li>
-        <li><img src="assets/MAP.svg" alt="" /></li>
-        <li><img src="assets/ITEM.svg" alt="" /></li>
-        <li><img src="assets/EXIT.svg" alt="" /></li>
-      </ul>
-    </div>
-    <!-- /Top Menu -->
-
-    <br />
-
-    <!-- Description Box -->
-    <div class="description-box bg-metal-brushed">
-      <div>
-        <p>Hand Gun</p>
-      </div>
-    </div>
-    <!-- /Description Box-->
   </body>
 </html>

@@ -7,21 +7,24 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.item-slot > div > img {
+  width: 3.5em;
+}
+
+.item-slot > div {
   position: relative;
 }
 
-.item-slot::after {
+.item-slot > div::after {
   content: "18";
   color: var(--clr-green-500);
-  font-size: 1.25em;
+  font-size: 1.15em;
   font-family: var(--ff-pixelify);
   text-shadow: 0.025em 0.075em 0em var(--clr-green-700);
   position: absolute;
-  bottom: -2.5%;
-  left: 25%;
+  bottom: -15%;
+  left: 5%;
   letter-spacing: 0.1em;
-}
-
-.item-slot img {
-  width: 3.5em;
 }

@@ -1,6 +1,6 @@
 .top-menu {
-  padding: 0.1em 0.25em;
-  width: 19em;
+  padding: 0.1em 0.5em;
+  width: 18.2em;
   height: 1.15em;
 }
 
@@ -12,7 +12,7 @@
 }
 
 .top-menu > ul > li {
-  --corner-step: 0.075em;
+  --corner-step: 0.1em;
 
   flex: 1;
   background: var(--clr-neutral-900);
