@@ -1,23 +1,28 @@
 .inventory-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--clr-blue-600);
+  height: 100%;
+}
+.inventory-screen > div {
   display: grid;
   grid-template-columns: repeat(2, min-content);
   grid-template-rows: 1.325em repeat(4, min-content);
   grid-column-gap: 0.2em;
   position: relative;
-  background: var(--clr-blue-600);
-  padding: 1.5em 0 0 0;
 }
-.inventory-screen > .navigation-panel {
+.inventory-screen > div > .navigation-panel {
   grid-area: 1 / 1 / 2 / 3;
   justify-self: end;
 }
-.inventory-screen > .player-status-panel {
+.inventory-screen > div > .player-status-panel {
   grid-area: 1 / 1 / 3 / 2;
 }
-.inventory-screen > .inventory-panel {
+.inventory-screen > div > .inventory-panel {
   grid-area: 2 / 2 / 5 / 3;
 }
-.inventory-screen > .item-description-panel {
+.inventory-screen > div > .item-description-panel {
   grid-area: 4 / 1 / 6 / 3;
 }
 
