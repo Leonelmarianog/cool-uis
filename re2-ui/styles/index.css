@@ -11,3 +11,5 @@
 @import "components/top-menu.css";
 @import "components/description-box.css";
 @import "components/inventory.css";
+@import "components/item-grid.css";
+@import "components/special-slot.css";

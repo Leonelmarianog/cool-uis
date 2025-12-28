@@ -1,20 +1,63 @@
-.bg-metal-brushed {
+.bg-brushed-metal {
+  position: relative;
+  background: var(--clr-neutral-700);
+}
+
+/* Move all childrens up in the stacking context to avoid the overlay from applying to them too */
+.bg-brushed-metal > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Texture pattern overlay (Gives the brushed metal look) */
+.bg-brushed-metal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: color-dodge;
+
+  --texture-pattern-scale: 1; /* How thick/thin you want this pattern to be? Small numbers make the pattern thinner */
+
   background: repeating-linear-gradient(
-      transparent 0%,
-      transparent 3%,
-      hsla(0, 0%, 50%, 0.1) 4.5%
+      transparent calc(0% * var(--texture-pattern-scale)),
+      transparent calc(3% * var(--texture-pattern-scale)),
+      hsla(0, 0%, 50%, 0.1) calc(4.5% * var(--texture-pattern-scale))
     ),
     repeating-linear-gradient(
-      transparent 0%,
-      transparent 2%,
-      hsla(0, 0%, 0%, 0.03) 2.5%
+      transparent calc(0% * var(--texture-pattern-scale)),
+      transparent calc(2% * var(--texture-pattern-scale)),
+      hsla(0, 0%, 0%, 0.03) calc(2.5% * var(--texture-pattern-scale))
     ),
     repeating-linear-gradient(
-      transparent 0%,
-      transparent 0.6%,
-      hsla(0, 0%, 50%, 0.15) 1.2%
-    ),
-    linear-gradient(to right, var(--clr-neutral-700), var(--clr-neutral-600));
+      transparent calc(0% * var(--texture-pattern-scale)),
+      transparent calc(0.6% * var(--texture-pattern-scale)),
+      hsla(0, 0%, 50%, 0.15) calc(1.2% * var(--texture-pattern-scale))
+    );
+}
+
+.bg-brushed-metal--shine-center {
+  background: linear-gradient(
+    to right,
+    var(--clr-neutral-700),
+    var(--clr-neutral-600),
+    var(--clr-neutral-700)
+  );
+}
+
+.bg-brushed-metal--shine-left {
+  background: linear-gradient(
+    to right,
+    var(--clr-neutral-600),
+    var(--clr-neutral-700)
+  );
+}
+
+.bg-brushed-metal--shine-right {
+  background: linear-gradient(
+    to right,
+    var(--clr-neutral-700),
+    var(--clr-neutral-600)
+  );
 }
 
 .bg-chrome-light {
