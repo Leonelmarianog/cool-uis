@@ -1,39 +1,23 @@
 .inventory {
-  --height-total: 16.5em;
-  --width-total: 8.1em;
-
-  --cutout-height: calc((var(--height-total) / 5) + 0.75em);
-  --cutout-width: calc((var(--width-total) / 2) - 0.5em);
-
-  padding: 0.2em 0.45em 0.3em 0.45em;
-  height: var(--height-total);
-  width: var(--width-total);
-  clip-path: polygon(
-    0% var(--cutout-height),
-    var(--cutout-width) var(--cutout-height),
-    var(--cutout-width) 0%,
-    100% 0,
-    100% 100%,
-    0% 100%
-  );
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 0.2em 0.2em 1fr 0.15em 0.2em 0.5em repeat(4, 1fr);
+  display: flex;
+  flex-direction: column;
+  align-items: end;
 }
 
-.inventory > div:nth-child(1),
-.inventory > div:nth-child(2),
-.inventory > div:nth-child(3),
-.inventory > div:nth-child(4),
-.inventory > div:nth-child(5),
-.inventory > div:nth-child(6) {
-  grid-column-start: 2;
-}
-
-.inventory > div[class="item-slot"] {
+.inventory .item-slot {
   position: relative;
 }
-.inventory > div[class="item-slot"]::before {
+
+/* 
+  On hover I need to move the Item Slot up the stacking context above its siblings, 
+  otherwise the selection border (pseudo element) is "cut" at the sides where the 
+  Item Slot touches its siblings. 
+*/
+.inventory .item-slot:hover {
+  z-index: 2;
+}
+
+.inventory .item-slot::before {
   --border-inner-size: 0.1em;
   --border-outer-size: calc(var(--border-inner-size) * 2);
   --border-inner-size-neg: calc(var(--border-inner-size) * -1);
@@ -46,12 +30,9 @@
   content: "";
   display: block;
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  bottom: 0;
+  inset: 0;
   opacity: 0;
-  z-index: 1;
+
   /* The selection box consist of two borders, inner and outer, so most of the borders use two box shadows. */
   box-shadow: /* Left */ var(--border-inner-size-neg) 0 0 0 var(--clr-rust-600),
     var(--border-outer-size-neg) 0 0 0 var(--clr-rust-400),
@@ -79,6 +60,7 @@
     var(--border-outer-size) var(--border-outer-size-neg) 0 0
       var(--clr-rust-800);
 }
-.inventory > div[class="item-slot"]:hover::before {
+
+.inventory .item-slot:hover::before {
   opacity: 1;
 }
