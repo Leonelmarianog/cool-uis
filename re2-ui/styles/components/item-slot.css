@@ -10,7 +10,7 @@
 }
 
 .item-slot > div > img {
-  width: 3.5em;
+  width: 3.2em;
 }
 
 .item-slot > div {
@@ -24,7 +24,7 @@
   font-family: var(--ff-pixelify);
   text-shadow: 0.025em 0.075em 0em var(--clr-green-700);
   position: absolute;
-  bottom: -15%;
-  left: 5%;
+  bottom: -20%;
+  left: 0%;
   letter-spacing: 0.1em;
 }
