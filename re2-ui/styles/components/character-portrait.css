@@ -1,15 +1,16 @@
 .character-portrait {
-  width: 4.15em;
   height: 5.85em;
+  width: 4.15em;
   padding: 0.4em 0.4em;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25em;
 }
 
-.character-portrait > p {
-  color: var(--clr-olive-800);
+.character-portrait > * + * {
+  margin-top: 0.25em;
+}
+
+.character-portrait__text {
   background: var(--clr-blue-600);
+  color: var(--clr-olive-800);
   padding: 0 0.5em;
   font-family: var(--ff-tiny5);
   text-transform: uppercase;
@@ -17,6 +18,7 @@
   text-align: center;
 }
 
-.character-portrait > img {
+.character-portrait__img {
   height: 100%;
+  width: 100%;
 }
