@@ -1,0 +1,36 @@
+.info-box {
+  --clr-text-bg: #0c0c19;
+  --clr-text: #cecebd;
+
+  height: 5.65em;
+  width: 19em;
+  padding: 0.4em;
+}
+
+.info-box > div {
+  background: var(--clr-text-bg);
+  height: 100%;
+  padding: 0 0.25em;
+}
+
+.info-box .info-box__text {
+  --stroke-weight: 0.06em;
+  --stroke-weight-negative: calc(var(--stroke-weight) * -1);
+  --stroke-color: #3a314a;
+
+  color: var(--clr-text);
+  font-family: var(--ff-noticia);
+  font-size: 1.45em;
+  line-height: 1em;
+  letter-spacing: 0.1em;
+
+  text-shadow: var(--stroke-weight) var(--stroke-weight) 0 var(--stroke-color),
+    var(--stroke-weight-negative) var(--stroke-weight-negative) 0
+      var(--stroke-color),
+    var(--stroke-weight) var(--stroke-weight-negative) 0 var(--stroke-color),
+    var(--stroke-weight-negative) var(--stroke-weight) 0 var(--stroke-color),
+    var(--stroke-weight) 0 0 var(--stroke-color),
+    var(--stroke-weight-negative) 0 0 var(--stroke-color),
+    0 var(--stroke-weight) 0 var(--stroke-color),
+    0 var(--stroke-weight-negative) 0 var(--stroke-color);
+}
