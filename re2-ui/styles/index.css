@@ -6,7 +6,7 @@
 
 @import "components/item-slot.css";
 @import "components/equipment-slot.css";
-@import "components/health-monitor.css";
+@import "components/condition-display.css";
 @import "components/character-portrait.css";
 @import "components/navigation.css";
 @import "components/info-box.css";
