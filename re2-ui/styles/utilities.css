@@ -3,7 +3,7 @@
   background: var(--clr-neutral-700);
 }
 
-/* Move all childrens up in the stacking context to avoid the overlay from applying to them too */
+/* Have to move all childrens up in the stacking context to avoid the overlay from applying to them too */
 .bg-brushed-metal > * {
   position: relative;
   z-index: 1;
@@ -113,5 +113,70 @@
     var(--clr-neutral-800) calc(100% - var(--line-thickness)),
     var(--clr-neutral-850) calc(100% - var(--line-thickness)),
     var(--clr-neutral-850) 100%
+  );
+}
+
+.bg-green-1 {
+  background: #103110;
+  box-shadow: 0.1em 0.1em 0 #081910 inset, -0.1em 0 0 #081910 inset;
+}
+
+.bg-green-2 {
+  background: #103110;
+  box-shadow: 0.1em 0.1em 0 #081910 inset, -0.1em 0 0 #004200 inset;
+}
+
+.bg-red-segmented-1 {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent 8.33%,
+    #522929 8.33%,
+    #522929 16.66%,
+    #7b2121 16.66%,
+    #7b2121 25%,
+    transparent 25%,
+    transparent 33.33%,
+    #522929 33.33%,
+    #522929 41.66%,
+    #7b2121 41.66%,
+    #7b2121 58.33%,
+    #522929 58.33%,
+    #522929 66.66%,
+    transparent 66.66%,
+    transparent 75%,
+    #7b2121 75%,
+    #7b2121 83.33%,
+    #522929 83.33%,
+    #522929 91.66%,
+    transparent 91.66%,
+    transparent 100%
+  );
+}
+
+.bg-red-segmented-2 {
+  background: #103110;
+  box-shadow: 0.1em 0.1em 0 #081910 inset, -0.1em 0 0 #081910 inset;
+  position: relative;
+}
+
+.bg-red-segmented-2::before {
+  content: "";
+  display: block;
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    to right,
+    #7b2121 0%,
+    #7b2121 8.33%,
+    transparent 8.33%,
+    transparent 25%,
+    #7b2121 25%,
+    #7b2121 75%,
+    transparent 75%,
+    transparent 91.67%,
+    #7b2121 91.67%,
+    #7b2121 100%
   );
 }
