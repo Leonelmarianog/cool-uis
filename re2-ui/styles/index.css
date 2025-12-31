@@ -5,7 +5,7 @@
 @import "layout.css";
 
 @import "components/item-slot.css";
-@import "components/equipment-slot.css";
+@import "components/equipment-display.css";
 @import "components/condition-display.css";
 @import "components/character-portrait.css";
 @import "components/navigation.css";
