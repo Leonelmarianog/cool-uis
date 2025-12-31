@@ -7,3 +7,13 @@
   width: 4.5em;
   padding: 0.2em 0.45em 0.05em 0.45em;
 }
+
+.special-slot > div:nth-child(1) {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 1fr;
+}
+
+.special-slot > div:nth-child(3) {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 1fr;
+}
