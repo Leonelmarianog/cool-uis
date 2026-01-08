@@ -47,16 +47,20 @@
   align-self: end;
 }
 
+/* Inventory Panel */
+
 .inventory-panel {
   display: grid;
   grid-template-columns: repeat(2, min-content);
   grid-template-rows: min-content;
   grid-column-gap: 5.375em;
 }
-.inventory-panel > div:nth-child(1) {
+
+.inventory-panel > .equipment-display {
   grid-area: 1 / 1 / 2 / 3;
 }
-.inventory-panel > div:nth-child(2) {
+
+.inventory-panel > .inventory {
   grid-area: 1 / 2 / 2 / 3;
 }
 
