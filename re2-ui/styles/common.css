@@ -63,21 +63,3 @@ body {
 .cylinder-group.cylinder-group--sparse > * {
   flex: 0.15;
 }
-
-.piston-arm {
-  --clr-neutral-900: #000000;
-  --clr-neutral-850: #191919;
-  --clr-neutral-800: #292929;
-  --clr-neutral-700: #3a3a3a;
-  --clr-neutral-600: #525252;
-  --clr-neutral-500: #636363;
-  --clr-neutral-400: #737373;
-
-  height: 1.4em;
-  display: grid;
-  grid-template-columns: 0.75em auto;
-}
-
-.piston-arm > *:nth-child(2) {
-  margin: 0.35em 0;
-}

@@ -22,7 +22,7 @@
 .inventory-screen > div > .inventory-panel {
   grid-area: 2 / 2 / 5 / 3;
 }
-.inventory-screen > div > .item-description-panel {
+.inventory-screen > div > .info-panel {
   grid-area: 4 / 1 / 6 / 3;
 }
 
@@ -60,18 +60,40 @@
   grid-area: 1 / 2 / 2 / 3;
 }
 
-.item-description-panel {
+/* Info Panel */
+
+.info-panel {
   display: grid;
   grid-template-columns: min-content auto;
   grid-template-rows: min-content;
 }
-.item-description-panel > div:nth-child(1) {
-  grid-area: 1 / 1 / 2 / 2;
-  margin-left: 0.65em;
-  margin-top: 0.25em;
-}
-.item-description-panel > div:nth-child(2) {
+
+.info-panel__decoration {
   grid-area: 1 / 2 / 2 / 3;
   align-self: end;
   margin-bottom: 0.25em;
+}
+
+.info-panel__decoration {
+  --clr-neutral-900: #000000;
+  --clr-neutral-850: #191919;
+  --clr-neutral-800: #292929;
+  --clr-neutral-700: #3a3a3a;
+  --clr-neutral-600: #525252;
+  --clr-neutral-500: #636363;
+  --clr-neutral-400: #737373;
+
+  height: 1.4em;
+  display: grid;
+  grid-template-columns: 0.75em auto;
+}
+
+.info-panel__decoration > div:nth-child(2) {
+  margin: 0.35em 0;
+}
+
+.info-panel > .info-box {
+  grid-area: 1 / 1 / 2 / 2;
+  margin-left: 0.65em;
+  margin-top: 0.25em;
 }
