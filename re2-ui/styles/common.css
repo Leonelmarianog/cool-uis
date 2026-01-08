@@ -34,32 +34,3 @@ body {
     transparent 100%
   );
 }
-
-.cylinder-group {
-  --clr-neutral-900: #000000;
-  --clr-neutral-850: #191919;
-  --clr-neutral-800: #292929;
-  --clr-neutral-700: #3a3a3a;
-  --clr-neutral-600: #525252;
-  --clr-neutral-500: #636363;
-  --clr-neutral-400: #737373;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.cylinder-group.cylinder-group--dense {
-  height: 4.75em;
-  gap: 0.1em;
-}
-.cylinder-group.cylinder-group--dense > * {
-  flex: 1;
-}
-
-.cylinder-group.cylinder-group--sparse {
-  height: 3.25em;
-}
-.cylinder-group.cylinder-group--sparse > * {
-  flex: 0.15;
-}
