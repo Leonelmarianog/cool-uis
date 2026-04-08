@@ -1,61 +1,168 @@
 ---
 name: pr
-description: Create a pull request with user approval at each step. Gathers diff/history, drafts PR description, waits for approval before creating.
-allowed-tools:
-  - Bash
-  - WebFetch
-  - WebSearch
+description: Create a pull request with explicit approval gates at each step. Gathers context, warns about uncommitted changes, drafts PR, waits for approval before creating.
 ---
 
-You are helping create a pull request. Follow this workflow:
+You are a PR assistant. The user must approve every significant action. Do not proceed to the next step without explicit confirmation.
 
-## Steps
+## Workflow Overview
 
-1. **Gather context**
-   - Run `git log main..HEAD --oneline` to see commits in this branch
-   - Run `git diff main...HEAD --stat` to see file changes summary
-   - Run `git diff main...HEAD` for the full diff
-   - Check if branch is up to date with main: `git fetch origin && git status`
+1. **Gather context** — Commits, diffs, branch status
+2. **Check for issues** — Uncommitted changes, branch sync
+3. **Draft PR** — Title and structured body
+4. **Push branch** — Only if user approves
+5. **Create PR** — Only after final approval
 
-2. **Present findings to user**
-   - Show commit history for this branch
-   - Show summary of changed files
-   - Ask which commits/files to include (or confirm all)
+## Step-by-Step
 
-3. **Draft PR description**
-   - Title: Follow Conventional Commits format with scope (e.g., `feat(re1-character-selection): add character grid`)
-   - Summary: Brief bullet points of changes
-   - Test plan: Checklist of how to verify changes
-   - Present draft to user for review
+### Step 1: Gather Context
 
-4. **Create PR** (only after user approval)
-   - Ensure branch is pushed to origin
-   - Use `gh pr create` with the approved title and body
-   - Show the PR URL
+Run these commands:
+```bash
+git status
+git log main..HEAD --oneline
+git diff main...HEAD --stat
+git branch -vv
+```
 
-## Rules
+(Replace "main" with actual base branch: main/master/develop)
 
-- NEVER create a PR without showing the user what will be included
-- ALWAYS wait for explicit user approval before executing `gh pr create`
-- ALWAYS use generic `Claude Code` attribution in PR body — NEVER specify a model name
-- If user provides feedback on the description, revise and re-present
+### Step 2: Present State
 
-## Example PR Titles
+Show findings:
+```
+Branch: <branch-name>
+Base: <base-branch>
+Commits ahead: <count>
+Files changed: <count>
 
-- `feat(re1-character-selection): add character selection UI`
-- `fix(re2-ui): resolve inventory slot alignment`
-- `refactor(re2-ui): extract common button styles`
+Changes:
+- <file1> (<+/- count>)
+- <file2> (<+/- count>)
 
-## Example PR Body
+⚠️ Uncommitted changes: <count> files (if any)
+Branch status: <ahead/behind/diverged> from origin
+```
 
+If uncommitted changes exist, warn:
+```
+⚠️ You have uncommitted changes:
+- <file1>
+- <file2>
+
+These won't be included in the PR. Commit first or proceed anyway?
+```
+
+### Step 3: Draft PR
+
+**Title format:**
+```
+<type>(<scope>): <description>
+```
+
+Examples:
+- `feat(character-selection): add hero grid with hover states`
+- `fix(ui): resolve alignment in inventory slots`
+- `refactor(api): extract auth middleware to dedicated module`
+
+**Body template:**
 ```markdown
 ## Summary
-- Added character grid component with responsive layout
-- Implemented character card hover effects
-- Added accessibility attributes for screen readers
+<!-- 2-3 bullets of what changed -->
+- Added character selection grid component
+- Implemented responsive layout for mobile
+- Fixed accessibility issues with keyboard navigation
 
-## Test plan
-- [ ] Verify character grid renders correctly
-- [ ] Test responsive behavior at different screen sizes
-- [ ] Check keyboard navigation works
+## Changes
+<!-- Specific technical details -->
+- `src/components/Grid.tsx`: New grid component with virtualization
+- `src/styles/grid.css`: Responsive breakpoints at 768px and 1024px
+- `src/types/index.ts`: Added Character interface
+
+## Test Plan
+<!-- Verification steps -->
+- [ ] Component renders without errors
+- [ ] Responsive layout tested at all breakpoints
+- [ ] Keyboard navigation works (Tab, Enter, Escape)
+- [ ] Screen reader announces selections correctly
+- [ ] Unit tests pass: `npm test`
+- [ ] Manual verification in Chrome, Firefox, Safari
+
+## Risks/Notes
+<!-- What reviewers should focus on -->
+- Performance impact on large character lists (>100 items)
+- Uses CSS Grid which may not work in IE11 (intentional)
+- Follow-up needed: add loading skeletons (separate PR)
+
+---
+🤖 Generated with Claude Code
 ```
+
+Present draft:
+```
+Proposed PR:
+================
+Title: <title>
+
+Body:
+<body>
+================
+
+Approve, edit, or cancel?
+```
+
+### Step 4: Handle Branch Push (with approval)
+
+If branch not on origin:
+```
+Branch not pushed to origin. Push now?
+
+Commits to push:
+- <hash> <message>
+- ...
+
+Approve or cancel?
+```
+
+If approved: `git push -u origin <branch-name>`
+
+If behind origin:
+```
+Branch is behind origin by <count> commits. Pull first or force push?
+```
+
+### Step 5: Create PR (only after final approval)
+
+```bash
+gh pr create --title "<title>" --body "<body>"
+```
+
+Show result:
+```
+✓ Pull request created: <URL>
+
+Title: <title>
+Base: <base-branch>
+```
+
+### Step 6: Post-Creation Options
+
+Ask if user wants to:
+- Assign reviewers: `gh pr edit <url> --add-reviewer <user>`
+- Add labels: `gh pr edit <url> --add-label <label>`
+- Link issues: `gh pr edit <url> --body "Closes #<issue>\n\n<existing-body>")`
+
+## Cancellation
+
+If user says **"cancel"**, **"abort"**, **"stop"**, or **"quit"** at any point:
+1. Stop immediately
+2. Summarize what was done
+3. Ask if they want to start over
+
+## Safety Rules
+
+- Never create PR without showing full content first
+- Always warn about uncommitted changes
+- Get explicit approval before pushing branches
+- Never force push without confirmation
+- Use generic "Claude Code" attribution, never model-specific names
