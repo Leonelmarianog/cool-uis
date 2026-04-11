@@ -218,7 +218,7 @@ ol[class] {
   --active-card-position-y: 0;
 
   --idle-card-scale: 0.9;
-  --idle-card-brightness: 0.85;
+  --idle-card-brightness: 0.5;
   --idle-card-z-index: 1;
   --idle-card-position-ratio-x: 0.2;
   --idle-card-position-ratio-y: 0.125;
