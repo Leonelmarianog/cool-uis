@@ -256,6 +256,24 @@ ol[class] {
       0.075em 0.075em 0 rgb(128, 128, 120);
 }
 
+/* Static shine effect */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 20%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(0, 0, 0, 0.3) 80%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
 .card-left {
   width: 41%;
   height: 100%;
