@@ -166,3 +166,4 @@ If user says **"cancel"**, **"abort"**, **"stop"**, or **"quit"** at any point:
 - Get explicit approval before pushing branches
 - Never force push without confirmation
 - Use generic "Claude Code" attribution, never model-specific names
+- **Do not escape backticks** in markdown content (e.g., write `CLAUDE.md` not \`CLAUDE.md\`) — escaping renders literally on GitHub
