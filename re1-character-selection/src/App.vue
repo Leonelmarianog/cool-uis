@@ -10,7 +10,25 @@
             class="card"
             :class="getCardClasses(index)"
         >
-          {{ card.name }}
+          <div class="card-left">
+            <img
+                src="./assets/raccoon-city-stars-logo.png"
+                alt="S.T.A.R.S Logo"
+                class="card__logo"
+            />
+          </div>
+          <div class="card-right">
+            <span class="text-inset card__heading">POLICE</span>
+            <span class="card-text text-underline text-inset card__character-name">{{ card.name }}</span>
+            <span class="card-text text-underline text-inset card__character-signature">{{ card.characterSign }}</span>
+            <span class="card-text text-underline text-inset card__character-id">{{ card.idNumber }}</span>
+            <span class="card-text text-underline text-inset card__issuer-signature">{{ card.issuerSign }}</span>
+            <img
+                class="card__character-portrait"
+                :src="card.portrait"
+                :alt="card.name"
+            />
+          </div>
         </div>
       </div>
 
@@ -21,15 +39,21 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import chrisPortrait from './assets/chris-portrait.png';
+import jillPortrait from './assets/jill-portrait.png';
 
 interface Card {
   id: number;
   name: string;
+  characterSign: string;
+  idNumber: string;
+  issuerSign: string;
+  portrait: {};
 }
 
 const cards = ref<Card[]>([
-  { id: 1, name: 'Jill' },
-  { id: 2, name: 'Chris' },
+  { id: 1, name: 'Jill Valentine', characterSign: 'Jill Valentine', idNumber: '0823', issuerSign: 'R.P.D.', portrait: jillPortrait },
+  { id: 2, name: 'Chris Redfield', characterSign: 'Chris Redfield', idNumber: '0738', issuerSign: 'R.P.D.', portrait: chrisPortrait },
 ]);
 
 const isAnimating = ref(false);
@@ -89,6 +113,39 @@ ol[class] {
 }
 </style>
 
+<style>
+/* UTILITIES */
+
+.card-text {
+  font-family: "Noticia Text", sans-serif;
+  font-size: 0.6em;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  color: #000000;
+}
+
+.text-inset {
+  text-shadow:
+      -0.05em -0.05em 0.025em rgba(255, 255, 255, 0.5),
+      0.05em 0.05em 0.025em rgba(0, 0, 0, 0.5);
+}
+
+.text-underline {
+  position: relative;
+  padding-bottom: 0.05em;
+}
+
+.text-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0.35em;
+  right: 0.35em;
+  height: 0.06em;
+  background: currentColor;
+}
+</style>
+
 <style scoped>
 .viewport {
   width: 100vw;
@@ -142,12 +199,13 @@ ol[class] {
   align-items: center;
   justify-content: center;
   gap: 1.5em;
-  background: #fbd17a;
-  border: 0.125em solid #ffac00;
+  background: url('./assets/desk-bg.jpeg') no-repeat center;
+  background-size: cover;
+  border: 0.125em solid #494949;
 }
 
 .card-stack {
-  --card-width: 10.5em;
+  --card-width: 11em;
   --card-height: 7.5em;
   --card-shadow:
       calc(var(--card-width) * 0.025) calc(var(--card-width) * 0.025)
@@ -160,7 +218,7 @@ ol[class] {
   --active-card-position-y: 0;
 
   --idle-card-scale: 0.9;
-  --idle-card-brightness: 0.85;
+  --idle-card-brightness: 0.5;
   --idle-card-z-index: 1;
   --idle-card-position-ratio-x: 0.2;
   --idle-card-position-ratio-y: 0.125;
@@ -190,14 +248,87 @@ ol[class] {
   height: var(--card-height);
   border-radius: 0.3em;
   display: flex;
+  overflow: hidden;
+  background: #C0C0B0;
+  box-shadow:
+      var(--card-shadow),
+      0.075em 0.075em 0 rgb(128, 128, 120),
+      0.075em 0.075em 0 rgb(128, 128, 120);
+}
+
+/* Static shine effect */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.3) 20%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(0, 0, 0, 0.3) 80%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.card-left {
+  width: 41%;
+  height: 100%;
+  background: #3068A0;
+  display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0.5em 0.05em;
+}
+
+.card-right {
+  flex: 1;
+  padding: 0.25em 0.25em 0.25em 0.6em;
+  row-gap: 0.25em;
+  column-gap: 0;
+  text-align: center;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(6, min-content);
+}
+
+.card-right .card__heading { grid-area: 1 / 1 / 2 / 3; }
+.card-right .card__character-name { grid-area: 2 / 1 / 3 / 3; }
+.card-right .card__character-signature { grid-area: 3 / 1 / 4 / 3; }
+.card-right .card__character-id { grid-area: 4 / 1 / 5 / 3; }
+.card-right .card__issuer-signature { grid-area: 5 / 1 / 6 / 3; }
+.card-right .card__character-portrait { grid-area: 4 / 1 / 7 / 2; }
+
+.card__logo {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.card__heading {
   font-family: monospace;
-  font-size: 0.9em;
+  font-size: 1em;
   font-weight: bold;
-  background: #ffffff;
   color: #000000;
-  box-shadow: var(--card-shadow);
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.card__character-id {
+  letter-spacing: 0.45em;
+  margin-left: 3.5em;
+}
+
+.card__issuer-signature {
+  margin-left: 3.5em;
+}
+
+.card__character-portrait {
+  height: 2.8em;
+  transform: translate(-0.25em, 0.45em);
 }
 
 .active-card {
