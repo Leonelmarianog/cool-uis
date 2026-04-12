@@ -48,7 +48,7 @@ interface Card {
   characterSign: string;
   idNumber: string;
   issuerSign: string;
-  portrait: {};
+  portrait: string;
 }
 
 const cards = ref<Card[]>([
