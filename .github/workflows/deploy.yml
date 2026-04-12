@@ -36,9 +36,9 @@ jobs:
       # Combine all projects into _site
       - name: Assemble site
         run: |
-          mkdir -p _site
           # Vue projects (built output in dist/)
-          cp -r re1-character-selection/dist _site/re1-character-selection
+          mkdir -p _site/re1-character-selection
+          cp -r re1-character-selection/dist/. _site/re1-character-selection/
           # Vanilla projects (serve as-is)
           cp -r re2-ui _site/re2-ui
 
