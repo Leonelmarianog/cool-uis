@@ -1,0 +1,24 @@
+/* Shared design values. Refine these as the inventory UI takes shape. */
+:root {
+  color-scheme: dark;
+
+  --color-background: #141414;
+  --color-surface: #242424;
+  --color-text: #ededed;
+  --color-text-muted: #a8a8a8;
+  --color-border: #555555;
+  --color-focus: #c8d6a0;
+
+  --font-family-body: Arial, Helvetica, sans-serif;
+  --font-size-body: 1rem;
+  --font-size-title: clamp(1.5rem, 4vw, 2.5rem);
+  --line-height-body: 1.5;
+  --line-height-heading: 1.2;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+}
