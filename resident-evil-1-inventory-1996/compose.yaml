@@ -1,0 +1,8 @@
+services:
+  web:
+    build:
+      context: .
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    # Inherits the HTTP healthcheck from the Dockerfile.
