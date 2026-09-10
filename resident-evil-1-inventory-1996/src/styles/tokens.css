@@ -8,6 +8,8 @@
   --color-text-muted: #a8a8a8;
   --color-border: #555555;
   --color-focus: #c8d6a0;
+  --color-preview-background: #000000;
+  --color-preview-sidebar: #c5e4bf;
 
   --font-family-body: Arial, Helvetica, sans-serif;
   --font-size-body: 1rem;

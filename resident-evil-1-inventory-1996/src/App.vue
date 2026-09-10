@@ -1,7 +1,10 @@
+<script setup>
+import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
+</script>
+
 <template>
   <main class="project-shell">
-    <h1>Resident Evil 1 Inventory</h1>
-    <p>1996 · UI recreation</p>
+    <ItemPreviewPanel class="project-shell__preview-panel" />
   </main>
 </template>
 
@@ -13,15 +16,10 @@
   gap: var(--space-3);
   min-height: 100svh;
   padding: var(--space-6);
-  text-align: center;
+  background: var(--color-preview-background);
 }
 
-h1 {
-  font-size: var(--font-size-title);
-  line-height: var(--line-height-heading);
-}
-
-p {
-  color: var(--color-text-muted);
+.project-shell__preview-panel {
+  max-width: 864px;
 }
 </style>

@@ -58,6 +58,13 @@ Keep component layout and appearance in each Vue file's `<style scoped>` block.
 Global variables inherit into scoped styles. Variables used only by one component
 can be declared on that component's root class instead of adding them to `:root`.
 
+Use BEM for CSS classes: `block`, `block__element`, and
+`block__element--modifier`. For example, `item-preview-panel`,
+`item-preview-panel__fastener`, and `item-preview-panel__fastener--top-left`.
+Keep the base class alongside modifier classes. Each component owns its block;
+parent layout classes such as `project-shell__preview-panel` can be added to a
+child component. CSS variables retain their semantic names.
+
 Add reusable UI pieces under `src/components/` as needed. Put imported images and
 fonts under `src/assets/`; use `public/` for files that need a fixed public URL.
 Create these directories when there are assets or components to put in them.
