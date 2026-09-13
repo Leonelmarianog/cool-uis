@@ -1,4 +1,5 @@
 <script setup>
+import BlueSlotBackground from './BlueSlotBackground.vue'
 import equippedHandgun from '../assets/equipped-handgun.png'
 
 // Each background row represents one art pixel of the screen's height.
@@ -13,14 +14,7 @@ const screenRows = 35
       <span class="equipped-weapon-panel__indicator" aria-hidden="true"></span>
       <span class="equipped-weapon-panel__connector-frame" aria-hidden="true"></span>
       <div class="equipped-weapon-panel__screen">
-        <div class="equipped-weapon-panel__screen-background" aria-hidden="true">
-          <span
-            v-for="row in screenRows"
-            :key="row"
-            class="equipped-weapon-panel__screen-row"
-            :style="{ '--row-index': row - 1 }"
-          ></span>
-        </div>
+        <BlueSlotBackground :rows="screenRows" />
         <slot>
           <img class="equipped-weapon-panel__gun" :src="equippedHandgun" alt="Handgun" width="156" height="110" />
           <span class="equipped-weapon-panel__ammo" aria-label="10 rounds">10</span>
@@ -51,9 +45,8 @@ const screenRows = 35
   --weapon-edge: #747476;
   --weapon-cutaway-shadow: #50585a;
   --weapon-shadow: #20251f;
-  --weapon-screen: #080044;
-  --weapon-screen-light: #0c0054;
-  --weapon-screen-dark: #050034;
+  --weapon-screen: var(--color-slot-blue);
+  --weapon-ink: #000;
   --weapon-ammo: #009900;
   --weapon-ammo-shadow: #003800;
 
@@ -178,7 +171,7 @@ const screenRows = 35
   position: absolute;
   inset: 0;
   content: '';
-  background: #000;
+  background: var(--weapon-ink);
   clip-path: polygon(
     0 0, 25% 0, 25% 12.5%, 50% 12.5%,
     50% 25%, 75% 25%, 75% 37.5%, 100% 37.5%,
@@ -193,7 +186,7 @@ const screenRows = 35
   left: 100%;
   width: var(--ui-pixel);
   height: var(--ui-pixel);
-  background: #000;
+  background: var(--weapon-ink);
   content: '';
 }
 
@@ -237,28 +230,6 @@ const screenRows = 35
   text-shadow: var(--ui-pixel) 0 0 var(--weapon-ammo-shadow);
 }
 
-/* One row per art pixel gives the diagonal transitions square stair steps. */
-.equipped-weapon-panel__screen-background {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  display: grid;
-  grid-template-rows: repeat(var(--screen-rows), 1fr);
-  pointer-events: none;
-}
-
-.equipped-weapon-panel__screen-row {
-  --light-stop: calc((24 - var(--row-index)) * var(--ui-pixel));
-  --dark-stop: calc((48 - var(--row-index)) * var(--ui-pixel));
-
-  background: linear-gradient(
-    to right,
-    var(--weapon-screen-light) 0 var(--light-stop),
-    var(--weapon-screen) var(--light-stop) var(--dark-stop),
-    var(--weapon-screen-dark) var(--dark-stop) 100%
-  );
-}
-
 /* This open-right frame ends at the housing edge, around the tubes and black rim. */
 .equipped-weapon-panel__connector-frame {
   position: absolute;
@@ -278,9 +249,9 @@ const screenRows = 35
 }
 
 .equipped-weapon-panel__connector {
-  --tube-dark: #091009;
-  --tube-mid: #39433b;
-  --tube-light: #5a5849;
+  --tube-dark: var(--color-panel-tube-dark);
+  --tube-mid: var(--color-panel-tube-mid);
+  --tube-light: var(--color-panel-tube-light);
   --tube-height: var(--ui-pixel);
   --tube-side-inset: calc(2 * var(--ui-pixel));
 
@@ -296,11 +267,11 @@ const screenRows = 35
   border-bottom: var(--ui-pixel) solid var(--weapon-connector-bottom);
   /* Keep the black rim on the top, bottom, and right, with square right corners. */
   box-shadow:
-    0 calc(-1 * var(--ui-pixel)) #000,
-    0 var(--ui-pixel) #000,
-    var(--ui-pixel) 0 #000,
-    var(--ui-pixel) calc(-1 * var(--ui-pixel)) #000,
-    var(--ui-pixel) var(--ui-pixel) #000;
+    0 calc(-1 * var(--ui-pixel)) var(--weapon-ink),
+    0 var(--ui-pixel) var(--weapon-ink),
+    var(--ui-pixel) 0 var(--weapon-ink),
+    var(--ui-pixel) calc(-1 * var(--ui-pixel)) var(--weapon-ink),
+    var(--ui-pixel) var(--ui-pixel) var(--weapon-ink);
 }
 
 .equipped-weapon-panel__tubes {

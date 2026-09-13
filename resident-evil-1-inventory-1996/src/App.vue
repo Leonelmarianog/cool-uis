@@ -3,6 +3,7 @@ import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
 import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue'
 import HealthStatusPanel from './components/HealthStatusPanel.vue'
 import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
+import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 </script>
 
@@ -10,6 +11,7 @@ import MenuPanel from './components/MenuPanel.vue'
   <main class="project-shell">
     <div class="project-shell__inventory">
       <!-- Keep new components first while building them individually. -->
+      <InventoryGrid />
       <MenuPanel />
       <EquippedWeaponPanel />
       <HealthStatusPanel />

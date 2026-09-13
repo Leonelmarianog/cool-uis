@@ -5,6 +5,14 @@
   /* One pixel in the recreated UI artwork. */
   --ui-pixel: 4px;
 
+  /* Shared inventory/equipped panel artwork palettes. */
+  --color-slot-blue-light: #0c0054;
+  --color-slot-blue: #080044;
+  --color-slot-blue-dark: #050034;
+  --color-panel-tube-dark: #091009;
+  --color-panel-tube-mid: #39433b;
+  --color-panel-tube-light: #5a5849;
+
   --color-background: #141414;
   --color-surface: #242424;
   --color-text: #ededed;
