@@ -1,5 +1,6 @@
 <script setup>
 import BlueSlotBackground from './BlueSlotBackground.vue'
+import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
 
 const cellRows = 34
 const cellCount = 8
@@ -11,6 +12,7 @@ const cellCount = 8
       <ol class="inventory-grid__cells" aria-label="Inventory slots">
         <li v-for="cell in cellCount" :key="cell" class="inventory-grid__cell" :aria-label="`Slot ${cell}: empty`">
           <BlueSlotBackground :rows="cellRows" />
+          <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
       </ol>
     </div>
@@ -75,5 +77,15 @@ const cellCount = 8
   position: relative;
   isolation: isolate;
   overflow: hidden;
+}
+
+.inventory-grid__selector {
+  display: none;
+}
+
+@media (hover: hover) {
+  .inventory-grid__cell:hover .inventory-grid__selector {
+    display: block;
+  }
 }
 </style>
