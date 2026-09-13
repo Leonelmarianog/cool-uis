@@ -2,12 +2,14 @@
 import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
 import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue'
 import HealthStatusPanel from './components/HealthStatusPanel.vue'
+import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 </script>
 
 <template>
   <main class="project-shell">
     <div class="project-shell__inventory">
       <!-- Keep new components first while building them individually. -->
+      <EquippedWeaponPanel />
       <HealthStatusPanel />
       <CharacterPortraitPanel class="project-shell__portrait-panel" />
       <ItemPreviewPanel />
