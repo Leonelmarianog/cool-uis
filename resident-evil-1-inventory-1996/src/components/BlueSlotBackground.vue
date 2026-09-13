@@ -1,5 +1,7 @@
 <script setup>
-defineProps({ rows: { type: Number, default: 35 } })
+defineProps({
+  rows: { type: Number, default: 35 },
+})
 </script>
 
 <template>
@@ -14,11 +16,10 @@ defineProps({ rows: { type: Number, default: 35 } })
 </template>
 
 <style scoped>
-/* Shared with the equipped screen: one row per art pixel, with square steps. */
+/* Hosts supply position: relative and isolation: isolate for the negative layer.
+   Set their height to rows × --ui-pixel to keep each step one art pixel tall. */
 .blue-slot-background {
-  --slot-blue-light: #0c0054;
-  --slot-blue: #080044;
-  --slot-blue-dark: #050034;
+  --slot-band-width: calc(24 * var(--ui-pixel));
 
   position: absolute;
   z-index: -1;
@@ -29,14 +30,16 @@ defineProps({ rows: { type: Number, default: 35 } })
 }
 
 .blue-slot-background__row {
-  --light-stop: calc((24 - var(--row-index)) * var(--ui-pixel));
-  --dark-stop: calc((48 - var(--row-index)) * var(--ui-pixel));
+  /* Shift both transitions left one art pixel per row, keeping them parallel. */
+  --slot-row-offset: calc(var(--row-index) * var(--ui-pixel));
+  --light-stop: calc(var(--slot-band-width) - var(--slot-row-offset));
+  --dark-stop: calc(2 * var(--slot-band-width) - var(--slot-row-offset));
 
   background: linear-gradient(
     to right,
-    var(--slot-blue-light) 0 var(--light-stop),
-    var(--slot-blue) var(--light-stop) var(--dark-stop),
-    var(--slot-blue-dark) var(--dark-stop) 100%
+    var(--color-slot-blue-light) 0 var(--light-stop),
+    var(--color-slot-blue) var(--light-stop) var(--dark-stop),
+    var(--color-slot-blue-dark) var(--dark-stop) 100%
   );
 }
 </style>

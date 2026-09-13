@@ -31,14 +31,21 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
+
+  /* Inherited theme hooks: base color, full cycle duration, and dark brightness.
+     Keep defaults at usage sites so overrides on a parent or cell still inherit. */
   color: var(--item-selector-color, #ed0033);
-  animation: item-selector-pulse var(--item-selector-duration, 1s) steps(1, end) infinite;
+  animation-name: item-selector-pulse;
+  animation-duration: var(--item-selector-duration, 1s);
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
 }
 
 /* Hold each shade for half a cycle, then switch instantly.
    Only the SVG is darkened; its base color remains configurable. */
 @keyframes item-selector-pulse {
-  0%, 100% {
+  0%,
+  100% {
     filter: brightness(1);
   }
 
@@ -46,5 +53,4 @@
     filter: brightness(var(--item-selector-dark-brightness, 0.35));
   }
 }
-
 </style>

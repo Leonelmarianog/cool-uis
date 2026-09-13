@@ -45,7 +45,8 @@ const screenRows = 35
   --weapon-edge: #747476;
   --weapon-cutaway-shadow: #50585a;
   --weapon-shadow: #20251f;
-  --weapon-screen: #080044;
+  --weapon-screen: var(--color-slot-blue);
+  --weapon-ink: #000;
   --weapon-ammo: #009900;
   --weapon-ammo-shadow: #003800;
 
@@ -170,7 +171,7 @@ const screenRows = 35
   position: absolute;
   inset: 0;
   content: '';
-  background: #000;
+  background: var(--weapon-ink);
   clip-path: polygon(
     0 0, 25% 0, 25% 12.5%, 50% 12.5%,
     50% 25%, 75% 25%, 75% 37.5%, 100% 37.5%,
@@ -185,7 +186,7 @@ const screenRows = 35
   left: 100%;
   width: var(--ui-pixel);
   height: var(--ui-pixel);
-  background: #000;
+  background: var(--weapon-ink);
   content: '';
 }
 
@@ -248,9 +249,9 @@ const screenRows = 35
 }
 
 .equipped-weapon-panel__connector {
-  --tube-dark: #091009;
-  --tube-mid: #39433b;
-  --tube-light: #5a5849;
+  --tube-dark: var(--color-panel-tube-dark);
+  --tube-mid: var(--color-panel-tube-mid);
+  --tube-light: var(--color-panel-tube-light);
   --tube-height: var(--ui-pixel);
   --tube-side-inset: calc(2 * var(--ui-pixel));
 
@@ -266,11 +267,11 @@ const screenRows = 35
   border-bottom: var(--ui-pixel) solid var(--weapon-connector-bottom);
   /* Keep the black rim on the top, bottom, and right, with square right corners. */
   box-shadow:
-    0 calc(-1 * var(--ui-pixel)) #000,
-    0 var(--ui-pixel) #000,
-    var(--ui-pixel) 0 #000,
-    var(--ui-pixel) calc(-1 * var(--ui-pixel)) #000,
-    var(--ui-pixel) var(--ui-pixel) #000;
+    0 calc(-1 * var(--ui-pixel)) var(--weapon-ink),
+    0 var(--ui-pixel) var(--weapon-ink),
+    var(--ui-pixel) 0 var(--weapon-ink),
+    var(--ui-pixel) calc(-1 * var(--ui-pixel)) var(--weapon-ink),
+    var(--ui-pixel) var(--ui-pixel) var(--weapon-ink);
 }
 
 .equipped-weapon-panel__tubes {

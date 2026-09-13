@@ -10,7 +10,12 @@ const cellCount = 8
   <section class="inventory-grid" aria-label="Inventory panel">
     <div class="inventory-grid__recess">
       <ol class="inventory-grid__cells" aria-label="Inventory slots">
-        <li v-for="cell in cellCount" :key="cell" class="inventory-grid__cell" :aria-label="`Slot ${cell}: empty`">
+        <li
+          v-for="cell in cellCount"
+          :key="cell"
+          class="inventory-grid__cell"
+          :aria-label="`Slot ${cell}: empty`"
+        >
           <BlueSlotBackground :rows="cellRows" />
           <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
@@ -22,25 +27,31 @@ const cellCount = 8
 <style scoped>
 .inventory-grid {
   /* Same three-tone tube palette as the portrait, plus the separating ring. */
-  --inventory-tube-dark: #091009;
-  --inventory-tube-mid: #39433b;
-  --inventory-tube-light: #5a5849;
+  --inventory-tube-dark: var(--color-panel-tube-dark);
+  --inventory-tube-mid: var(--color-panel-tube-mid);
+  --inventory-tube-light: var(--color-panel-tube-light);
   --inventory-ring: #192019;
   --inventory-bevel-dark: #050025;
   --inventory-bevel-light: #100078;
+
+  /* Derive the panel width and grid tracks from the same column geometry. */
+  --inventory-columns: 2;
   --inventory-frame-width: calc(8 * var(--ui-pixel));
   --inventory-bevel-width: calc(4.5 * var(--ui-pixel));
   --inventory-cell-width: calc(45 * var(--ui-pixel));
   --inventory-cell-height: calc(v-bind(cellRows) * var(--ui-pixel));
+  --inventory-content-width: calc(var(--inventory-columns) * var(--inventory-cell-width));
+  --inventory-edge-width: calc(var(--inventory-frame-width) + var(--inventory-bevel-width));
 
   position: relative;
-  width: calc(2 * (var(--inventory-cell-width) + var(--inventory-bevel-width) + var(--inventory-frame-width)));
+  width: calc(var(--inventory-content-width) + 2 * var(--inventory-edge-width));
   padding: var(--inventory-frame-width);
   background: var(--inventory-ring);
 }
 
 /* Eight one-art-pixel bands, outside to inside: dark, mid, light, mid,
-   separator, mid, light, mid. The inner tube has no final dark edge. */
+   separator, mid, light, mid. The inner tube has no final dark edge.
+   Smaller inset shadows come first so each covers the next band's overlap. */
 .inventory-grid::before {
   position: absolute;
   inset: 0;
@@ -60,13 +71,15 @@ const cellCount = 8
 .inventory-grid__recess {
   /* Equal border widths form the diagonal miter at every inner corner. */
   border: var(--inventory-bevel-width) solid;
-  border-color: var(--inventory-bevel-dark) var(--inventory-bevel-light)
-    var(--inventory-bevel-light) var(--inventory-bevel-dark);
+  border-top-color: var(--inventory-bevel-dark);
+  border-left-color: var(--inventory-bevel-dark);
+  border-right-color: var(--inventory-bevel-light);
+  border-bottom-color: var(--inventory-bevel-light);
 }
 
 .inventory-grid__cells {
   display: grid;
-  grid-template-columns: repeat(2, var(--inventory-cell-width));
+  grid-template-columns: repeat(var(--inventory-columns), var(--inventory-cell-width));
   grid-auto-rows: var(--inventory-cell-height);
   margin: 0;
   padding: 0;
@@ -75,11 +88,13 @@ const cellCount = 8
 
 .inventory-grid__cell {
   position: relative;
+  /* Keep the negative background layer inside its own cell, below the selector. */
   isolation: isolate;
   overflow: hidden;
 }
 
 .inventory-grid__selector {
+  /* Removing the SVG from layout also restarts its pulse on the next hover. */
   display: none;
 }
 
