@@ -36,9 +36,13 @@ import portrait from '../assets/jill-valentine-portrait.png'
 
 <style scoped>
 .character-portrait-panel {
+  --bar-border: #666b5d;
+  --bar-body: #a7aa99;
+  --bar-border-shade: #3e4038;
+  --bar-body-shade: #64665c;
+
   /* Reference housing: 280 × 172, including the connectors on the left. */
   --portrait-metal-light: #aaa799;
-  --portrait-metal-mid: #929580;
   --portrait-metal-dark: #535a4d;
   --portrait-edge: #30372f;
   --portrait-connector-border-dark: #38423a;
@@ -52,6 +56,15 @@ import portrait from '../assets/jill-valentine-portrait.png'
   --portrait-frame-green: #666c5c;
   --portrait-frame-inset: #aaa799;
 
+  /* Connector size is relative to the panel; face and bars are relative to the connector. */
+  --connector-width: 0.16;
+  --connector-height: 0.88;
+  --connector-face-width: 0.795;
+  --connector-face-height: 0.2542;
+  --connector-bars-height: 0.47;
+  --housing-left: 14%;
+  --frame-strip-width: calc(2 * var(--ui-pixel));
+
   position: relative;
   width: 100%;
   aspect-ratio: 280 / 172;
@@ -59,6 +72,10 @@ import portrait from '../assets/jill-valentine-portrait.png'
 }
 
 .character-portrait-panel__tubes {
+  --tube-dark: #091009;
+  --tube-mid: #39433b;
+  --tube-light: #5a5849;
+
   position: absolute;
   top: 50%;
   left: 100%;
@@ -70,22 +87,22 @@ import portrait from '../assets/jill-valentine-portrait.png'
 
 .character-portrait-panel__tube {
   background: linear-gradient(to bottom,
-    #091009 0 20%,
-    #39433b 20% 40%,
-    #5a5849 40% 60%,
-    #39433b 60% 80%,
-    #091009 80% 100%
+    var(--tube-dark) 0 20%,
+    var(--tube-mid) 20% 40%,
+    var(--tube-light) 40% 60%,
+    var(--tube-mid) 60% 80%,
+    var(--tube-dark) 80% 100%
   );
 }
 
 .character-portrait-panel__tube--upper {
   height: calc(20 * var(--ui-pixel));
   background: linear-gradient(to bottom,
-    #091009 0 10%,
-    #39433b 10% 25%,
-    #5a5849 25% 75%,
-    #39433b 75% 90%,
-    #091009 90% 100%
+    var(--tube-dark) 0 10%,
+    var(--tube-mid) 10% 25%,
+    var(--tube-light) 25% 75%,
+    var(--tube-mid) 75% 90%,
+    var(--tube-dark) 90% 100%
   );
 }
 
@@ -95,12 +112,15 @@ import portrait from '../assets/jill-valentine-portrait.png'
 
 .character-portrait-panel__connector {
   position: absolute;
-  inset: 0 auto 12% 0;
-  width: 16%;
+  inset: 0 auto calc(100% - var(--connector-height) * 100%) 0;
+  width: calc(var(--connector-width) * 100%);
   background:
     repeating-linear-gradient(to bottom,
-      #666b5d 0 var(--ui-pixel), #a7aa99 var(--ui-pixel) calc(2 * var(--ui-pixel)), #666b5d calc(2 * var(--ui-pixel)) calc(3 * var(--ui-pixel)), transparent calc(3 * var(--ui-pixel)) calc(7 * var(--ui-pixel)))
-      bottom / 100% 47% no-repeat;
+      var(--bar-border) 0 var(--ui-pixel),
+      var(--bar-body) var(--ui-pixel) calc(2 * var(--ui-pixel)),
+      var(--bar-border) calc(2 * var(--ui-pixel)) calc(3 * var(--ui-pixel)),
+      transparent calc(3 * var(--ui-pixel)) calc(7 * var(--ui-pixel))
+    ) bottom / 100% calc(var(--connector-bars-height) * 100%) no-repeat;
   /* Include the outlined cap above the connector. */
   clip-path: polygon(
     8% calc(-3 * var(--ui-pixel)), 100% calc(-3 * var(--ui-pixel)),
@@ -120,8 +140,8 @@ import portrait from '../assets/jill-valentine-portrait.png'
 
 .character-portrait-panel__connector-top {
   left: 8%;
-  width: 79.5%;
-  height: 25.42%;
+  width: calc(var(--connector-face-width) * 100%);
+  height: calc(var(--connector-face-height) * 100%);
 }
 
 .character-portrait-panel__connector-cap {
@@ -141,6 +161,7 @@ import portrait from '../assets/jill-valentine-portrait.png'
   width: calc(6 * var(--ui-pixel));
 }
 
+/* Eyes and centered mouth, shared by both face rectangles. */
 .character-portrait-panel__connector-top::before,
 .character-portrait-panel__mount::before {
   position: absolute;
@@ -159,6 +180,7 @@ import portrait from '../assets/jill-valentine-portrait.png'
       bottom center / calc(3 * var(--ui-pixel)) var(--ui-pixel) no-repeat;
 }
 
+/* One cheek pixel at each bottom inner corner. */
 .character-portrait-panel__connector-top::after,
 .character-portrait-panel__mount::after {
   position: absolute;
@@ -174,12 +196,13 @@ import portrait from '../assets/jill-valentine-portrait.png'
       right / var(--ui-pixel) 100% no-repeat;
 }
 
+/* Light connector rectangle, including its empty bottom-left corner. */
 .character-portrait-panel__connector::before {
   position: absolute;
   /* Match the original rectangle's background position: 31% of the remaining 82%. */
-  top: 25.42%;
+  top: calc(var(--connector-face-height) * 100%);
   left: 0;
-  width: 87.5%;
+  width: calc(var(--housing-left) / var(--connector-width));
   height: 18%;
   content: '';
   background:
@@ -195,34 +218,43 @@ import portrait from '../assets/jill-valentine-portrait.png'
       top left / 100% calc(100% - var(--ui-pixel)) no-repeat;
 }
 
+/* Right-end shading on the three connector bars. */
 .character-portrait-panel::before {
   position: absolute;
   z-index: 1;
-  bottom: 12%;
+  bottom: calc(100% - var(--connector-height) * 100%);
   /* Align the darker body edge to whole pixels before the housing. */
-  left: calc(round(down, 14%, 1px) - var(--ui-pixel));
+  left: calc(round(down, var(--housing-left), 1px) - var(--ui-pixel));
   width: var(--ui-pixel);
   /* Match the bars: 47% of the connector's 88% panel height. */
-  height: 41.36%;
+  height: calc(var(--connector-height) * var(--connector-bars-height) * 100%);
   content: '';
   background: repeating-linear-gradient(to bottom,
-    transparent 0 var(--ui-pixel), #64665c var(--ui-pixel) calc(2 * var(--ui-pixel)), transparent calc(2 * var(--ui-pixel)) calc(7 * var(--ui-pixel)));
+    transparent 0 var(--ui-pixel),
+    var(--bar-body-shade) var(--ui-pixel) calc(2 * var(--ui-pixel)),
+    transparent calc(2 * var(--ui-pixel)) calc(7 * var(--ui-pixel))
+  );
 }
 
+/* Left-end shading shares the bars' repeating color boundaries. */
 .character-portrait-panel__connector::after {
   position: absolute;
   bottom: 0;
   left: 20%;
   width: var(--ui-pixel);
-  height: 47%;
+  height: calc(var(--connector-bars-height) * 100%);
   content: '';
   background: repeating-linear-gradient(to bottom,
-    #3e4038 0 var(--ui-pixel), #64665c var(--ui-pixel) calc(2 * var(--ui-pixel)), #3e4038 calc(2 * var(--ui-pixel)) calc(3 * var(--ui-pixel)), transparent calc(3 * var(--ui-pixel)) calc(7 * var(--ui-pixel)));
+    var(--bar-border-shade) 0 var(--ui-pixel),
+    var(--bar-body-shade) var(--ui-pixel) calc(2 * var(--ui-pixel)),
+    var(--bar-border-shade) calc(2 * var(--ui-pixel)) calc(3 * var(--ui-pixel)),
+    transparent calc(3 * var(--ui-pixel)) calc(7 * var(--ui-pixel))
+  );
 }
 
 .character-portrait-panel__housing {
   position: absolute;
-  inset: 0 0 0 14%;
+  inset: 0 0 0 var(--housing-left);
   background: linear-gradient(to top, #718b72, #949285, #afa194);
   box-shadow: inset var(--ui-pixel) 0 var(--portrait-gray);
   clip-path: polygon(
@@ -233,6 +265,8 @@ import portrait from '../assets/jill-valentine-portrait.png'
 }
 
 .character-portrait-panel__housing::after {
+  --corner-shadow: rgb(14 24 13 / 30%);
+
   position: absolute;
   right: 0;
   bottom: 0;
@@ -241,9 +275,9 @@ import portrait from '../assets/jill-valentine-portrait.png'
   content: '';
   pointer-events: none;
   background:
-    linear-gradient(rgb(14 24 13 / 30%), rgb(14 24 13 / 30%))
+    linear-gradient(var(--corner-shadow), var(--corner-shadow))
       bottom right / calc(2 * var(--ui-pixel)) calc(2 * var(--ui-pixel)) no-repeat,
-    rgb(14 24 13 / 30%);
+    var(--corner-shadow);
   /* Follow the cut, then extend two art pixels along the right and bottom edges. */
   clip-path: polygon(
     100% 0,
@@ -261,9 +295,9 @@ import portrait from '../assets/jill-valentine-portrait.png'
 
 .character-portrait-panel__mount {
   /* Match the connector rectangle's panel-relative dimensions, minus one art pixel. */
-  right: 3.44%;
-  width: calc(12.72% - var(--ui-pixel));
-  height: 22.3696%;
+  right: calc((100% - var(--housing-left)) * 0.04);
+  width: calc(var(--connector-width) * var(--connector-face-width) * 100% - var(--ui-pixel));
+  height: calc(var(--connector-height) * var(--connector-face-height) * 100%);
   border-left: var(--ui-pixel) solid var(--portrait-connector-top-border);
   box-shadow:
     inset 0 var(--ui-pixel) var(--portrait-connector-face),
@@ -297,7 +331,7 @@ import portrait from '../assets/jill-valentine-portrait.png'
   display: grid;
   grid-template-rows: repeat(3, minmax(0, 1fr));
   gap: var(--ui-pixel);
-  width: calc(2 * var(--ui-pixel));
+  width: var(--frame-strip-width);
   padding: var(--ui-pixel) var(--ui-pixel) var(--ui-pixel) 0;
   background: var(--portrait-frame-green);
 }
@@ -314,8 +348,18 @@ import portrait from '../assets/jill-valentine-portrait.png'
 }
 
 .character-portrait-panel__control {
+  --control-tone-1: #5b594a;
+  --control-tone-2: #6a6964;
+  --control-tone-3: #7a8273;
+  --control-tone-4: #93928d;
+  --control-tone-5: #83897b;
+  --control-tone-6: #b0a9a3;
+  --control-tone-7: #859179;
+  --control-tone-8: #bdb9ae;
+  --control-tab: #6d7461;
+
   position: absolute;
-  left: calc(100% + 2 * var(--ui-pixel));
+  left: calc(100% + var(--frame-strip-width));
   bottom: 0;
   width: calc(5 * var(--ui-pixel));
   height: calc(17 * var(--ui-pixel));
@@ -323,29 +367,31 @@ import portrait from '../assets/jill-valentine-portrait.png'
   background: var(--portrait-edge);
 }
 
+/* Fifteen hard-edged bands, mirrored around the central highlight. */
 .character-portrait-panel__control::before {
   display: block;
   height: 100%;
   content: '';
   background: linear-gradient(to bottom,
-    #5b594a 0 var(--ui-pixel),
-    #6a6964 var(--ui-pixel) calc(2 * var(--ui-pixel)),
-    #7a8273 calc(2 * var(--ui-pixel)) calc(3 * var(--ui-pixel)),
-    #93928d calc(3 * var(--ui-pixel)) calc(4 * var(--ui-pixel)),
-    #83897b calc(4 * var(--ui-pixel)) calc(5 * var(--ui-pixel)),
-    #b0a9a3 calc(5 * var(--ui-pixel)) calc(6 * var(--ui-pixel)),
-    #859179 calc(6 * var(--ui-pixel)) calc(7 * var(--ui-pixel)),
-    #bdb9ae calc(7 * var(--ui-pixel)) calc(8 * var(--ui-pixel)),
-    #859179 calc(8 * var(--ui-pixel)) calc(9 * var(--ui-pixel)),
-    #b0a9a3 calc(9 * var(--ui-pixel)) calc(10 * var(--ui-pixel)),
-    #83897b calc(10 * var(--ui-pixel)) calc(11 * var(--ui-pixel)),
-    #93928d calc(11 * var(--ui-pixel)) calc(12 * var(--ui-pixel)),
-    #7a8273 calc(12 * var(--ui-pixel)) calc(13 * var(--ui-pixel)),
-    #6a6964 calc(13 * var(--ui-pixel)) calc(14 * var(--ui-pixel)),
-    #5b594a calc(14 * var(--ui-pixel)) 100%
+    var(--control-tone-1) 0 var(--ui-pixel),
+    var(--control-tone-2) var(--ui-pixel) calc(2 * var(--ui-pixel)),
+    var(--control-tone-3) calc(2 * var(--ui-pixel)) calc(3 * var(--ui-pixel)),
+    var(--control-tone-4) calc(3 * var(--ui-pixel)) calc(4 * var(--ui-pixel)),
+    var(--control-tone-5) calc(4 * var(--ui-pixel)) calc(5 * var(--ui-pixel)),
+    var(--control-tone-6) calc(5 * var(--ui-pixel)) calc(6 * var(--ui-pixel)),
+    var(--control-tone-7) calc(6 * var(--ui-pixel)) calc(7 * var(--ui-pixel)),
+    var(--control-tone-8) calc(7 * var(--ui-pixel)) calc(8 * var(--ui-pixel)),
+    var(--control-tone-7) calc(8 * var(--ui-pixel)) calc(9 * var(--ui-pixel)),
+    var(--control-tone-6) calc(9 * var(--ui-pixel)) calc(10 * var(--ui-pixel)),
+    var(--control-tone-5) calc(10 * var(--ui-pixel)) calc(11 * var(--ui-pixel)),
+    var(--control-tone-4) calc(11 * var(--ui-pixel)) calc(12 * var(--ui-pixel)),
+    var(--control-tone-3) calc(12 * var(--ui-pixel)) calc(13 * var(--ui-pixel)),
+    var(--control-tone-2) calc(13 * var(--ui-pixel)) calc(14 * var(--ui-pixel)),
+    var(--control-tone-1) calc(14 * var(--ui-pixel)) 100%
   );
 }
 
+/* Stepped tab above the control and its upward shadow. */
 .character-portrait-panel__control::after {
   position: absolute;
   right: 25%;
@@ -355,9 +401,9 @@ import portrait from '../assets/jill-valentine-portrait.png'
   content: '';
   filter: drop-shadow(0 calc(-1 * var(--ui-pixel)) 0 var(--portrait-frame-gray));
   background:
-    linear-gradient(#6d7461, #6d7461)
+    linear-gradient(var(--control-tab), var(--control-tab))
       bottom left / var(--ui-pixel) 50% no-repeat,
-    linear-gradient(#6d7461, #6d7461)
+    linear-gradient(var(--control-tab), var(--control-tab))
       right / var(--ui-pixel) 100% no-repeat;
 }
 </style>
