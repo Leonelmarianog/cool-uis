@@ -48,12 +48,12 @@
   background: var(--metal);
   /* Clip the backing too, so it cannot fill the rails' corner cutouts. */
   clip-path: polygon(
-    4px 0, calc(100% - 4px) 0,
-    calc(100% - 4px) 4px, 100% 4px,
-    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px),
-    calc(100% - 4px) 100%, 4px 100%,
-    4px calc(100% - 4px), 0 calc(100% - 4px),
-    0 4px, 4px 4px
+    var(--ui-pixel) 0, calc(100% - var(--ui-pixel)) 0,
+    calc(100% - var(--ui-pixel)) var(--ui-pixel), 100% var(--ui-pixel),
+    100% calc(100% - var(--ui-pixel)), calc(100% - var(--ui-pixel)) calc(100% - var(--ui-pixel)),
+    calc(100% - var(--ui-pixel)) 100%, var(--ui-pixel) 100%,
+    var(--ui-pixel) calc(100% - var(--ui-pixel)), 0 calc(100% - var(--ui-pixel)),
+    0 var(--ui-pixel), var(--ui-pixel) var(--ui-pixel)
   );
 }
 
@@ -66,9 +66,9 @@
   height: var(--rail-height);
   content: '';
   clip-path: polygon(
-    4px 0, calc(100% - 4px) 0,
-    calc(100% - 4px) 4px, 100% 4px,
-    100% 100%, 0 100%, 0 4px, 4px 4px
+    var(--ui-pixel) 0, calc(100% - var(--ui-pixel)) 0,
+    calc(100% - var(--ui-pixel)) var(--ui-pixel), 100% var(--ui-pixel),
+    100% 100%, 0 100%, 0 var(--ui-pixel), var(--ui-pixel) var(--ui-pixel)
   );
   background: linear-gradient(to bottom, #718b72, #afa194);
 }
@@ -89,15 +89,15 @@
   background: var(--color-preview-sidebar);
   /* Earlier inset shadows cover later ones, giving the vertical edges square corners. */
   box-shadow:
-    inset 4px 0 #263629,
-    inset -4px 0 #263629,
-    inset 0 4px #7e9e73,
-    inset 0 -4px #7e9e73;
+    inset var(--ui-pixel) 0 #263629,
+    inset calc(-1 * var(--ui-pixel)) 0 #263629,
+    inset 0 var(--ui-pixel) #7e9e73,
+    inset 0 calc(-1 * var(--ui-pixel)) #7e9e73;
 }
 
 .item-preview-panel__display {
-  --display-strip-height: 4px;
-  --right-edge-pixel: 4px;
+  --display-strip-height: var(--ui-pixel);
+  --right-edge-pixel: var(--ui-pixel);
   --right-edge-black: #111114;
   --right-edge-dark: #39383e;
   --right-edge-mid: #68676d;
@@ -122,7 +122,7 @@
   padding-right: calc(4 * var(--right-edge-pixel));
   background: var(--color-preview-background);
   /* With no horizontal borders, this line has uninterrupted square corners. */
-  border-left: 5px solid #27262c;
+  border-left: var(--ui-pixel) solid #27262c;
 }
 
 .item-preview-panel__display::before,
@@ -217,7 +217,7 @@
 .item-preview-panel__fastener {
   position: absolute;
   z-index: 3;
-  width: 3.472222%;
+  width: calc(6 * var(--ui-pixel));
   aspect-ratio: 1;
   /* Six-by-six pixel circle; each cardinal edge is two pixels long. */
   background: #000;
