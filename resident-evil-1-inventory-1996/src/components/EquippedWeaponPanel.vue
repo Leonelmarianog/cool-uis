@@ -1,4 +1,5 @@
 <script setup>
+import BlueSlotBackground from './BlueSlotBackground.vue'
 import equippedHandgun from '../assets/equipped-handgun.png'
 
 // Each background row represents one art pixel of the screen's height.
@@ -13,14 +14,7 @@ const screenRows = 35
       <span class="equipped-weapon-panel__indicator" aria-hidden="true"></span>
       <span class="equipped-weapon-panel__connector-frame" aria-hidden="true"></span>
       <div class="equipped-weapon-panel__screen">
-        <div class="equipped-weapon-panel__screen-background" aria-hidden="true">
-          <span
-            v-for="row in screenRows"
-            :key="row"
-            class="equipped-weapon-panel__screen-row"
-            :style="{ '--row-index': row - 1 }"
-          ></span>
-        </div>
+        <BlueSlotBackground :rows="screenRows" />
         <slot>
           <img class="equipped-weapon-panel__gun" :src="equippedHandgun" alt="Handgun" width="156" height="110" />
           <span class="equipped-weapon-panel__ammo" aria-label="10 rounds">10</span>
@@ -52,8 +46,6 @@ const screenRows = 35
   --weapon-cutaway-shadow: #50585a;
   --weapon-shadow: #20251f;
   --weapon-screen: #080044;
-  --weapon-screen-light: #0c0054;
-  --weapon-screen-dark: #050034;
   --weapon-ammo: #009900;
   --weapon-ammo-shadow: #003800;
 
@@ -235,28 +227,6 @@ const screenRows = 35
   transform-origin: left bottom;
   /* The horizontal scale also stretches this right-only shadow. */
   text-shadow: var(--ui-pixel) 0 0 var(--weapon-ammo-shadow);
-}
-
-/* One row per art pixel gives the diagonal transitions square stair steps. */
-.equipped-weapon-panel__screen-background {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  display: grid;
-  grid-template-rows: repeat(var(--screen-rows), 1fr);
-  pointer-events: none;
-}
-
-.equipped-weapon-panel__screen-row {
-  --light-stop: calc((24 - var(--row-index)) * var(--ui-pixel));
-  --dark-stop: calc((48 - var(--row-index)) * var(--ui-pixel));
-
-  background: linear-gradient(
-    to right,
-    var(--weapon-screen-light) 0 var(--light-stop),
-    var(--weapon-screen) var(--light-stop) var(--dark-stop),
-    var(--weapon-screen-dark) var(--dark-stop) 100%
-  );
 }
 
 /* This open-right frame ends at the housing edge, around the tubes and black rim. */
