@@ -74,7 +74,6 @@ const screenRows = 35
   /* The housing is 68 × 43 art pixels; reserve space for its right mount. */
   position: relative;
   width: calc(var(--housing-width) + var(--connector-reserved-width));
-  max-width: 100%;
   height: calc(var(--screen-rows) * var(--ui-pixel) + 2 * var(--screen-block-inset));
 }
 

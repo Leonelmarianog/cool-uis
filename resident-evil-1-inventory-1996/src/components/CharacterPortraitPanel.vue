@@ -66,7 +66,7 @@ import portrait from '../assets/jill-valentine-portrait.png'
   --frame-strip-width: calc(2 * var(--ui-pixel));
 
   position: relative;
-  width: 100%;
+  width: calc(70 * var(--ui-pixel));
   aspect-ratio: 280 / 172;
   isolation: isolate;
 }
@@ -224,7 +224,7 @@ import portrait from '../assets/jill-valentine-portrait.png'
   z-index: 1;
   bottom: calc(100% - var(--connector-height) * 100%);
   /* Align the darker body edge to whole pixels before the housing. */
-  left: calc(round(down, var(--housing-left), 1px) - var(--ui-pixel));
+  left: calc(round(down, var(--housing-left), calc(0.25 * var(--ui-pixel))) - var(--ui-pixel));
   width: var(--ui-pixel);
   /* Match the bars: 47% of the connector's 88% panel height. */
   height: calc(var(--connector-height) * var(--connector-bars-height) * 100%);

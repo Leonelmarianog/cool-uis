@@ -3,7 +3,7 @@
   color-scheme: dark;
 
   /* One pixel in the recreated UI artwork. */
-  --ui-pixel: 4px;
+  --ui-pixel: 0.25rem;
 
   /* Shared inventory/equipped panel artwork palettes. */
   --color-slot-blue-light: #0c0054;
