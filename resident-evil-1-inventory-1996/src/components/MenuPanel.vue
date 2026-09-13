@@ -25,18 +25,19 @@ defineEmits(['map', 'file', 'exit'])
 .menu-panel {
   --menu-ink: #050704;
   --menu-rim-light: #b6b8a5;
+  --menu-rim-mid: #999d8d;
+  --menu-rim-dark: #72796c;
   --menu-metal-light: #a7a6a8;
   --menu-metal-mid: #929193;
   --menu-metal-dark: #68686a;
   --menu-highlight: #c5242c;
   --menu-metal-center: #858486;
-  --menu-rim-width: calc(5 * var(--ui-pixel));
+  --menu-label-shadow: #424340;
 
-  position: relative;
-  width: calc(117 * var(--ui-pixel));
-  height: calc(45 * var(--ui-pixel));
-  padding: var(--menu-rim-width);
-  /* Remove one square art pixel at each outer corner. */
+  --menu-panel-padding: calc(5 * var(--ui-pixel));
+  --menu-grid-overhang: var(--ui-pixel);
+
+  /* Shared by the panel and buttons: remove one square art pixel per corner. */
   --menu-corner-cutaway: polygon(
     var(--ui-pixel) 0,
     calc(100% - var(--ui-pixel)) 0,
@@ -51,10 +52,19 @@ defineEmits(['map', 'file', 'exit'])
     0 var(--ui-pixel),
     var(--ui-pixel) var(--ui-pixel)
   );
+
+  position: relative;
+  width: calc(117 * var(--ui-pixel));
+  height: calc(45 * var(--ui-pixel));
+  padding: var(--menu-panel-padding);
   clip-path: var(--menu-corner-cutaway);
   background: linear-gradient(to bottom,
-    #72796c, var(--menu-rim-light) 15%, #999d8d 38%,
-    #72796c 60%, var(--menu-rim-light) 85%, #72796c);
+    var(--menu-rim-dark),
+    var(--menu-rim-light) 15%,
+    var(--menu-rim-mid) 38%,
+    var(--menu-rim-dark) 60%,
+    var(--menu-rim-light) 85%,
+    var(--menu-rim-dark));
 }
 
 /* Solid black inset ring between the metallic outer frame and buttons. */
@@ -67,27 +77,27 @@ defineEmits(['map', 'file', 'exit'])
 }
 
 .menu-panel__grid {
+  /* Both seam backings leave the outer and central corner cutaways open. */
+  --menu-seam-stops:
+    transparent var(--ui-pixel),
+    var(--menu-ink) var(--ui-pixel) calc(50% - var(--ui-pixel)),
+    transparent calc(50% - var(--ui-pixel)) calc(50% + var(--ui-pixel)),
+    var(--menu-ink) calc(50% + var(--ui-pixel)) calc(100% - var(--ui-pixel)),
+    transparent calc(100% - var(--ui-pixel));
+
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  /* Buttons own their borders; preserve the former outer rim's footprint. */
-  width: calc(100% + 2 * var(--ui-pixel));
-  height: calc(100% + 2 * var(--ui-pixel));
-  margin: calc(-1 * var(--ui-pixel));
-  /* Back shared edges against fractional zoom seams; leave cutaways open. */
+  /* Extend equally on all sides to include the buttons' outer black borders. */
+  width: calc(100% + 2 * var(--menu-grid-overhang));
+  height: calc(100% + 2 * var(--menu-grid-overhang));
+  margin: calc(-1 * var(--menu-grid-overhang));
+  /* Back shared edges against fractional zoom seams. */
   background:
-    linear-gradient(to right,
-      transparent var(--ui-pixel),
-      var(--menu-ink) var(--ui-pixel) calc(50% - var(--ui-pixel)),
-      transparent calc(50% - var(--ui-pixel)) calc(50% + var(--ui-pixel)),
-      var(--menu-ink) calc(50% + var(--ui-pixel)) calc(100% - var(--ui-pixel)),
-      transparent calc(100% - var(--ui-pixel))) center / 100% var(--ui-pixel) no-repeat,
-    linear-gradient(to bottom,
-      transparent var(--ui-pixel),
-      var(--menu-ink) var(--ui-pixel) calc(50% - var(--ui-pixel)),
-      transparent calc(50% - var(--ui-pixel)) calc(50% + var(--ui-pixel)),
-      var(--menu-ink) calc(50% + var(--ui-pixel)) calc(100% - var(--ui-pixel)),
-      transparent calc(100% - var(--ui-pixel))) center / var(--ui-pixel) 100% no-repeat;
+    linear-gradient(to right, var(--menu-seam-stops))
+      center / 100% var(--ui-pixel) no-repeat,
+    linear-gradient(to bottom, var(--menu-seam-stops))
+      center / var(--ui-pixel) 100% no-repeat;
 }
 
 .menu-panel__button {
@@ -105,9 +115,12 @@ defineEmits(['map', 'file', 'exit'])
     linear-gradient(to bottom,
       var(--menu-metal-dark) 0 var(--ui-pixel),
       var(--menu-metal-mid) var(--ui-pixel) 12%,
-      var(--menu-metal-light) 27%, var(--menu-metal-mid) 43%,
-      var(--menu-metal-center) 52%, var(--menu-metal-light) 73%,
-      var(--menu-metal-mid) 87%, var(--menu-metal-dark) 100%);
+      var(--menu-metal-light) 27%,
+      var(--menu-metal-mid) 43%,
+      var(--menu-metal-center) 52%,
+      var(--menu-metal-light) 73%,
+      var(--menu-metal-mid) 87%,
+      var(--menu-metal-dark) 100%);
   background-origin: padding-box;
   background-clip: padding-box;
   box-shadow: inset 0 calc(-1 * var(--ui-pixel)) 0 #494b47;
@@ -122,7 +135,7 @@ defineEmits(['map', 'file', 'exit'])
   line-height: 0.8;
   letter-spacing: calc(0.25 * var(--ui-pixel));
   transform: translateY(calc(1 * var(--ui-pixel))) scaleX(1.15);
-  text-shadow: calc(0.5 * var(--ui-pixel)) 0 #424340;
+  text-shadow: calc(0.5 * var(--ui-pixel)) 0 var(--menu-label-shadow);
 }
 
 .menu-panel__button--blank {
@@ -135,13 +148,10 @@ defineEmits(['map', 'file', 'exit'])
     --menu-metal-mid: #b6b6b8;
     --menu-metal-light: #d3d3d5;
     --menu-metal-center: #aaa9ac;
+    --menu-label-shadow: #747476;
 
     color: var(--menu-highlight);
     border-color: var(--menu-highlight);
-  }
-
-  .menu-panel__button:hover .menu-panel__label {
-    text-shadow: calc(0.5 * var(--ui-pixel)) 0 #747476;
   }
 }
 
