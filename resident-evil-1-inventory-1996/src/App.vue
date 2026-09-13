@@ -1,10 +1,15 @@
 <script setup>
 import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
+import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue'
 </script>
 
 <template>
   <main class="project-shell">
-    <ItemPreviewPanel class="project-shell__preview-panel" />
+    <div class="project-shell__inventory">
+      <!-- Keep new components first while building them individually. -->
+      <CharacterPortraitPanel class="project-shell__portrait-panel" />
+      <ItemPreviewPanel />
+    </div>
   </main>
 </template>
 
@@ -19,7 +24,14 @@ import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
   background: var(--color-preview-background);
 }
 
-.project-shell__preview-panel {
+.project-shell__inventory {
+  display: grid;
+  gap: 8px;
+  width: 100%;
   max-width: 864px;
+}
+
+.project-shell__portrait-panel {
+  width: 32.407407%;
 }
 </style>

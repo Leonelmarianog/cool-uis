@@ -2,6 +2,9 @@
 :root {
   color-scheme: dark;
 
+  /* One pixel in the recreated UI artwork. */
+  --ui-pixel: 4px;
+
   --color-background: #141414;
   --color-surface: #242424;
   --color-text: #ededed;
