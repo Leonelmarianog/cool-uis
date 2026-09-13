@@ -5,12 +5,14 @@ import HealthStatusPanel from './components/HealthStatusPanel.vue'
 import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
+import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
 </script>
 
 <template>
   <main class="project-shell">
     <div class="project-shell__inventory">
       <!-- Keep new components first while building them individually. -->
+      <ItemDescriptionPanel />
       <InventoryGrid />
       <MenuPanel />
       <EquippedWeaponPanel />
