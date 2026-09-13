@@ -1,5 +1,8 @@
 <script setup>
 import equippedHandgun from '../assets/equipped-handgun.png'
+
+// Each background row represents one art pixel of the screen's height.
+const screenRows = 35
 </script>
 
 <template>
@@ -12,7 +15,7 @@ import equippedHandgun from '../assets/equipped-handgun.png'
       <div class="equipped-weapon-panel__screen">
         <div class="equipped-weapon-panel__screen-background" aria-hidden="true">
           <span
-            v-for="row in 35"
+            v-for="row in screenRows"
             :key="row"
             class="equipped-weapon-panel__screen-row"
             :style="{ '--row-index': row - 1 }"
@@ -40,6 +43,7 @@ import equippedHandgun from '../assets/equipped-handgun.png'
 
 <style scoped>
 .equipped-weapon-panel {
+  /* Housing and screen palette. */
   --weapon-metal: #596163;
   --weapon-nose-light: #848178;
   --weapon-nose-mid: #73787b;
@@ -52,32 +56,44 @@ import equippedHandgun from '../assets/equipped-handgun.png'
   --weapon-screen-dark: #050034;
   --weapon-ammo: #009900;
   --weapon-ammo-shadow: #003800;
+
+  /* Connector palette. */
   --weapon-connector: #4a4a42;
   --weapon-connector-bottom: #323931;
   --weapon-connector-left: #192019;
   --weapon-connector-frame-left: #394038;
+
+  /* Shared geometry keeps the screen, connector, and recess aligned. */
   --housing-width: calc(68 * var(--ui-pixel));
-  --connector-overhang: calc(8 * var(--ui-pixel));
+  --nose-width: calc(13 * var(--ui-pixel));
+  --screen-rows: v-bind(screenRows);
+  --screen-block-inset: calc(4 * var(--ui-pixel));
+  --screen-right-inset: calc(8 * var(--ui-pixel));
+  --connector-reserved-width: calc(8 * var(--ui-pixel));
   --connector-width: calc(12 * var(--ui-pixel));
   --connector-height: calc(6 * var(--ui-pixel));
-  --connector-right: calc(2 * var(--ui-pixel));
+  --connector-screen-gap: var(--ui-pixel);
+  --connector-right: calc(
+    var(--connector-reserved-width) + var(--screen-right-inset) - var(--connector-width)
+    - var(--ui-pixel) - var(--connector-screen-gap)
+  );
 
   /* The housing is 68 × 43 art pixels; reserve space for its right mount. */
   position: relative;
-  width: calc(var(--housing-width) + var(--connector-overhang));
+  width: calc(var(--housing-width) + var(--connector-reserved-width));
   max-width: 100%;
-  height: calc(43 * var(--ui-pixel));
+  height: calc(var(--screen-rows) * var(--ui-pixel) + 2 * var(--screen-block-inset));
 }
 
 .equipped-weapon-panel__housing {
   position: absolute;
-  inset: 0 var(--connector-overhang) 0 0;
+  inset: 0 var(--connector-reserved-width) 0 0;
   background: var(--weapon-metal);
   /* Mirrored square steps form the narrow nose at the left of the housing. */
   clip-path: polygon(
-    calc(13 * var(--ui-pixel)) 0, 100% 0,
-    100% 100%, calc(13 * var(--ui-pixel)) 100%,
-    calc(13 * var(--ui-pixel)) calc(100% - var(--ui-pixel)),
+    var(--nose-width) 0, 100% 0,
+    100% 100%, var(--nose-width) 100%,
+    var(--nose-width) calc(100% - var(--ui-pixel)),
     calc(9 * var(--ui-pixel)) calc(100% - var(--ui-pixel)),
     calc(9 * var(--ui-pixel)) calc(100% - 2 * var(--ui-pixel)),
     calc(5 * var(--ui-pixel)) calc(100% - 2 * var(--ui-pixel)),
@@ -92,7 +108,7 @@ import equippedHandgun from '../assets/equipped-handgun.png'
     calc(5 * var(--ui-pixel)) calc(2 * var(--ui-pixel)),
     calc(9 * var(--ui-pixel)) calc(2 * var(--ui-pixel)),
     calc(9 * var(--ui-pixel)) var(--ui-pixel),
-    calc(13 * var(--ui-pixel)) var(--ui-pixel)
+    var(--nose-width) var(--ui-pixel)
   );
 }
 
@@ -100,7 +116,7 @@ import equippedHandgun from '../assets/equipped-handgun.png'
 .equipped-weapon-panel__housing::before {
   position: absolute;
   inset: 0 auto 0 0;
-  width: calc(6.5 * var(--ui-pixel));
+  width: calc(var(--nose-width) / 2);
   background: linear-gradient(
     to right,
     var(--weapon-nose-light),
@@ -115,13 +131,13 @@ import equippedHandgun from '../assets/equipped-handgun.png'
 .equipped-weapon-panel__corner-shadow {
   position: absolute;
   left: 0;
-  width: calc(16 * var(--ui-pixel));
+  width: calc(var(--nose-width) + 3 * var(--ui-pixel));
   height: calc(7 * var(--ui-pixel));
   background: var(--weapon-cutaway-shadow);
   pointer-events: none;
   clip-path: polygon(
-    100% 0, calc(13 * var(--ui-pixel)) 0,
-    calc(13 * var(--ui-pixel)) var(--ui-pixel),
+    100% 0, var(--nose-width) 0,
+    var(--nose-width) var(--ui-pixel),
     calc(9 * var(--ui-pixel)) var(--ui-pixel),
     calc(9 * var(--ui-pixel)) calc(2 * var(--ui-pixel)),
     calc(5 * var(--ui-pixel)) calc(2 * var(--ui-pixel)),
@@ -136,8 +152,8 @@ import equippedHandgun from '../assets/equipped-handgun.png'
     calc(6 * var(--ui-pixel)) calc(3 * var(--ui-pixel)),
     calc(10 * var(--ui-pixel)) calc(3 * var(--ui-pixel)),
     calc(10 * var(--ui-pixel)) calc(2 * var(--ui-pixel)),
-    calc(14 * var(--ui-pixel)) calc(2 * var(--ui-pixel)),
-    calc(14 * var(--ui-pixel)) var(--ui-pixel), 100% var(--ui-pixel)
+    calc(var(--nose-width) + var(--ui-pixel)) calc(2 * var(--ui-pixel)),
+    calc(var(--nose-width) + var(--ui-pixel)) var(--ui-pixel), 100% var(--ui-pixel)
   );
 }
 
@@ -184,8 +200,8 @@ import equippedHandgun from '../assets/equipped-handgun.png'
 .equipped-weapon-panel__screen {
   position: absolute;
   isolation: isolate;
-  inset: calc(4 * var(--ui-pixel)) calc(8 * var(--ui-pixel))
-    calc(4 * var(--ui-pixel)) calc(13 * var(--ui-pixel));
+  inset: var(--screen-block-inset) var(--screen-right-inset)
+    var(--screen-block-inset) var(--nose-width);
   overflow: hidden;
   background: var(--weapon-screen);
   box-shadow:
@@ -195,20 +211,17 @@ import equippedHandgun from '../assets/equipped-handgun.png'
     0 var(--ui-pixel) var(--weapon-edge);
 }
 
-.equipped-weapon-panel__gun,
-.equipped-weapon-panel__ammo {
-  position: absolute;
-  image-rendering: pixelated;
-}
-
 .equipped-weapon-panel__gun {
+  position: absolute;
   top: calc(3.5 * var(--ui-pixel));
   left: calc(3 * var(--ui-pixel));
   width: calc(39 * var(--ui-pixel));
   height: calc(27.5 * var(--ui-pixel));
+  image-rendering: pixelated;
 }
 
 .equipped-weapon-panel__ammo {
+  position: absolute;
   left: calc(4.5 * var(--ui-pixel));
   bottom: calc(2.25 * var(--ui-pixel));
   color: var(--weapon-ammo);
@@ -220,8 +233,8 @@ import equippedHandgun from '../assets/equipped-handgun.png'
   /* Match the reference's wider digits without increasing their height. */
   transform: scaleX(1.4);
   transform-origin: left bottom;
-  text-shadow:
-    var(--ui-pixel) 0 0 var(--weapon-ammo-shadow);
+  /* The horizontal scale also stretches this right-only shadow. */
+  text-shadow: var(--ui-pixel) 0 0 var(--weapon-ammo-shadow);
 }
 
 /* One row per art pixel gives the diagonal transitions square stair steps. */
@@ -230,7 +243,7 @@ import equippedHandgun from '../assets/equipped-handgun.png'
   z-index: -1;
   inset: 0;
   display: grid;
-  grid-template-rows: repeat(35, 1fr);
+  grid-template-rows: repeat(var(--screen-rows), 1fr);
   pointer-events: none;
 }
 
@@ -252,11 +265,12 @@ import equippedHandgun from '../assets/equipped-handgun.png'
   top: 50%;
   right: 0;
   width: calc(
-    var(--connector-width) + var(--connector-right) - var(--connector-overhang) + var(--ui-pixel)
+    var(--connector-width) + var(--connector-right) - var(--connector-reserved-width) + var(--ui-pixel)
   );
   height: calc(var(--connector-height) + 4 * var(--ui-pixel));
   transform: translateY(-50%);
   pointer-events: none;
+  /* First shadow wins at overlaps: top covers left; left covers bottom. */
   box-shadow:
     inset 0 var(--ui-pixel) var(--weapon-shadow),
     inset var(--ui-pixel) 0 var(--weapon-connector-frame-left),
