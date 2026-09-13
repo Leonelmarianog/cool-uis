@@ -74,3 +74,12 @@ The initial screen and token values are placeholders for the future recreation.
 ## Reference
 
 [Game UI Database](https://www.gameuidatabase.com/gameData.php?id=2179)
+
+## Menu panel
+
+`MenuPanel` recreates the MAP / FILE / dash / EXIT housing with CSS gradients.
+It uses locally hosted [Teko](https://fonts.google.com/specimen/Teko) at weight
+400 as an approximation of the reference lettering; its SIL Open Font License
+is included alongside the font. Geometry follows the shared `--ui-pixel` scale.
+The three buttons emit `map`, `file`, and `exit` events for future navigation.
+The dash is decorative. The development stack displays this component first.
