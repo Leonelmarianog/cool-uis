@@ -32,7 +32,6 @@ import ecgLabel from '../assets/ecg-label.svg'
   /* Reference housing: 72 × 43 art pixels. */
   position: relative;
   width: calc(72 * var(--ui-pixel));
-  max-width: 100%;
   height: calc(43 * var(--ui-pixel));
 }
 

@@ -43,7 +43,7 @@
 
   position: relative;
   isolation: isolate;
-  width: 100%;
+  width: calc(216 * var(--ui-pixel));
   aspect-ratio: 3 / 2;
   background: var(--metal);
   /* Clip the backing too, so it cannot fill the rails' corner cutouts. */

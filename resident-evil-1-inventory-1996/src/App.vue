@@ -17,7 +17,7 @@ import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
       <MenuPanel />
       <EquippedWeaponPanel />
       <HealthStatusPanel />
-      <CharacterPortraitPanel class="project-shell__portrait-panel" />
+      <CharacterPortraitPanel />
       <ItemPreviewPanel />
     </div>
   </main>
@@ -36,12 +36,11 @@ import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
 
 .project-shell__inventory {
   display: grid;
-  gap: 8px;
+  /* Keep wide panels from expanding the column beyond the container. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(2 * var(--ui-pixel));
   width: 100%;
-  max-width: 864px;
+  max-width: calc(216 * var(--ui-pixel));
 }
 
-.project-shell__portrait-panel {
-  width: 32.407407%;
-}
 </style>

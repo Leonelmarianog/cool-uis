@@ -32,10 +32,9 @@ defineProps({
   --description-name-left: 15%;
   --description-text-outline-width: var(--ui-pixel);
 
-  /* Reference size: 360 × 56 art pixels, capped by the development container. */
+  /* Preserve the approved development size at every UI scale. */
   position: relative;
-  width: calc(360 * var(--ui-pixel));
-  max-width: 100%;
+  width: calc(216 * var(--ui-pixel));
   height: calc(56 * var(--ui-pixel));
   border-top: calc(2 * var(--ui-pixel)) solid var(--description-metal-light);
   background: var(--description-ink);
