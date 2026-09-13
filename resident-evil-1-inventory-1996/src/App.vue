@@ -1,12 +1,14 @@
 <script setup>
 import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
 import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue'
+import HealthStatusPanel from './components/HealthStatusPanel.vue'
 </script>
 
 <template>
   <main class="project-shell">
     <div class="project-shell__inventory">
       <!-- Keep new components first while building them individually. -->
+      <HealthStatusPanel />
       <CharacterPortraitPanel class="project-shell__portrait-panel" />
       <ItemPreviewPanel />
     </div>

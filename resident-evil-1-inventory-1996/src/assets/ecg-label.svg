@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="148" viewBox="0 0 9 37" shape-rendering="crispEdges">
+  <title>ECG lettering and lower marks, reference version</title>
+  <defs>
+    <path id="ecg-reference" d="M0 1H1V6H2V7H3V8H7V4H6V3H5V5H4V2H6V3H7V4H8V9H3V8H2V7H1V6H0Z M0 10H1V15H2V16H3V17H7V12H8V18H3V17H2V16H1V15H0Z M0 19H1V24H2V25H3V26H4V20H5V27H7V21H8V28H3V27H2V26H1V25H0Z M1 30H3V32H2V31H1Z M2 33H3V35H2V37H1V35H2Z M4 30H5V36H4Z M7 31H8V37H7Z M7 0H8V1H7Z"/>
+  </defs>
+  <use href="#ecg-reference" fill="#000000"/>
+</svg>
