@@ -1,5 +1,7 @@
 html {
-  font-size: clamp(8px, 1.25vw, 16px);
+  /* Fit the complete layout (360 × 269.5 art pixels), including its padding.
+     Below the 8px minimum, preserve readability and allow scrolling. */
+  font-size: clamp(8px, min(calc(100vw / 90), calc(100svh / 67.375)), 16px);
 }
 
 body {
