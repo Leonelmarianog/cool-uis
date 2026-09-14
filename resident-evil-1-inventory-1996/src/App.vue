@@ -11,14 +11,17 @@ import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
 <template>
   <main class="project-shell">
     <div class="project-shell__inventory">
-      <!-- Keep new components first while building them individually. -->
-      <ItemDescriptionPanel />
-      <InventoryGrid />
-      <MenuPanel />
-      <EquippedWeaponPanel />
-      <HealthStatusPanel />
-      <CharacterPortraitPanel />
-      <ItemPreviewPanel />
+      <ItemPreviewPanel class="project-shell__preview" />
+      <div class="project-shell__status">
+        <CharacterPortraitPanel />
+        <HealthStatusPanel />
+        <EquippedWeaponPanel class="project-shell__weapon" />
+      </div>
+      <div class="project-shell__items">
+        <MenuPanel class="project-shell__menu" />
+        <InventoryGrid class="project-shell__grid" />
+      </div>
+      <ItemDescriptionPanel class="project-shell__description" />
     </div>
   </main>
 </template>
@@ -26,21 +29,84 @@ import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
 <style scoped>
 .project-shell {
   display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: var(--space-3);
+  place-content: safe center;
   min-height: 100svh;
-  padding: var(--space-6);
   background: var(--color-preview-background);
 }
 
 .project-shell__inventory {
+  --layout-edge: calc(9 * var(--ui-pixel));
+  --layout-panel-gap: calc(2 * var(--ui-pixel));
+  --layout-frame-overlap: calc(8 * var(--ui-pixel));
+
   display: grid;
-  /* Keep wide panels from expanding the column beyond the container. */
-  grid-template-columns: minmax(0, 1fr);
-  gap: calc(2 * var(--ui-pixel));
-  width: 100%;
-  max-width: calc(216 * var(--ui-pixel));
+  grid-template-columns:
+    var(--layout-edge)
+    calc(220.5 * var(--ui-pixel))
+    minmax(0, 1fr)
+    var(--layout-edge);
+  /* The left panels set the rows. The taller inventory continues behind
+     the description instead of stretching the space above the status row. */
+  grid-template-rows:
+    calc(144 * var(--ui-pixel))
+    calc(45 * var(--ui-pixel))
+    var(--layout-panel-gap)
+    auto;
+  grid-template-areas:
+    ". preview items ."
+    ". status  items ."
+    ". .       .     ."
+    "description description description description";
+  width: calc(360 * var(--ui-pixel));
+  padding-block: calc(13.5 * var(--ui-pixel)) var(--layout-edge);
 }
 
+.project-shell__preview {
+  grid-area: preview;
+}
+
+.project-shell__status {
+  grid-area: status;
+  align-self: end;
+  display: grid;
+  grid-template-columns:
+    calc(70 * var(--ui-pixel))
+    calc(72 * var(--ui-pixel))
+    calc(76 * var(--ui-pixel));
+  column-gap: var(--layout-panel-gap);
+  align-items: end;
+}
+
+.project-shell__weapon {
+  /* Match the housing's right edge to the inventory's left edge;
+     the component's reserved connector space is not housing width. */
+  margin-left: calc(11 * var(--ui-pixel));
+}
+
+.project-shell__items {
+  grid-area: items;
+  align-self: start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto var(--layout-frame-overlap) auto;
+  align-content: start;
+}
+
+.project-shell__menu {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  z-index: 1;
+}
+
+.project-shell__grid {
+  grid-column: 1;
+  grid-row: 2 / 4;
+  margin-left: calc(4.5 * var(--ui-pixel));
+}
+
+.project-shell__description {
+  grid-area: description;
+  z-index: 2;
+  width: 100%;
+}
 </style>

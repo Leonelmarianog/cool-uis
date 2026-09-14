@@ -1,5 +1,6 @@
 html {
-  font-size: clamp(8px, 1.25vw, 16px);
+  /* The complete 360-art-pixel inventory is 90rem wide. */
+  font-size: clamp(8px, calc(100vw / 90), 16px);
 }
 
 body {
