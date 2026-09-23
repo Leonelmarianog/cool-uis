@@ -6,12 +6,14 @@ import ecgState0 from '../assets/ecg/fine.svg'
 import ecgState1 from '../assets/ecg/fine-yellow.svg'
 import ecgState2 from '../assets/ecg/caution.svg'
 import ecgState3 from '../assets/ecg/danger.svg'
+import ecgPoison from '../assets/ecg/poison.svg'
 
 const states = [
   { name: 'Fine', accessibleName: 'Fine, green', labelColor: '#009900', image: ecgState0, blinking: false },
   { name: 'Fine', accessibleName: 'Fine, yellow', labelColor: '#009900', image: ecgState1, blinking: false },
   { name: 'Caution', accessibleName: 'Caution', labelColor: '#e59b00', image: ecgState2, blinking: true },
   { name: 'Danger!', accessibleName: 'Danger', labelColor: '#e50030', image: ecgState3, blinking: true },
+  { name: 'Poison!', accessibleName: 'Poison', labelColor: '#c78bea', image: ecgPoison, blinking: true },
 ]
 const stateIndex = ref(0)
 const state = computed(() => states[stateIndex.value])
