@@ -1,12 +1,83 @@
 <script setup>
+import { ref, computed, useId } from 'vue'
 import ecgLabel from '../assets/ecg-label.svg'
+
+const ecgId = useId()
+const gridLineCount = 10
+const gridTopInset = 2.1
+const gridLineSpacing = (35 - 2 * gridTopInset) / (gridLineCount - 1)
+const gridLines = Array.from({ length: gridLineCount }, (_, index) => gridTopInset + index * gridLineSpacing)
+const waveformBaseline = gridLines[gridLines.length - 5]
+
+// Coordinates follow the screen's 54 × 35 art-pixel canvas.
+const states = [
+  { name: 'Fine', accessibleName: 'Fine, green', color: '#00b900', labelColor: '#009900', points: '0,18 16,18 20,21 24,3 29,21 32,12 36,18 54,18' },
+  { name: 'Fine', accessibleName: 'Fine, yellow', color: '#b8b600', labelColor: '#009900', points: '0,18 18,18 20,20 24,7 29,20 32,13 35,18 54,18' },
+  { name: 'Caution', accessibleName: 'Caution', color: '#d88a00', labelColor: '#e59b00', points: '0,18 19,18 21,19 24,10 28,19 30,15 32,18 54,18' },
+  { name: 'Danger!', accessibleName: 'Danger', color: '#bc0018', labelColor: '#e50030', points: '0,18 19,18 21,19 23,14 26,19 28,16 30,18 54,18' },
+]
+const stateIndex = ref(0)
+const state = computed(() => states[stateIndex.value])
+// Rasterize the straight segments on the art-pixel grid, rather than letting
+// the browser rasterize diagonal strokes at the much finer screen resolution.
+const waveformPixels = computed(() => {
+  const points = state.value.points.split(' ').map(point => point.split(',').map(Number))
+  const pixels = new Set()
+  for (let i = 1; i < points.length; i++) {
+    const [startX, startY] = points[i - 1]
+    const [endX, endY] = points[i]
+    const steps = Math.max(Math.abs(endX - startX), Math.abs(endY - startY))
+    for (let step = 0; step <= steps; step++) {
+      const x = Math.round(startX + (endX - startX) * step / steps)
+      const y = Math.round(startY + (endY - startY) * step / steps)
+      pixels.add(`${x},${y}`)
+    }
+  }
+  return [...pixels].map(pixel => {
+    const [x, y] = pixel.split(',').map(Number)
+    // Center the one-pixel trace on the fifth grid line from the bottom.
+    return `M${x},${y - 18 + waveformBaseline - 0.5}h1v1h-1z`
+  }).join(' ')
+})
+function cycleState() {
+  stateIndex.value = (stateIndex.value + 1) % states.length
+}
 </script>
 
 <template>
   <section class="health-status-panel" aria-label="Health status panel">
     <div class="health-status-panel__housing">
       <img class="health-status-panel__label" :src="ecgLabel" alt="ECG" width="36" height="148" />
-      <div class="health-status-panel__screen" aria-hidden="true"></div>
+      <button
+        class="health-status-panel__screen"
+        type="button"
+        :aria-label="`Health: ${state.accessibleName}. Click to cycle health status.`"
+        :style="{ '--ecg-color': state.color, '--ecg-label-color': state.labelColor }"
+        @click="cycleState"
+      >
+        <svg class="health-status-panel__grid" viewBox="0 0 54 35" preserveAspectRatio="none" aria-hidden="true">
+          <path v-for="y in gridLines" :key="y" :d="`M 0 ${y} H 54`" />
+        </svg>
+        <span :key="stateIndex" class="health-status-panel__animation" aria-hidden="true">
+          <svg class="health-status-panel__trace" viewBox="0 0 54 35" preserveAspectRatio="none">
+            <defs>
+              <linearGradient :id="`${ecgId}-fade`">
+                <stop offset="0" stop-color="black" />
+                <stop offset="66.6667%" stop-color="black" />
+                <stop offset="100%" stop-color="white" />
+              </linearGradient>
+              <mask :id="`${ecgId}-mask`" maskUnits="userSpaceOnUse" x="0" y="0" width="54" height="35" style="mask-type: luminance">
+                <rect width="54" height="35" fill="white" stroke="none" />
+                <rect class="health-status-panel__erase" width="162" height="35" :fill="`url(#${ecgId}-fade)`" stroke="none" />
+              </mask>
+            </defs>
+            <path :d="waveformPixels" fill="var(--ecg-color)" stroke="none" :mask="`url(#${ecgId}-mask)`" />
+          </svg>
+          <span class="health-status-panel__status-box">
+            <span class="health-status-panel__status" :class="{ 'health-status-panel__status--blinking': stateIndex > 1 }">{{ state.name }}</span>
+          </span>
+        </span>
+      </button>
     </div>
     <div class="health-status-panel__top-mount" aria-hidden="true">
       <span class="health-status-panel__reflection-mark"></span>
@@ -176,6 +247,89 @@ import ecgLabel from '../assets/ecg-label.svg'
   right: calc(5 * var(--ui-pixel));
   bottom: calc(4 * var(--ui-pixel));
   left: calc(13 * var(--ui-pixel));
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  cursor: pointer;
   background: #000;
+  appearance: none;
+}
+
+.health-status-panel__screen:focus-visible {
+  outline-offset: calc(-1 * var(--ui-pixel));
+}
+
+.health-status-panel__grid,
+.health-status-panel__trace,
+.health-status-panel__animation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.health-status-panel__grid {
+  fill: none;
+  stroke: #003321;
+  stroke-width: 0.65;
+}
+
+.health-status-panel__trace {
+  fill: none;
+  stroke: var(--ecg-color);
+  stroke-width: 1;
+  stroke-linejoin: miter;
+  shape-rendering: crispEdges;
+  /* Reveal across the screen, then dim from left to right like phosphor. */
+  animation: ecg-sweep 1500ms linear infinite;
+}
+
+.health-status-panel__status-box {
+  --status-box-width: calc(100% * 2 / 3);
+
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  width: var(--status-box-width);
+  padding-left: calc(2 * var(--ui-pixel));
+  background: #000;
+}
+
+.health-status-panel__status {
+  display: block;
+  color: var(--ecg-label-color);
+  font-family: 'VT323', monospace;
+  font-size: calc(10 * var(--ui-pixel));
+  font-weight: 400;
+  line-height: 1;
+  text-align: left;
+}
+
+.health-status-panel__status--blinking {
+  animation: ecg-status-blink 750ms steps(1, end) infinite;
+}
+
+.health-status-panel__erase {
+  animation: ecg-erase 1500ms linear infinite;
+}
+
+@keyframes ecg-sweep {
+  0% { clip-path: inset(0 100% 0 0); }
+  55%, 100% { clip-path: inset(0 0 0 0); }
+}
+
+/* The gradient's leading white edge preserves the trace ahead of the eraser;
+   its black tail removes it, with a fading band between the two. */
+@keyframes ecg-erase {
+  0%, 45% { transform: translateX(-162px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes ecg-status-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 </style>
