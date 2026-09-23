@@ -1,12 +1,46 @@
 <script setup>
+import { ref, computed } from 'vue'
 import ecgLabel from '../assets/ecg-label.svg'
+import ecgGrid from '../assets/ecg/grid.svg'
+import ecgState0 from '../assets/ecg/fine.svg'
+import ecgState1 from '../assets/ecg/fine-yellow.svg'
+import ecgState2 from '../assets/ecg/caution.svg'
+import ecgState3 from '../assets/ecg/danger.svg'
+import ecgPoison from '../assets/ecg/poison.svg'
+
+const states = [
+  { name: 'Fine', accessibleName: 'Fine, green', labelColor: '#009900', image: ecgState0, blinking: false },
+  { name: 'Fine', accessibleName: 'Fine, yellow', labelColor: '#009900', image: ecgState1, blinking: false },
+  { name: 'Caution', accessibleName: 'Caution', labelColor: '#e59b00', image: ecgState2, blinking: true },
+  { name: 'Danger!', accessibleName: 'Danger', labelColor: '#e50030', image: ecgState3, blinking: true },
+  { name: 'Poison!', accessibleName: 'Poison', labelColor: '#c78bea', image: ecgPoison, blinking: true },
+]
+const stateIndex = ref(0)
+const state = computed(() => states[stateIndex.value])
+function cycleState() {
+  stateIndex.value = (stateIndex.value + 1) % states.length
+}
 </script>
 
 <template>
   <section class="health-status-panel" aria-label="Health status panel">
     <div class="health-status-panel__housing">
       <img class="health-status-panel__label" :src="ecgLabel" alt="ECG" width="36" height="148" />
-      <div class="health-status-panel__screen" aria-hidden="true"></div>
+      <button
+        class="health-status-panel__screen"
+        type="button"
+        :aria-label="`Health: ${state.accessibleName}. Click to cycle health status.`"
+        :style="{ '--ecg-label-color': state.labelColor }"
+        @click="cycleState"
+      >
+        <img class="health-status-panel__grid" :src="ecgGrid" alt="" />
+        <span :key="stateIndex" class="health-status-panel__animation" aria-hidden="true">
+          <img class="health-status-panel__trace" :src="state.image" alt="" />
+          <span class="health-status-panel__status-box">
+            <span class="health-status-panel__status" :class="{ 'health-status-panel__status--blinking': state.blinking }">{{ state.name }}</span>
+          </span>
+        </span>
+      </button>
     </div>
     <div class="health-status-panel__top-mount" aria-hidden="true">
       <span class="health-status-panel__reflection-mark"></span>
@@ -176,6 +210,57 @@ import ecgLabel from '../assets/ecg-label.svg'
   right: calc(5 * var(--ui-pixel));
   bottom: calc(4 * var(--ui-pixel));
   left: calc(13 * var(--ui-pixel));
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  cursor: pointer;
   background: #000;
+  appearance: none;
+}
+
+.health-status-panel__screen:focus-visible {
+  outline-offset: calc(-1 * var(--ui-pixel));
+}
+
+.health-status-panel__grid,
+.health-status-panel__trace,
+.health-status-panel__animation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.health-status-panel__status-box {
+  --status-box-width: calc(100% * 2 / 3);
+
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  width: var(--status-box-width);
+  padding-left: calc(2 * var(--ui-pixel));
+  background: #000;
+}
+
+.health-status-panel__status {
+  display: block;
+  color: var(--ecg-label-color);
+  font-family: 'VT323', monospace;
+  font-size: calc(10 * var(--ui-pixel));
+  font-weight: 400;
+  line-height: 1;
+  text-align: left;
+}
+
+.health-status-panel__status--blinking {
+  animation: ecg-status-blink 750ms steps(1, end) infinite;
+}
+
+@keyframes ecg-status-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 </style>
