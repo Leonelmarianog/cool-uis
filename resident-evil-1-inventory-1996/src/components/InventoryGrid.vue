@@ -4,19 +4,51 @@ import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
 
 const cellRows = 34
 const cellCount = 8
+defineProps({
+  items: { type: Array, default: () => [] },
+  selectedIndex: { type: Number, default: -1 },
+  menuOpen: Boolean,
+})
+const emit = defineEmits(['select', 'open'])
+
+function move(event, index) {
+  const offsets = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -2, ArrowDown: 2 }
+  if (!(event.key in offsets)) return
+  event.preventDefault()
+  const target = index + offsets[event.key]
+  if (target < 0 || target >= cellCount) return
+  if (event.key === 'ArrowLeft' && index % 2 === 0) return
+  if (event.key === 'ArrowRight' && index % 2 === 1) return
+  event.currentTarget.parentElement.parentElement.children[target].querySelector('button').focus()
+}
 </script>
 
 <template>
-  <section class="inventory-grid" aria-label="Inventory panel">
+  <section class="inventory-grid" :class="{ 'inventory-grid--locked': menuOpen }" aria-label="Inventory panel">
     <div class="inventory-grid__recess">
       <ol class="inventory-grid__cells" aria-label="Inventory slots">
         <li
           v-for="cell in cellCount"
           :key="cell"
           class="inventory-grid__cell"
-          :aria-label="`Slot ${cell}: empty`"
+          :class="{ 'inventory-grid__cell--selected': selectedIndex === cell - 1 }"
         >
           <BlueSlotBackground :rows="cellRows" />
+          <button
+            :id="`inventory-slot-${cell - 1}`"
+            class="inventory-grid__item"
+            type="button"
+            :disabled="menuOpen"
+            :aria-label="`Slot ${cell}: ${items[cell - 1]?.name ?? 'empty'}`"
+            :aria-haspopup="items[cell - 1] ? 'menu' : undefined"
+            :tabindex="selectedIndex === cell - 1 || (selectedIndex < 0 && cell === 1) ? 0 : -1"
+            @focus="emit('select', cell - 1)"
+            @pointerenter="!menuOpen && emit('select', cell - 1)"
+            @click="items[cell - 1] && emit('open', cell - 1)"
+            @keydown="move($event, cell - 1)"
+          >
+            <img v-if="items[cell - 1]?.image" :src="items[cell - 1].image" alt="" />
+          </button>
           <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
       </ol>
@@ -98,8 +130,28 @@ const cellCount = 8
   display: none;
 }
 
+.inventory-grid__item {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.inventory-grid__item img {
+  width: calc(39 * var(--ui-pixel));
+  image-rendering: pixelated;
+}
+
+.inventory-grid__cell--selected .inventory-grid__selector {
+  display: block;
+}
+
 @media (hover: hover) {
-  .inventory-grid__cell:hover .inventory-grid__selector {
+  .inventory-grid:not(.inventory-grid--locked) .inventory-grid__cell:hover .inventory-grid__selector {
     display: block;
   }
 }

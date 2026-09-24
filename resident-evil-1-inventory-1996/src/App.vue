@@ -1,4 +1,7 @@
 <script setup>
+import { computed, nextTick, ref } from 'vue'
+import ItemActionsMenu from './components/ItemActionsMenu.vue'
+import handgunImage from './assets/equipped-handgun.png'
 import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
 import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue'
 import HealthStatusPanel from './components/HealthStatusPanel.vue'
@@ -6,12 +9,31 @@ import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
+
+// Temporary review fixture; the complete item catalog is a separate step.
+const items = [{ id: 'handgun', name: 'HANDGUN', weapon: true, image: handgunImage }]
+const selectedIndex = ref(0)
+const menuOpen = ref(false)
+const selectedItem = computed(() => items[selectedIndex.value])
+
+function openMenu(index) {
+  selectedIndex.value = index
+  menuOpen.value = true
+}
+
+async function closeMenu() {
+  menuOpen.value = false
+  await nextTick()
+  document.getElementById(`inventory-slot-${selectedIndex.value}`)?.focus()
+}
 </script>
 
 <template>
   <main class="project-shell">
     <div class="project-shell__inventory">
-      <ItemPreviewPanel class="project-shell__preview" />
+      <ItemPreviewPanel class="project-shell__preview">
+        <ItemActionsMenu v-if="menuOpen" :weapon="selectedItem?.weapon" @cancel="closeMenu" />
+      </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
         <HealthStatusPanel />
@@ -19,9 +41,16 @@ import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
       </div>
       <div class="project-shell__items">
         <MenuPanel class="project-shell__menu" />
-        <InventoryGrid class="project-shell__grid" />
+        <InventoryGrid
+          class="project-shell__grid"
+          :items="items"
+          :selected-index="selectedIndex"
+          :menu-open="menuOpen"
+          @select="selectedIndex = $event"
+          @open="openMenu"
+        />
       </div>
-      <ItemDescriptionPanel class="project-shell__description" />
+      <ItemDescriptionPanel class="project-shell__description" :item-name="selectedItem?.name ?? ''" />
     </div>
   </main>
 </template>
