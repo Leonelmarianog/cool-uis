@@ -1,17 +1,35 @@
 <script setup>
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
+import ItemCombinationCursor from './ItemCombinationCursor.vue'
 
 const cellRows = 34
 const cellCount = 8
-defineProps({
+const props = defineProps({
   items: { type: Array, default: () => [] },
   selectedIndex: { type: Number, default: -1 },
   menuOpen: Boolean,
+  combining: Boolean,
+  sourceIndex: { type: Number, default: -1 },
 })
-const emit = defineEmits(['select', 'open'])
+const emit = defineEmits(['select', 'open', 'cancel-combine'])
 
 function move(event, index) {
+  if (event.repeat && ['Enter', ' ', 'Escape'].includes(event.key)) {
+    event.preventDefault()
+    return
+  }
+  if (props.combining && event.key === 'Escape') {
+    event.preventDefault()
+    emit('cancel-combine')
+    return
+  }
+  if (props.combining && event.key === 'Tab') {
+    event.preventDefault()
+    const next = (index + (event.shiftKey ? -1 : 1) + cellCount) % cellCount
+    event.currentTarget.parentElement.parentElement.children[next].querySelector('button').focus()
+    return
+  }
   const offsets = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -2, ArrowDown: 2 }
   if (!(event.key in offsets)) return
   event.preventDefault()
@@ -24,14 +42,14 @@ function move(event, index) {
 </script>
 
 <template>
-  <section class="inventory-grid" :class="{ 'inventory-grid--locked': menuOpen }" aria-label="Inventory panel">
+  <section class="inventory-grid" :class="{ 'inventory-grid--locked': menuOpen || combining }" :aria-label="combining ? 'Select an item to combine; Escape cancels' : 'Inventory panel'">
     <div class="inventory-grid__recess">
       <ol class="inventory-grid__cells" aria-label="Inventory slots">
         <li
           v-for="cell in cellCount"
           :key="cell"
           class="inventory-grid__cell"
-          :class="{ 'inventory-grid__cell--selected': selectedIndex === cell - 1 }"
+          :class="{ 'inventory-grid__cell--selected': (combining ? sourceIndex : selectedIndex) === cell - 1 }"
         >
           <BlueSlotBackground :rows="cellRows" />
           <button
@@ -40,11 +58,11 @@ function move(event, index) {
             type="button"
             :disabled="menuOpen"
             :aria-label="`Slot ${cell}: ${items[cell - 1]?.name ?? 'empty'}${items[cell - 1]?.amountLabel ? ', ' + items[cell - 1].amountLabel : ''}`"
-            :aria-haspopup="items[cell - 1] ? 'menu' : undefined"
+            :aria-haspopup="!combining && items[cell - 1] ? 'menu' : undefined"
             :tabindex="selectedIndex === cell - 1 || (selectedIndex < 0 && cell === 1) ? 0 : -1"
             @focus="emit('select', cell - 1)"
             @pointerenter="!menuOpen && emit('select', cell - 1)"
-            @click="items[cell - 1] && emit('open', cell - 1)"
+            @click="(combining || items[cell - 1]) && emit('open', cell - 1)"
             @keydown="move($event, cell - 1)"
           >
             <img v-if="items[cell - 1]?.image" :src="items[cell - 1].image" alt="" />
@@ -57,6 +75,7 @@ function move(event, index) {
             <span v-if="items[cell - 1]?.count" class="inventory-grid__amount" aria-hidden="true">{{ items[cell - 1].amount }}</span>
           </button>
           <ItemSelectionOverlay class="inventory-grid__selector" />
+          <ItemCombinationCursor v-if="combining && selectedIndex === cell - 1" />
         </li>
       </ol>
     </div>

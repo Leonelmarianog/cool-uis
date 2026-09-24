@@ -10,12 +10,17 @@ import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
 import { createItem, describeItem } from './inventory/items.js'
+import { combineInventoryItems } from './inventory/combinations.js'
 
 // Temporary review fixture; the complete item catalog is a separate step.
 const slots = ref([
   createItem('handgun', 'handgun-1', 10),
   createItem('clip', 'clip-1', 15),
-  null, null, null, null, null, null,
+  createItem('clip', 'clip-2', 250),
+  createItem('greenHerb', 'green-1'),
+  createItem('redHerb', 'red-1'),
+  createItem('greenHerb', 'green-2'),
+  null, null,
 ])
 const items = computed(() => slots.value.map(item => {
   const view = describeItem(item)
@@ -29,9 +34,20 @@ const menuOpen = ref(false)
 const message = ref('')
 const messageButton = ref(null)
 const actionIndex = ref(0)
+const combineSourceId = ref(null)
+const combining = computed(() => combineSourceId.value !== null)
+const sourceIndex = computed(() => slots.value.findIndex(item => item?.id === combineSourceId.value))
+const menuItem = computed(() => combining.value ? items.value[sourceIndex.value] : selectedItem.value)
+const recipeTargetId = ref(null)
+const confirmingRecipe = computed(() => recipeTargetId.value !== null)
 const selectedItem = computed(() => items.value[selectedIndex.value])
 
 function openMenu(index) {
+  if (message.value) return
+  if (combining.value) {
+    selectCombination(index)
+    return
+  }
   selectedIndex.value = index
   actionIndex.value = 0
   menuOpen.value = true
@@ -40,6 +56,13 @@ function openMenu(index) {
 async function handleAction({ action, index }) {
   if (message.value) return
   actionIndex.value = index
+  if (action === 'combine') {
+    combineSourceId.value = selectedItem.value.id
+    const next = slots.value.findIndex(item => item && item.id !== combineSourceId.value)
+    if (next !== -1) selectedIndex.value = next
+    await focusSlot()
+    return
+  }
   if (action === 'equip' && selectedItem.value?.weapon) {
     equippedItemId.value = equippedItemId.value === selectedItem.value.id ? null : selectedItem.value.id
     await closeMenu()
@@ -50,12 +73,70 @@ async function handleAction({ action, index }) {
   messageButton.value?.focus()
 }
 
-function dismissMessage() {
+async function focusSlot() {
+  await nextTick()
+  document.getElementById(`inventory-slot-${selectedIndex.value}`)?.focus()
+}
+
+async function selectCombination(index) {
+  selectedIndex.value = index
+  const result = combineInventoryItems(slots.value, combineSourceId.value, slots.value[index]?.id)
+  if (!result.ok) {
+    message.value = result.message
+  } else if (result.kind === 'recipe') {
+    recipeTargetId.value = slots.value[index].id
+    message.value = 'Will you mix these herbs?'
+  } else {
+    await applyCombination(result)
+    return
+  }
+  await nextTick()
+  messageButton.value?.focus()
+}
+
+async function applyCombination(result) {
+  const originalSource = sourceIndex.value
+  const target = selectedIndex.value
+  slots.value = result.slots
+  selectedIndex.value = slots.value[originalSource] ? originalSource : target
+  combineSourceId.value = null
+  recipeTargetId.value = null
   message.value = ''
+  await closeMenu()
+}
+
+async function confirmRecipe() {
+  // Confirmation evaluates current inventory again; no cached replacements.
+  const result = combineInventoryItems(slots.value, combineSourceId.value, recipeTargetId.value)
+  recipeTargetId.value = null
+  if (result.ok) await applyCombination(result)
+  else {
+    message.value = result.message
+    await nextTick()
+    messageButton.value?.focus()
+  }
+}
+
+function cancelCombination() {
+  selectedIndex.value = sourceIndex.value
+  combineSourceId.value = null
+  actionIndex.value = 2
+}
+
+async function dismissMessage() {
+  message.value = ''
+  recipeTargetId.value = null
+  if (combining.value) await focusSlot()
 }
 
 function onMessageKeydown(event) {
-  if (event.key === 'Tab' || (event.repeat && ['Enter', ' ', 'Escape'].includes(event.key))) {
+  if (event.key === 'Tab') {
+    event.preventDefault()
+    if (confirmingRecipe.value) {
+      const buttons = [...event.currentTarget.querySelectorAll('button')]
+      buttons[(buttons.indexOf(document.activeElement) + 1) % buttons.length].focus()
+    }
+  } else if (event.repeat && ['Enter', ' ', 'Escape'].includes(event.key)) {
     event.preventDefault()
   } else if (event.key === 'Escape') {
     event.preventDefault()
@@ -76,8 +157,10 @@ async function closeMenu() {
       <ItemPreviewPanel class="project-shell__preview">
         <ItemActionsMenu
           v-if="menuOpen && !message"
-          :weapon="selectedItem?.weapon"
+          :key="combining ? 'target-selection' : 'actions'"
+          :weapon="menuItem?.weapon"
           :initial-index="actionIndex"
+          :inert="combining"
           @cancel="closeMenu"
           @action="handleAction"
         />
@@ -93,14 +176,25 @@ async function closeMenu() {
           class="project-shell__grid"
           :items="items"
           :selected-index="selectedIndex"
-          :menu-open="menuOpen"
+          :menu-open="(menuOpen && !combining) || Boolean(message)"
+          :combining="combining"
+          :source-index="sourceIndex"
           @select="selectedIndex = $event"
           @open="openMenu"
+          @cancel-combine="cancelCombination"
         />
       </div>
       <ItemDescriptionPanel class="project-shell__description" :item-name="selectedItem?.name ?? ''">
         <div v-if="message" role="dialog" aria-modal="true" aria-labelledby="inventory-message" @keydown="onMessageKeydown">
+          <template v-if="confirmingRecipe">
+            <p id="inventory-message" class="project-shell__recipe-question">{{ message }}</p>
+            <div class="project-shell__recipe-options">
+              <button ref="messageButton" type="button" @click="confirmRecipe">Yes</button>
+              <button type="button" @click="dismissMessage">No</button>
+            </div>
+          </template>
           <button
+            v-else
             id="inventory-message"
             ref="messageButton"
             class="project-shell__message"
@@ -214,5 +308,27 @@ async function closeMenu() {
   cursor: pointer;
   -webkit-text-stroke: calc(0.5 * var(--ui-pixel)) #434356;
   paint-order: stroke fill;
+}
+
+.project-shell__recipe-question,
+.project-shell__recipe-options {
+  padding-inline: calc(8 * var(--ui-pixel));
+  color: #c1beb2;
+  font-family: 'VT323', monospace;
+  font-size: calc(10 * var(--ui-pixel));
+  line-height: 1.2;
+}
+
+.project-shell__recipe-options {
+  display: flex;
+  gap: calc(8 * var(--ui-pixel));
+}
+
+.project-shell__recipe-options button {
+  padding: 0 var(--ui-pixel);
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
 }
 </style>

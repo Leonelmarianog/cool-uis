@@ -44,10 +44,10 @@ onMounted(() => move(props.initialIndex))
       class="item-actions-menu__option"
       :class="{ 'item-actions-menu__option--selected': active === index }"
       :tabindex="active === index ? 0 : -1"
-      :aria-disabled="index > 0"
+      :aria-disabled="index === 1"
       @focus="active = index"
       @pointerenter="move(index)"
-      @click="index === 0 && emit('action', { action: weapon ? 'equip' : 'use', index })"
+      @click="index !== 1 && emit('action', { action: index === 2 ? 'combine' : weapon ? 'equip' : 'use', index })"
     >{{ option }}</button>
   </div>
 </template>

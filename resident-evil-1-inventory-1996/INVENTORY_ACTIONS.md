@@ -101,3 +101,25 @@ subsequent branches above. Preserve the approved panel artwork and dimensions.
   depletion and a full weapon after an earlier valid preview. Build passes.
 - No COMBN UI is enabled by this branch. At confirmation, call the inventory
   function with current state rather than applying cached preview replacements.
+
+## COMBN interaction
+
+- Rules committed as `d9a3256`; UI follows on `feat/combine-items`.
+- COMBN enters target selection, retaining the source's red outline and the
+  visible action menu. Green inward arrows mark the target, following
+  `combine-cursor.gif`. Target movement updates the bottom-panel item name.
+- Click or Enter/Space selects a target; arrows/Tab navigate. Escape returns to
+  COMBN in the source menu; another Escape returns to the source inventory slot.
+- Reload/stack results apply immediately and keep equipped ammo synchronized.
+  Herbs prompt Yes/No; Escape/No returns to target selection without mutations.
+  Confirmation re-evaluates the current inventory. Rejections show feedback and
+  restore target focus after dismissal. Unrelated controls remain inert.
+- Success closes the menu and focuses the source result, or the surviving
+  target if the source was consumed. Empty slots remain empty; automatic slot
+  compaction is not yet implemented.
+- Review fixture: handgun 10, clips 15/250, green/red/green herbs, two empty slots.
+  Reload the page to reset it. CHECK and healing USE remain separate work.
+- Unit tests/build/whitespace checks passed. Chromium verified reloads, equipped
+  synchronization, capped stacking, both recipes, confirmation/cancellation,
+  full/incompatible/self/empty rejection, focus and target navigation. Target
+  selection screenshots reviewed at 1440px; also captured at 800px.
