@@ -2,6 +2,8 @@
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import equippedHandgun from '../assets/equipped-handgun.png'
 
+defineProps({ equipped: { type: Boolean, default: true } })
+
 // Each background row represents one art pixel of the screen's height.
 const screenRows = 35
 </script>
@@ -15,7 +17,7 @@ const screenRows = 35
       <span class="equipped-weapon-panel__connector-frame" aria-hidden="true"></span>
       <div class="equipped-weapon-panel__screen">
         <BlueSlotBackground :rows="screenRows" />
-        <slot>
+        <slot v-if="equipped">
           <img class="equipped-weapon-panel__gun" :src="equippedHandgun" alt="Handgun" width="156" height="110" />
           <span class="equipped-weapon-panel__ammo" aria-label="10 rounds">10</span>
         </slot>

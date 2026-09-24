@@ -11,14 +11,48 @@ import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
 
 // Temporary review fixture; the complete item catalog is a separate step.
-const items = [{ id: 'handgun', name: 'HANDGUN', weapon: true, image: handgunImage }]
+const items = [
+  { id: 'handgun', name: 'HANDGUN', weapon: true, image: handgunImage },
+  { id: 'clip', name: 'CLIP', weapon: false, sprite: { column: 1, row: 1 } },
+]
+const equippedItemId = ref('handgun')
 const selectedIndex = ref(0)
 const menuOpen = ref(false)
+const message = ref('')
+const messageButton = ref(null)
+const actionIndex = ref(0)
 const selectedItem = computed(() => items[selectedIndex.value])
 
 function openMenu(index) {
   selectedIndex.value = index
+  actionIndex.value = 0
   menuOpen.value = true
+}
+
+async function handleAction({ action, index }) {
+  if (message.value) return
+  actionIndex.value = index
+  if (action === 'equip' && selectedItem.value?.weapon) {
+    equippedItemId.value = equippedItemId.value === selectedItem.value.id ? null : selectedItem.value.id
+    await closeMenu()
+    return
+  }
+  message.value = 'This item cannot be used by itself.'
+  await nextTick()
+  messageButton.value?.focus()
+}
+
+function dismissMessage() {
+  message.value = ''
+}
+
+function onMessageKeydown(event) {
+  if (event.key === 'Tab' || (event.repeat && ['Enter', ' ', 'Escape'].includes(event.key))) {
+    event.preventDefault()
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    dismissMessage()
+  }
 }
 
 async function closeMenu() {
@@ -32,15 +66,21 @@ async function closeMenu() {
   <main class="project-shell">
     <div class="project-shell__inventory">
       <ItemPreviewPanel class="project-shell__preview">
-        <ItemActionsMenu v-if="menuOpen" :weapon="selectedItem?.weapon" @cancel="closeMenu" />
+        <ItemActionsMenu
+          v-if="menuOpen && !message"
+          :weapon="selectedItem?.weapon"
+          :initial-index="actionIndex"
+          @cancel="closeMenu"
+          @action="handleAction"
+        />
       </ItemPreviewPanel>
-      <div class="project-shell__status">
+      <div class="project-shell__status" :inert="menuOpen">
         <CharacterPortraitPanel />
         <HealthStatusPanel />
-        <EquippedWeaponPanel class="project-shell__weapon" />
+        <EquippedWeaponPanel class="project-shell__weapon" :equipped="equippedItemId !== null" />
       </div>
       <div class="project-shell__items">
-        <MenuPanel class="project-shell__menu" />
+        <MenuPanel class="project-shell__menu" :inert="menuOpen" />
         <InventoryGrid
           class="project-shell__grid"
           :items="items"
@@ -50,7 +90,17 @@ async function closeMenu() {
           @open="openMenu"
         />
       </div>
-      <ItemDescriptionPanel class="project-shell__description" :item-name="selectedItem?.name ?? ''" />
+      <ItemDescriptionPanel class="project-shell__description" :item-name="selectedItem?.name ?? ''">
+        <div v-if="message" role="dialog" aria-modal="true" aria-labelledby="inventory-message" @keydown="onMessageKeydown">
+          <button
+            id="inventory-message"
+            ref="messageButton"
+            class="project-shell__message"
+            type="button"
+            @click="dismissMessage"
+          >{{ message }}</button>
+        </div>
+      </ItemDescriptionPanel>
     </div>
   </main>
 </template>
@@ -137,5 +187,24 @@ async function closeMenu() {
   grid-area: description;
   z-index: 2;
   width: 100%;
+}
+
+.project-shell__message {
+  display: block;
+  width: 100%;
+  min-height: calc(34 * var(--ui-pixel));
+  margin: 0;
+  padding: var(--ui-pixel) calc(8 * var(--ui-pixel));
+  border: 0;
+  background: transparent;
+  color: #c1beb2;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: calc(10 * var(--ui-pixel));
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  -webkit-text-stroke: calc(0.5 * var(--ui-pixel)) #434356;
+  paint-order: stroke fill;
 }
 </style>

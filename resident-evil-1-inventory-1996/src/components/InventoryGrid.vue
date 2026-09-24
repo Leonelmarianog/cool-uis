@@ -48,6 +48,12 @@ function move(event, index) {
             @keydown="move($event, cell - 1)"
           >
             <img v-if="items[cell - 1]?.image" :src="items[cell - 1].image" alt="" />
+            <span
+              v-else-if="items[cell - 1]?.sprite"
+              class="inventory-grid__sprite"
+              :style="{ '--sprite-column': items[cell - 1].sprite.column, '--sprite-row': items[cell - 1].sprite.row }"
+              aria-hidden="true"
+            ></span>
           </button>
           <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
@@ -143,6 +149,18 @@ function move(event, index) {
 
 .inventory-grid__item img {
   width: calc(39 * var(--ui-pixel));
+  image-rendering: pixelated;
+}
+
+.inventory-grid__sprite {
+  /* Crop inside the sheet's 43 × 33 cells to exclude its blue dividers. */
+  width: calc(40 * var(--ui-pixel));
+  height: calc(30 * var(--ui-pixel));
+  background-image: url('../assets/item-sprites.png');
+  background-size: calc(216 * var(--ui-pixel)) calc(496 * var(--ui-pixel));
+  background-position:
+    calc((-43 * var(--sprite-column) - 2) * var(--ui-pixel))
+    calc((-33 * var(--sprite-row) - 2) * var(--ui-pixel));
   image-rendering: pixelated;
 }
 

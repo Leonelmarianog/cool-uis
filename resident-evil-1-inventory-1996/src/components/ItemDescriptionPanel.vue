@@ -6,7 +6,9 @@ defineProps({
 
 <template>
   <section class="item-description-panel" aria-label="Item description panel">
-    <p class="item-description-panel__name">{{ itemName }}</p>
+    <slot>
+      <p class="item-description-panel__name">{{ itemName }}</p>
+    </slot>
     <div class="item-description-panel__lower-frame" aria-hidden="true"></div>
   </section>
 </template>

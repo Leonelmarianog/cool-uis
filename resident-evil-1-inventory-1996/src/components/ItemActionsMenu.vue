@@ -1,10 +1,10 @@
 <script setup>
 import { computed, nextTick, onMounted, ref } from 'vue'
 
-const props = defineProps({ weapon: Boolean })
-const emit = defineEmits(['cancel'])
+const props = defineProps({ weapon: Boolean, initialIndex: { type: Number, default: 0 } })
+const emit = defineEmits(['cancel', 'action'])
 const options = computed(() => [props.weapon ? 'EQUIP' : 'USE', 'CHECK', 'COMBN'])
-const active = ref(0)
+const active = ref(props.initialIndex)
 const buttons = ref([])
 
 async function move(index) {
@@ -14,6 +14,10 @@ async function move(index) {
 }
 
 function onKeydown(event) {
+  if (event.repeat && ['Enter', ' ', 'Escape'].includes(event.key)) {
+    event.preventDefault()
+    return
+  }
   if (event.key === 'Escape') {
     event.preventDefault()
     emit('cancel')
@@ -26,7 +30,7 @@ function onKeydown(event) {
   }
 }
 
-onMounted(() => move(0))
+onMounted(() => move(props.initialIndex))
 </script>
 
 <template>
@@ -40,9 +44,10 @@ onMounted(() => move(0))
       class="item-actions-menu__option"
       :class="{ 'item-actions-menu__option--selected': active === index }"
       :tabindex="active === index ? 0 : -1"
+      :aria-disabled="index > 0"
       @focus="active = index"
       @pointerenter="move(index)"
-      @click="move(index)"
+      @click="index === 0 && emit('action', { action: weapon ? 'equip' : 'use', index })"
     >{{ option }}</button>
   </div>
 </template>

@@ -30,3 +30,23 @@ Use a small explicitly temporary sample inventory to review selection and menu
 behavior. Do not infer a complete item catalog from unlabeled sprites. Implement
 opening, menu navigation, and cancellation first; action execution belongs to the
 subsequent branches above. Preserve the approved panel artwork and dimensions.
+
+## Progress
+
+- `item-actions-menu`: implemented and saved as `7fb102d`. Confirm uses click or
+  Enter/Space; Escape cancels. Menu navigation supports arrows, Home/End and Tab.
+- `item-action-feedback`: adds the handgun CLIP sprite (column 2, row 2),
+  standalone-invalid USE feedback, and EQUIP toggling. Equipping the active
+  weapon unequips it, clearing its artwork/ammo from the equipped panel;
+  equipping it again restores both. Click/Enter/Space/Escape
+  dismiss messages and return focus to the menu; a second Escape returns to
+  the inventory. Other controls are inert during menu/message interaction.
+  CHECK/COMBN are marked unavailable until their dedicated branches. No item
+  quantities or health mutate in this step. Message wording is provisional.
+- Browser checks cover message dismissal, focus restoration, background locking,
+  unavailable actions, empty slots, runtime errors, and 1440/800px layouts.
+- Runtime sprite sheet is extracted with `python3 scripts/extract-item-sprites.py`
+  (requires ffmpeg). It preserves the original 216 × 496 dimensions and all RGB
+  values, clearing alpha for the atlas dividers and its specific background
+  palette. The original design sheet remains untouched. Generated-image output
+  was rejected because it changed the sprite pixels and atlas dimensions.
