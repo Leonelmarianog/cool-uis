@@ -39,7 +39,7 @@ function move(event, index) {
             class="inventory-grid__item"
             type="button"
             :disabled="menuOpen"
-            :aria-label="`Slot ${cell}: ${items[cell - 1]?.name ?? 'empty'}`"
+            :aria-label="`Slot ${cell}: ${items[cell - 1]?.name ?? 'empty'}${items[cell - 1]?.amountLabel ? ', ' + items[cell - 1].amountLabel : ''}`"
             :aria-haspopup="items[cell - 1] ? 'menu' : undefined"
             :tabindex="selectedIndex === cell - 1 || (selectedIndex < 0 && cell === 1) ? 0 : -1"
             @focus="emit('select', cell - 1)"
@@ -54,6 +54,7 @@ function move(event, index) {
               :style="{ '--sprite-column': items[cell - 1].sprite.column, '--sprite-row': items[cell - 1].sprite.row }"
               aria-hidden="true"
             ></span>
+            <span v-if="items[cell - 1]?.count" class="inventory-grid__amount" aria-hidden="true">{{ items[cell - 1].amount }}</span>
           </button>
           <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
@@ -162,6 +163,22 @@ function move(event, index) {
     calc((-43 * var(--sprite-column) - 2) * var(--ui-pixel))
     calc((-33 * var(--sprite-row) - 2) * var(--ui-pixel));
   image-rendering: pixelated;
+}
+
+.inventory-grid__amount {
+  position: absolute;
+  right: calc(2 * var(--ui-pixel));
+  bottom: calc(1.5 * var(--ui-pixel));
+  color: #009900;
+  font-family: 'VT323', monospace;
+  font-size: calc(12 * var(--ui-pixel));
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: var(--ui-pixel);
+  transform: scaleX(1.4);
+  transform-origin: right bottom;
+  text-shadow: var(--ui-pixel) 0 #003800;
+  pointer-events: none;
 }
 
 .inventory-grid__cell--selected .inventory-grid__selector {

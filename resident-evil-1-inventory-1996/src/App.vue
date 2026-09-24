@@ -9,19 +9,27 @@ import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
+import { createItem, describeItem } from './inventory/items.js'
 
 // Temporary review fixture; the complete item catalog is a separate step.
-const items = [
-  { id: 'handgun', name: 'HANDGUN', weapon: true, image: handgunImage },
-  { id: 'clip', name: 'CLIP', weapon: false, sprite: { column: 1, row: 1 } },
-]
-const equippedItemId = ref('handgun')
+const slots = ref([
+  createItem('handgun', 'handgun-1', 10),
+  createItem('clip', 'clip-1', 15),
+  null, null, null, null, null, null,
+])
+const items = computed(() => slots.value.map(item => {
+  const view = describeItem(item)
+  // Preserve the approved extracted handgun artwork in both panels.
+  return view?.typeId === 'handgun' ? { ...view, image: handgunImage } : view
+}))
+const equippedItemId = ref('handgun-1')
+const equippedItem = computed(() => items.value.find(item => item?.id === equippedItemId.value) ?? null)
 const selectedIndex = ref(0)
 const menuOpen = ref(false)
 const message = ref('')
 const messageButton = ref(null)
 const actionIndex = ref(0)
-const selectedItem = computed(() => items[selectedIndex.value])
+const selectedItem = computed(() => items.value[selectedIndex.value])
 
 function openMenu(index) {
   selectedIndex.value = index
@@ -77,7 +85,7 @@ async function closeMenu() {
       <div class="project-shell__status" :inert="menuOpen">
         <CharacterPortraitPanel />
         <HealthStatusPanel />
-        <EquippedWeaponPanel class="project-shell__weapon" :equipped="equippedItemId !== null" />
+        <EquippedWeaponPanel class="project-shell__weapon" :item="equippedItem" />
       </div>
       <div class="project-shell__items">
         <MenuPanel class="project-shell__menu" :inert="menuOpen" />
