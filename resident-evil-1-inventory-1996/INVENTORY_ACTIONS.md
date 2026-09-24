@@ -14,6 +14,7 @@ and context-dependent uses still need rules/reference material before coding.
 | `item-actions-menu` | Select an occupied slot; show its name; confirm to open its menu; navigate options; cancel to close and restore slot focus. Weapons show EQUIP, other items USE; both show CHECK and COMBN. Empty slots do not open menus. Menu selection stays locked to its source item. |
 | `item-action-feedback` | Dispatch a selected action; show bottom-panel feedback; confirm/cancel dismisses feedback and restores the appropriate selection. Block accidental activation of the inventory underneath. |
 | `item-system` | Define item types, unique instances, bounded counts and no-count items; render inventory counts and share weapon state with the equipped panel. This precedes USE/COMBN. |
+| `combination-rules` | Pure compatibility evaluation and atomic inventory updates for reloads, ammo stacks and explicit herb recipes. This precedes the COMBN menu interaction. |
 | `equip-item` | Equip a weapon, replace the previously equipped weapon, synchronize artwork/ammo and equipped indication, and handle selecting an already equipped weapon. Decide unequip behavior from reference. |
 | `use-item` | Consume a usable healing/curing item, update health and quantity, clear an exhausted slot, and preserve selection. Reject unnecessary or standalone-invalid use with bottom-panel feedback and no mutation. Context items require an explicit world-use context. |
 | `check-item` | Enter examination, show description/preview, navigate available examination views, return to the source item. Any rotation, reveal, or item transformation requires item-specific assets/rules. |
@@ -74,3 +75,29 @@ subsequent branches above. Preserve the approved panel artwork and dimensions.
   bottom-left). Equipped-panel number placement retains its approved styling.
 - The demo remains handgun + clip. Tests cover no-count herbs/spray and amount
   limits; this branch does not enable combining or consuming healing items.
+
+## Combination rules
+
+- `src/inventory/combinations.js` exports `evaluateCombination(first, second)`.
+  Failure returns `{ ok: false, reason, message }`. Success returns
+  `{ ok: true, kind, items }`, with replacement instances in input order and
+  `null` for consumed items; transfers also return `moved`. Inputs never mutate.
+- Reloading requires a loaded-ammo weapon and stackable ammunition with matching
+  `ammoType`. Transfer is capped by available ammunition and weapon capacity.
+  Weapon identity survives; exhausted ammunition becomes an empty slot.
+- Ammo stacks require the same item type. Fill the larger stack; equal amounts
+  use instance ID as a stable tie-breaker. Reversing selection gives the same
+  per-instance results. Overflow remains in the other slot. An already-full
+  stack blocks consolidation without shuffling rounds into the smaller stack.
+- Explicit G+G/G+R recipes match either order. The first-selected slot becomes
+  the result (retaining its instance ID) and the second is emptied. Other herb
+  recipes are rejected until explicitly added to the recipe data.
+- `combineInventoryItems(slots, firstId, secondId)` re-evaluates current items
+  and returns a new `slots` array only on success. Missing/self-selected items,
+  duplicate inventory IDs, malformed counts and unsupported pairs are rejected.
+  Slot compaction and cursor movement remain UI work; unrelated slots stay put.
+- Tests cover all 16 handgun amounts × 255 clip amounts, stack overflow and order,
+  both herb recipes, immutable inputs, invalid pairs, identity preservation,
+  depletion and a full weapon after an earlier valid preview. Build passes.
+- No COMBN UI is enabled by this branch. At confirmation, call the inventory
+  function with current state rather than applying cached preview replacements.
