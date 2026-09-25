@@ -1,5 +1,10 @@
 # Inventory interaction plan
 
+> **Outdated.** This document describes the previous interaction implementation,
+> which was removed on the `resident-evil-1-inventory-1996/refactor/base` branch.
+> The logic is being rebuilt feature by feature. Keep this file as a reference for
+> intended behavior and reference findings, not as a description of the current code.
+
 Build and visually review one branch at a time. Branch names below share the
 `resident-evil-1-inventory-1996/feat/` prefix. Later branches start from the
 approved preceding work; do not open all branches or merge automatically.

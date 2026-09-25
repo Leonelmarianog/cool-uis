@@ -1,5 +1,10 @@
 # Inventory UI features and actions
 
+> **Outdated.** This document describes the previous interaction implementation,
+> which was removed on the `resident-evil-1-inventory-1996/refactor/base` branch.
+> The logic is being rebuilt feature by feature. Keep this file as a reference for
+> intended behavior and reference findings, not as a description of the current code.
+
 Current feature catalog for this project. **Implemented** means available in
 the current UI; **Partial** means the control exists but its intended behavior
 is incomplete; **Planned** means the feature is not available yet. **Demo**
