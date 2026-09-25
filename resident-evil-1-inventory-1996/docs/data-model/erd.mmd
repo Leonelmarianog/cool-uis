@@ -1,0 +1,114 @@
+%% Column names are snake_case here for readability; the JSON files and code use camelCase (e.g. sprite_sheet_id = spriteSheetId).
+%% No column is nullable. Optional data lives in its own table: a missing row means "not present".
+%% Tables whose primary key is also a foreign key (shared key) are 1:0..1 extensions of their parent.
+%% Every player item is in exactly one place: player_inventory or player_item_box.
+%% All primary and foreign keys are UUIDs (crypto.randomUUID for records created at runtime).
+erDiagram
+    %% ---------- Reference data (fixed game facts) ----------
+    sprite_sheets ||--o{ items : "draws"
+    items ||--o| weapons : "is a"
+    items ||--o| ammunition : "is a"
+    items ||--o| consumables : "is a"
+    items ||--o| key_items : "is a"
+    items ||--o| item_models : "has 3D model"
+    weapons ||--o{ weapon_ammunition : "accepts"
+    ammunition ||--o{ weapon_ammunition : "loads into"
+    items ||--o{ recipes : "first ingredient"
+    items ||--o{ recipes : "second ingredient"
+    items ||--o{ recipes : "result"
+
+    %% ---------- Player data: player_* tables (start from JSON, reset on refresh) ----------
+    items ||--o{ player_items : "is copied as"
+    player_items ||--o| player_weapons : "is a"
+    player_items ||--o| player_ammunition : "is a"
+    characters ||--o{ player_inventory : "carries"
+    player_items ||--o| player_inventory : "sits in"
+    characters ||--o| player_equipment : "holds"
+    player_weapons ||--o| player_equipment : "is equipped as"
+    characters ||--o{ player_item_box : "stores"
+    player_items ||--o| player_item_box : "sits in"
+
+    sprite_sheets {
+        uuid id PK
+        text file
+        integer width
+        integer height
+        integer cell_width
+        integer cell_height
+        integer frame_x
+        integer frame_y
+        integer frame_width
+        integer frame_height
+    }
+    items {
+        uuid id PK
+        text type "weapon | ammunition | consumable | key"
+        text name
+        uuid fk_sprite_sheet_id FK
+        integer sprite_column
+        integer sprite_row
+    }
+    weapons {
+        uuid fk_item_id PK, FK
+        integer capacity "rounds when fully loaded"
+    }
+    ammunition {
+        uuid fk_item_id PK, FK
+        integer max_stack "most rounds in one slot"
+    }
+    consumables {
+        uuid fk_item_id PK, FK
+    }
+    key_items {
+        uuid fk_item_id PK, FK
+    }
+    item_models {
+        uuid fk_item_id PK, FK
+        text file "3D model for CHECK"
+    }
+    weapon_ammunition {
+        uuid id PK
+        uuid fk_weapon_id FK
+        uuid fk_ammunition_id FK
+    }
+    recipes {
+        uuid id PK
+        uuid fk_first_item_id FK
+        uuid fk_second_item_id FK
+        uuid fk_result_item_id FK
+    }
+    characters {
+        uuid id PK
+        text name
+        text portrait "image file"
+        integer inventory_size "Jill 8, Chris 6"
+        integer item_box_size "rows in the item box list"
+    }
+    player_items {
+        uuid id PK
+        uuid fk_item_id FK
+    }
+    player_weapons {
+        uuid fk_player_item_id PK, FK
+        integer loaded_rounds "0 to capacity"
+    }
+    player_ammunition {
+        uuid fk_player_item_id PK, FK
+        integer amount "1 to max_stack"
+    }
+    player_inventory {
+        uuid id PK
+        uuid fk_character_id FK
+        integer position "1..item count, no gaps; empty slots come after the last item"
+        uuid fk_player_item_id FK "unique"
+    }
+    player_equipment {
+        uuid fk_character_id PK, FK "no row = unarmed"
+        uuid fk_player_weapon_id FK "unique"
+    }
+    player_item_box {
+        uuid id PK
+        uuid fk_character_id FK
+        integer position "1..item_box_size, gaps allowed (No Item)"
+        uuid fk_player_item_id FK "unique"
+    }
