@@ -3,21 +3,24 @@ import { computed } from 'vue'
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
 import SpriteFrame from './SpriteFrame.vue'
-import type { Sprite } from '../sprites/spriteSheet'
-
-interface GridItem {
-  name: string
-  sprite: Sprite
-}
+import { hasAmount } from '../inventory/items'
+import type { ResolvedItem } from '../inventory/types'
 
 // null marks an empty slot.
-const { items = [] } = defineProps<{ items?: (GridItem | null)[] }>()
+const { slots = [] } = defineProps<{ slots?: (ResolvedItem | null)[] }>()
 
 const cellRows = 34
 const cellCount = 8
 
-// Always render every cell; slots beyond the given items are empty.
-const cells = computed(() => Array.from({ length: cellCount }, (_, index) => items[index] ?? null))
+// Always render every cell; cells beyond the given slots are empty.
+const cells = computed(() => Array.from({ length: cellCount }, (_, index) => slots[index] ?? null))
+
+function cellLabel(slot: ResolvedItem | null, index: number): string {
+  if (!slot) return `Slot ${index + 1}: empty`
+  const { item, definition } = slot
+  const amount = hasAmount(definition) ? `, ${item.amount}` : ''
+  return `Slot ${index + 1}: ${definition.name}${amount}`
+}
 </script>
 
 <template>
@@ -25,13 +28,16 @@ const cells = computed(() => Array.from({ length: cellCount }, (_, index) => ite
     <div class="inventory-grid__recess">
       <ol class="inventory-grid__cells" aria-label="Inventory slots">
         <li
-          v-for="(item, index) in cells"
+          v-for="(slot, index) in cells"
           :key="index"
           class="inventory-grid__cell"
-          :aria-label="`Slot ${index + 1}: ${item?.name ?? 'empty'}`"
+          :aria-label="cellLabel(slot, index)"
         >
           <BlueSlotBackground :rows="cellRows" />
-          <SpriteFrame v-if="item" :sprite="item.sprite" />
+          <template v-if="slot">
+            <SpriteFrame :sprite="slot.definition.sprite" />
+            <span v-if="hasAmount(slot.definition)" class="inventory-grid__amount" aria-hidden="true">{{ slot.item.amount }}</span>
+          </template>
           <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
       </ol>
@@ -108,6 +114,23 @@ const cells = computed(() => Array.from({ length: cellCount }, (_, index) => ite
   /* Keep the negative background layer inside its own cell, below the selector. */
   isolation: isolate;
   overflow: hidden;
+}
+
+.inventory-grid__amount {
+  position: absolute;
+  right: calc(2 * var(--ui-pixel));
+  bottom: calc(1.5 * var(--ui-pixel));
+  color: #009900;
+  font-family: 'VT323', monospace;
+  font-size: calc(12 * var(--ui-pixel));
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: var(--ui-pixel);
+  /* Same widened digits as the equipped ammo, anchored to the right edge. */
+  transform: scaleX(1.4);
+  transform-origin: right bottom;
+  text-shadow: var(--ui-pixel) 0 #003800;
+  pointer-events: none;
 }
 
 .inventory-grid__selector {

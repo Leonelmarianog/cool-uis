@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import SpriteFrame from './SpriteFrame.vue'
-import { itemSpriteSheet } from '../sprites/itemSpriteSheet'
-import type { Sprite } from '../sprites/spriteSheet'
+import type { ResolvedItem } from '../inventory/types'
+
+// null leaves the screen empty.
+const { weapon = null } = defineProps<{ weapon?: ResolvedItem | null }>()
 
 // Each background row represents one art pixel of the screen's height.
 const screenRows = 35
-
-// Placeholder until the equipped item comes from the inventory.
-const handgunSprite: Sprite = { sheet: itemSpriteSheet, column: 1, row: 0 }
 </script>
 
 <template>
@@ -20,10 +19,10 @@ const handgunSprite: Sprite = { sheet: itemSpriteSheet, column: 1, row: 0 }
       <span class="equipped-weapon-panel__connector-frame" aria-hidden="true"></span>
       <div class="equipped-weapon-panel__screen">
         <BlueSlotBackground :rows="screenRows" />
-        <slot>
-          <SpriteFrame class="equipped-weapon-panel__gun" :sprite="handgunSprite" label="Handgun" />
-          <span class="equipped-weapon-panel__ammo" aria-label="10 rounds">10</span>
-        </slot>
+        <template v-if="weapon">
+          <SpriteFrame class="equipped-weapon-panel__gun" :sprite="weapon.definition.sprite" :label="weapon.definition.name" />
+          <span class="equipped-weapon-panel__ammo" :aria-label="`${weapon.item.amount} rounds`">{{ weapon.item.amount }}</span>
+        </template>
       </div>
     </div>
     <div class="equipped-weapon-panel__connector" aria-hidden="true">

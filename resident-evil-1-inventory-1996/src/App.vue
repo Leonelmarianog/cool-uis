@@ -6,16 +6,23 @@ import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
-import { itemSpriteSheet } from './sprites/itemSpriteSheet'
+import { createItem, resolveItem } from './inventory/items'
+import { itemCatalog } from './inventory/itemCatalog'
+import type { Item } from './inventory/types'
 
-// Temporary sprite preview; the item model replaces this in its own branch.
-const demoItems = [
-  { name: 'HANDGUN', sprite: { sheet: itemSpriteSheet, column: 1, row: 0 } },
-  { name: 'CLIP', sprite: { sheet: itemSpriteSheet, column: 1, row: 1 } },
-  { name: 'F.-AID SPRAY', sprite: { sheet: itemSpriteSheet, column: 3, row: 10 } },
-  { name: 'GREEN HERB', sprite: { sheet: itemSpriteSheet, column: 0, row: 11 } },
-  { name: 'RED HERB', sprite: { sheet: itemSpriteSheet, column: 1, row: 11 } },
+// Temporary sample inventory; the inventory state composable replaces it.
+const sampleInventory: (Item | null)[] = [
+  createItem(itemCatalog, { id: 'handgun-1', type: 'handgun', amount: 10 }),
+  createItem(itemCatalog, { id: 'clip-1', type: 'clip', amount: 15 }),
+  createItem(itemCatalog, { id: 'clip-2', type: 'clip', amount: 250 }),
+  createItem(itemCatalog, { id: 'green-herb-1', type: 'greenHerb' }),
+  createItem(itemCatalog, { id: 'red-herb-1', type: 'redHerb' }),
+  createItem(itemCatalog, { id: 'spray-1', type: 'firstAidSpray' }),
+  null,
+  null,
 ]
+const slots = sampleInventory.map(item => item && resolveItem(itemCatalog, item))
+const equippedWeapon = slots.find(slot => slot?.item.id === 'handgun-1') ?? null
 </script>
 
 <template>
@@ -25,11 +32,11 @@ const demoItems = [
       <div class="project-shell__status">
         <CharacterPortraitPanel />
         <HealthStatusPanel />
-        <EquippedWeaponPanel class="project-shell__weapon" />
+        <EquippedWeaponPanel class="project-shell__weapon" :weapon="equippedWeapon" />
       </div>
       <div class="project-shell__items">
         <MenuPanel class="project-shell__menu" />
-        <InventoryGrid class="project-shell__grid" :items="demoItems" />
+        <InventoryGrid class="project-shell__grid" :slots="slots" />
       </div>
       <ItemDescriptionPanel class="project-shell__description" />
     </div>
