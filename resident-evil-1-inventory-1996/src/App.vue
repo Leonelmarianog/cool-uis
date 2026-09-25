@@ -6,7 +6,7 @@ import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
-import { itemSpriteSheet } from './sprites/itemSpriteSheet.js'
+import { itemSpriteSheet } from './sprites/itemSpriteSheet'
 
 // Temporary sprite preview; the item model replaces this in its own branch.
 const demoItems = [

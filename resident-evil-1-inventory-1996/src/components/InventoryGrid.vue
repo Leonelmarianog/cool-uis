@@ -3,11 +3,15 @@ import { computed } from 'vue'
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
 import SpriteFrame from './SpriteFrame.vue'
+import type { Sprite } from '../sprites/spriteSheet'
 
-const { items } = defineProps({
-  // Each entry is { name, sprite: { sheet, column, row } } or null for an empty slot.
-  items: { type: Array, default: () => [] },
-})
+interface GridItem {
+  name: string
+  sprite: Sprite
+}
+
+// null marks an empty slot.
+const { items = [] } = defineProps<{ items?: (GridItem | null)[] }>()
 
 const cellRows = 34
 const cellCount = 8
@@ -27,7 +31,7 @@ const cells = computed(() => Array.from({ length: cellCount }, (_, index) => ite
           :aria-label="`Slot ${index + 1}: ${item?.name ?? 'empty'}`"
         >
           <BlueSlotBackground :rows="cellRows" />
-          <SpriteFrame v-if="item" v-bind="item.sprite" />
+          <SpriteFrame v-if="item" :sprite="item.sprite" />
           <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
       </ol>
