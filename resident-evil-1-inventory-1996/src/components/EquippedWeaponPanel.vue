@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import equippedHandgun from '../assets/equipped-handgun.png'
 

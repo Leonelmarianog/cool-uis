@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
 

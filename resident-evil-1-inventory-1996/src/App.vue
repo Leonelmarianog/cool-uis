@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
 import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue'
 import HealthStatusPanel from './components/HealthStatusPanel.vue'

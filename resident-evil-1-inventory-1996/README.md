@@ -1,6 +1,6 @@
 # Resident Evil 1 Inventory (1996)
 
-A standalone Vue project using JavaScript, Vite, and plain CSS.
+A standalone Vue project using TypeScript, Vite, and plain CSS.
 
 ## Development
 
@@ -9,7 +9,8 @@ npm install
 npm run dev
 ```
 
-`npm run build` creates the production bundle in `dist/`.
+`npm run typecheck` checks types with `vue-tsc`; Vite itself only strips them.
+`npm run build` type-checks, then creates the production bundle in `dist/`.
 `npm run preview` serves that bundle locally after building.
 
 ## Docker
@@ -42,7 +43,7 @@ Rebuild after source changes; this setup serves a production build without hot r
 design/             UI reference images
 src/
   App.vue           Root UI and its scoped styles
-  main.js           Vue entry point; imports shared CSS once
+  main.ts           Vue entry point; imports shared CSS once
   styles/
     main.css        Shared stylesheet import order
     tokens.css      Global CSS variables on :root

@@ -1,5 +1,5 @@
-<script setup>
-defineEmits(['map', 'file', 'exit'])
+<script setup lang="ts">
+defineEmits<{ map: []; file: []; exit: [] }>()
 </script>
 
 <template>
