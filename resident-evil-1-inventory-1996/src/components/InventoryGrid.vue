@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
+import SpriteFrame from './SpriteFrame.vue'
+
+const { items } = defineProps({
+  // Each entry is { name, sprite: { sheet, column, row } } or null for an empty slot.
+  items: { type: Array, default: () => [] },
+})
 
 const cellRows = 34
 const cellCount = 8
+
+// Always render every cell; slots beyond the given items are empty.
+const cells = computed(() => Array.from({ length: cellCount }, (_, index) => items[index] ?? null))
 </script>
 
 <template>
@@ -11,12 +21,13 @@ const cellCount = 8
     <div class="inventory-grid__recess">
       <ol class="inventory-grid__cells" aria-label="Inventory slots">
         <li
-          v-for="cell in cellCount"
-          :key="cell"
+          v-for="(item, index) in cells"
+          :key="index"
           class="inventory-grid__cell"
-          :aria-label="`Slot ${cell}: empty`"
+          :aria-label="`Slot ${index + 1}: ${item?.name ?? 'empty'}`"
         >
           <BlueSlotBackground :rows="cellRows" />
+          <SpriteFrame v-if="item" v-bind="item.sprite" />
           <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
       </ol>
@@ -88,6 +99,8 @@ const cellCount = 8
 
 .inventory-grid__cell {
   position: relative;
+  display: grid;
+  place-items: center;
   /* Keep the negative background layer inside its own cell, below the selector. */
   isolation: isolate;
   overflow: hidden;

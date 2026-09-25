@@ -6,6 +6,16 @@ import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
+import { itemSpriteSheet } from './sprites/itemSpriteSheet.js'
+
+// Temporary sprite preview; the item model replaces this in its own branch.
+const demoItems = [
+  { name: 'HANDGUN', sprite: { sheet: itemSpriteSheet, column: 1, row: 0 } },
+  { name: 'CLIP', sprite: { sheet: itemSpriteSheet, column: 1, row: 1 } },
+  { name: 'F.-AID SPRAY', sprite: { sheet: itemSpriteSheet, column: 3, row: 10 } },
+  { name: 'GREEN HERB', sprite: { sheet: itemSpriteSheet, column: 0, row: 11 } },
+  { name: 'RED HERB', sprite: { sheet: itemSpriteSheet, column: 1, row: 11 } },
+]
 </script>
 
 <template>
@@ -19,7 +29,7 @@ import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
       </div>
       <div class="project-shell__items">
         <MenuPanel class="project-shell__menu" />
-        <InventoryGrid class="project-shell__grid" />
+        <InventoryGrid class="project-shell__grid" :items="demoItems" />
       </div>
       <ItemDescriptionPanel class="project-shell__description" />
     </div>

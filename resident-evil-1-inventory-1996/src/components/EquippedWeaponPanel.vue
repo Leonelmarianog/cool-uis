@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BlueSlotBackground from './BlueSlotBackground.vue'
-import equippedHandgun from '../assets/equipped-handgun.png'
+import SpriteFrame from './SpriteFrame.vue'
+import { itemSpriteSheet } from '../sprites/itemSpriteSheet.js'
 
 // Each background row represents one art pixel of the screen's height.
 const screenRows = 35
@@ -16,7 +17,7 @@ const screenRows = 35
       <div class="equipped-weapon-panel__screen">
         <BlueSlotBackground :rows="screenRows" />
         <slot>
-          <img class="equipped-weapon-panel__gun" :src="equippedHandgun" alt="Handgun" width="156" height="110" />
+          <SpriteFrame class="equipped-weapon-panel__gun" :sheet="itemSpriteSheet" :column="1" :row="0" label="Handgun" />
           <span class="equipped-weapon-panel__ammo" aria-label="10 rounds">10</span>
         </slot>
       </div>
@@ -203,13 +204,11 @@ const screenRows = 35
     0 var(--ui-pixel) var(--weapon-edge);
 }
 
+/* Center the 40 × 30 sprite frame in the 47 × 35 screen. */
 .equipped-weapon-panel__gun {
   position: absolute;
-  top: calc(3.5 * var(--ui-pixel));
-  left: calc(3 * var(--ui-pixel));
-  width: calc(39 * var(--ui-pixel));
-  height: calc(27.5 * var(--ui-pixel));
-  image-rendering: pixelated;
+  top: calc(2.5 * var(--ui-pixel));
+  left: calc(3.5 * var(--ui-pixel));
 }
 
 .equipped-weapon-panel__ammo {
