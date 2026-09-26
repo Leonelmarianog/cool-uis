@@ -1,0 +1,51 @@
+[
+  {
+    "id": "handgun",
+    "type": "weapon",
+    "name": "HANDGUN",
+    "sprite": { "sheetId": "items", "column": 1, "row": 0 },
+    "weapon": {
+      "capacity": 15,
+      "ammunition": ["clip"]
+    }
+  },
+  {
+    "id": "clip",
+    "type": "ammunition",
+    "name": "CLIP",
+    "sprite": { "sheetId": "items", "column": 1, "row": 1 },
+    "ammunition": {
+      "maxStack": 255
+    }
+  },
+  {
+    "id": "first-aid-spray",
+    "type": "consumable",
+    "name": "F.-AID SPRAY",
+    "sprite": { "sheetId": "items", "column": 3, "row": 10 }
+  },
+  {
+    "id": "green-herb",
+    "type": "consumable",
+    "name": "GREEN HERB",
+    "sprite": { "sheetId": "items", "column": 0, "row": 11 }
+  },
+  {
+    "id": "red-herb",
+    "type": "consumable",
+    "name": "RED HERB",
+    "sprite": { "sheetId": "items", "column": 1, "row": 11 }
+  },
+  {
+    "id": "green-green-herb",
+    "type": "consumable",
+    "name": "G+G HERB",
+    "sprite": { "sheetId": "items", "column": 4, "row": 11 }
+  },
+  {
+    "id": "green-red-herb",
+    "type": "consumable",
+    "name": "G+R HERB",
+    "sprite": { "sheetId": "items", "column": 3, "row": 11 }
+  }
+]
