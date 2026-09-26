@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Sprite } from '../sprites/spriteSheet'
+import type { SpriteView } from '../types/item-view'
 
 // Without a label the sprite is decorative and hidden from assistive technology.
-const { sprite, label = '' } = defineProps<{ sprite: Sprite; label?: string }>()
+const { sprite, label = '' } = defineProps<{ sprite: SpriteView; label?: string }>()
 
 // Sheet geometry is in source pixels; the CSS scales it by --ui-pixel.
 const style = computed(() => {
   const { sheet, column, row } = sprite
+  // Vite bundles every file in src/assets that this pattern can match.
+  const url = new URL(`../assets/${sheet.file}`, import.meta.url).href
   return {
-    '--sprite-url': `url("${sheet.url}")`,
-    '--sheet-width': sheet.size.width,
-    '--sheet-height': sheet.size.height,
+    '--sprite-url': `url("${url}")`,
+    '--sheet-width': sheet.width,
+    '--sheet-height': sheet.height,
     '--frame-width': sheet.frame.width,
     '--frame-height': sheet.frame.height,
-    '--frame-x': column * sheet.cell.width + sheet.frame.x,
-    '--frame-y': row * sheet.cell.height + sheet.frame.y,
+    '--frame-x': column * sheet.cellWidth + sheet.frame.x,
+    '--frame-y': row * sheet.cellHeight + sheet.frame.y,
   }
 })
 </script>

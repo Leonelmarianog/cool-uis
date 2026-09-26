@@ -6,23 +6,9 @@ import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
-import { createItem, resolveItem } from './inventory/items'
-import { itemCatalog } from './inventory/itemCatalog'
-import type { Item } from './inventory/types'
+import { usePlayerStore } from './stores/player'
 
-// Temporary sample inventory; the inventory state composable replaces it.
-const sampleInventory: (Item | null)[] = [
-  createItem(itemCatalog, { id: 'handgun-1', type: 'handgun', amount: 10 }),
-  createItem(itemCatalog, { id: 'clip-1', type: 'clip', amount: 15 }),
-  createItem(itemCatalog, { id: 'clip-2', type: 'clip', amount: 250 }),
-  createItem(itemCatalog, { id: 'green-herb-1', type: 'greenHerb' }),
-  createItem(itemCatalog, { id: 'red-herb-1', type: 'redHerb' }),
-  createItem(itemCatalog, { id: 'spray-1', type: 'firstAidSpray' }),
-  null,
-  null,
-]
-const slots = sampleInventory.map(item => item && resolveItem(itemCatalog, item))
-const equippedWeapon = slots.find(slot => slot?.item.id === 'handgun-1') ?? null
+const player = usePlayerStore()
 </script>
 
 <template>
@@ -32,11 +18,11 @@ const equippedWeapon = slots.find(slot => slot?.item.id === 'handgun-1') ?? null
       <div class="project-shell__status">
         <CharacterPortraitPanel />
         <HealthStatusPanel />
-        <EquippedWeaponPanel class="project-shell__weapon" :weapon="equippedWeapon" />
+        <EquippedWeaponPanel class="project-shell__weapon" :weapon="player.equippedWeapon" />
       </div>
       <div class="project-shell__items">
         <MenuPanel class="project-shell__menu" />
-        <InventoryGrid class="project-shell__grid" :slots="slots" />
+        <InventoryGrid class="project-shell__grid" :slots="player.inventorySlots" />
       </div>
       <ItemDescriptionPanel class="project-shell__description" />
     </div>

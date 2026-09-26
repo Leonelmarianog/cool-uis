@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import SpriteFrame from './SpriteFrame.vue'
-import type { ResolvedItem } from '../inventory/types'
+import type { ItemView } from '../types/item-view'
 
 // null leaves the screen empty.
-const { weapon = null } = defineProps<{ weapon?: ResolvedItem | null }>()
+const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
 
 // Each background row represents one art pixel of the screen's height.
 const screenRows = 35
@@ -20,8 +20,8 @@ const screenRows = 35
       <div class="equipped-weapon-panel__screen">
         <BlueSlotBackground :rows="screenRows" />
         <template v-if="weapon">
-          <SpriteFrame class="equipped-weapon-panel__gun" :sprite="weapon.definition.sprite" :label="weapon.definition.name" />
-          <span class="equipped-weapon-panel__ammo" :aria-label="`${weapon.item.amount} rounds`">{{ weapon.item.amount }}</span>
+          <SpriteFrame class="equipped-weapon-panel__gun" :sprite="weapon.sprite" :label="weapon.name" />
+          <span class="equipped-weapon-panel__ammo" :aria-label="`${weapon.amount} rounds`">{{ weapon.amount }}</span>
         </template>
       </div>
     </div>

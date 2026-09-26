@@ -3,11 +3,10 @@ import { computed } from 'vue'
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
 import SpriteFrame from './SpriteFrame.vue'
-import { hasAmount } from '../inventory/items'
-import type { ResolvedItem } from '../inventory/types'
+import type { ItemView } from '../types/item-view'
 
-// null marks an empty slot.
-const { slots = [] } = defineProps<{ slots?: (ResolvedItem | null)[] }>()
+// Items fill the first cells; the rest are empty.
+const { slots = [] } = defineProps<{ slots?: ItemView[] }>()
 
 const cellRows = 34
 const cellCount = 8
@@ -15,11 +14,10 @@ const cellCount = 8
 // Always render every cell; cells beyond the given slots are empty.
 const cells = computed(() => Array.from({ length: cellCount }, (_, index) => slots[index] ?? null))
 
-function cellLabel(slot: ResolvedItem | null, index: number): string {
+function cellLabel(slot: ItemView | null, index: number): string {
   if (!slot) return `Slot ${index + 1}: empty`
-  const { item, definition } = slot
-  const amount = hasAmount(definition) ? `, ${item.amount}` : ''
-  return `Slot ${index + 1}: ${definition.name}${amount}`
+  const amount = slot.amount === undefined ? '' : `, ${slot.amount}`
+  return `Slot ${index + 1}: ${slot.name}${amount}`
 }
 </script>
 
@@ -35,8 +33,8 @@ function cellLabel(slot: ResolvedItem | null, index: number): string {
         >
           <BlueSlotBackground :rows="cellRows" />
           <template v-if="slot">
-            <SpriteFrame :sprite="slot.definition.sprite" />
-            <span v-if="hasAmount(slot.definition)" class="inventory-grid__amount" aria-hidden="true">{{ slot.item.amount }}</span>
+            <SpriteFrame :sprite="slot.sprite" />
+            <span v-if="slot.amount !== undefined" class="inventory-grid__amount" aria-hidden="true">{{ slot.amount }}</span>
           </template>
           <ItemSelectionOverlay class="inventory-grid__selector" />
         </li>
