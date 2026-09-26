@@ -53,8 +53,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 <style scoped>
 .project-shell {
   display: grid;
-  place-content: safe center;
+  place-content: start;
   min-height: 100svh;
+  /* Center the layout (320 × 239.5625 game pixels) on whole CSS pixels,
+     so every game pixel stays aligned to the screen's pixels. */
+  padding-top: max(0px, round(down, (100svh - 239.5625 * var(--game-pixel)) / 2, 1px));
+  padding-left: max(0px, round(down, (100vw - 320 * var(--game-pixel)) / 2, 1px));
   background: var(--color-preview-background);
 }
 
