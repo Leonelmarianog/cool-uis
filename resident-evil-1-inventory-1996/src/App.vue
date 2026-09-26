@@ -7,6 +7,7 @@ import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
+import ItemActionMenu from './components/ItemActionMenu.vue'
 import { useInventoryStore } from './stores/inventory'
 import { usePlayerStore } from './stores/player'
 
@@ -24,7 +25,10 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 <template>
   <main class="project-shell">
     <div class="project-shell__inventory">
-      <ItemPreviewPanel class="project-shell__preview" />
+      <ItemPreviewPanel class="project-shell__preview">
+        <!-- Temporary: shown statically to review the visuals; behavior comes later. -->
+        <ItemActionMenu :options="['EQUIP', 'CHECK', 'COMBN']" :highlighted="0" />
+      </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
         <HealthStatusPanel />
