@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import ecgLabel from '../assets/ecg-label.svg'
 import ecgGrid from '../assets/ecg/grid.svg'

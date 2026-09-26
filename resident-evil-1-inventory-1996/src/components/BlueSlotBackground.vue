@@ -1,7 +1,5 @@
-<script setup>
-defineProps({
-  rows: { type: Number, default: 35 },
-})
+<script setup lang="ts">
+const { rows = 35 } = defineProps<{ rows?: number }>()
 </script>
 
 <template>

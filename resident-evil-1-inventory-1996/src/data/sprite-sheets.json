@@ -1,0 +1,16 @@
+[
+  {
+    "id": "items",
+    "file": "item-sprites.png",
+    "width": 216,
+    "height": 496,
+    "cellWidth": 43,
+    "cellHeight": 33,
+    "frame": {
+      "x": 2,
+      "y": 2,
+      "width": 40,
+      "height": 30
+    }
+  }
+]

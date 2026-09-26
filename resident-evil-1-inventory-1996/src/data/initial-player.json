@@ -1,0 +1,43 @@
+{
+  "characterId": "jill",
+
+  "inventory": [
+    {
+      "id": "player-item-1",
+      "itemId": "handgun",
+      "type": "weapon",
+      "loadedRounds": 10
+    },
+    {
+      "id": "player-item-2",
+      "itemId": "clip",
+      "type": "ammunition",
+      "amount": 15
+    },
+    {
+      "id": "player-item-3",
+      "itemId": "clip",
+      "type": "ammunition",
+      "amount": 250
+    },
+    {
+      "id": "player-item-4",
+      "itemId": "green-herb",
+      "type": "consumable"
+    },
+    {
+      "id": "player-item-5",
+      "itemId": "red-herb",
+      "type": "consumable"
+    },
+    {
+      "id": "player-item-6",
+      "itemId": "first-aid-spray",
+      "type": "consumable"
+    }
+  ],
+
+  "equippedItemId": "player-item-1",
+
+  "itemBox": []
+}

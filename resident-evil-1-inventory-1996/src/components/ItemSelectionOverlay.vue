@@ -1,6 +1,12 @@
+<script setup lang="ts">
+// Locked: an item is selected, so the outline stops pulsing and stays dark.
+const { locked = false } = defineProps<{ locked?: boolean }>()
+</script>
+
 <template>
   <svg
     class="item-selection-overlay"
+    :class="{ 'item-selection-overlay--locked': locked }"
     viewBox="0 0 45 34"
     preserveAspectRatio="none"
     shape-rendering="crispEdges"
@@ -39,6 +45,11 @@
   animation-duration: var(--item-selector-duration, 1s);
   animation-timing-function: steps(1, end);
   animation-iteration-count: infinite;
+}
+
+.item-selection-overlay--locked {
+  animation: none;
+  filter: brightness(var(--item-selector-dark-brightness, 0.35));
 }
 
 /* Hold each shade for half a cycle, then switch instantly.

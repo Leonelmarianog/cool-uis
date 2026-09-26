@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import portrait from '../assets/jill-valentine-portrait.png'
 </script>
 

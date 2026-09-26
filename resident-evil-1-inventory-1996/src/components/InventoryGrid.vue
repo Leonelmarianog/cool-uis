@@ -1,81 +1,50 @@
-<script setup>
+<script setup lang="ts">
+import { computed } from 'vue'
 import BlueSlotBackground from './BlueSlotBackground.vue'
 import ItemSelectionOverlay from './ItemSelectionOverlay.vue'
-import ItemCombinationCursor from './ItemCombinationCursor.vue'
+import SpriteFrame from './SpriteFrame.vue'
+import type { ItemView } from '../types/item-view'
+
+// Items fill the first cells; the rest are empty.
+const {
+  slots = [],
+  cursorSlot = 0,
+  locked = false,
+} = defineProps<{ slots?: ItemView[]; cursorSlot?: number; locked?: boolean }>()
+
+const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>()
 
 const cellRows = 34
 const cellCount = 8
-const props = defineProps({
-  items: { type: Array, default: () => [] },
-  selectedIndex: { type: Number, default: -1 },
-  menuOpen: Boolean,
-  combining: Boolean,
-  sourceIndex: { type: Number, default: -1 },
-})
-const emit = defineEmits(['select', 'open', 'cancel-combine'])
 
-function move(event, index) {
-  if (event.repeat && ['Enter', ' ', 'Escape'].includes(event.key)) {
-    event.preventDefault()
-    return
-  }
-  if (props.combining && event.key === 'Escape') {
-    event.preventDefault()
-    emit('cancel-combine')
-    return
-  }
-  if (props.combining && event.key === 'Tab') {
-    event.preventDefault()
-    const next = (index + (event.shiftKey ? -1 : 1) + cellCount) % cellCount
-    event.currentTarget.parentElement.parentElement.children[next].querySelector('button').focus()
-    return
-  }
-  const offsets = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -2, ArrowDown: 2 }
-  if (!(event.key in offsets)) return
-  event.preventDefault()
-  const target = index + offsets[event.key]
-  if (target < 0 || target >= cellCount) return
-  if (event.key === 'ArrowLeft' && index % 2 === 0) return
-  if (event.key === 'ArrowRight' && index % 2 === 1) return
-  event.currentTarget.parentElement.parentElement.children[target].querySelector('button').focus()
+// Always render every cell; cells beyond the given slots are empty.
+const cells = computed(() => Array.from({ length: cellCount }, (_, index) => slots[index] ?? null))
+
+function cellLabel(slot: ItemView | null, index: number): string {
+  if (!slot) return `Slot ${index + 1}: empty`
+  const amount = slot.amount === undefined ? '' : `, ${slot.amount}`
+  return `Slot ${index + 1}: ${slot.name}${amount}`
 }
 </script>
 
 <template>
-  <section class="inventory-grid" :class="{ 'inventory-grid--locked': menuOpen || combining }" :aria-label="combining ? 'Select an item to combine; Escape cancels' : 'Inventory panel'">
+  <section class="inventory-grid" aria-label="Inventory panel">
     <div class="inventory-grid__recess">
       <ol class="inventory-grid__cells" aria-label="Inventory slots">
         <li
-          v-for="cell in cellCount"
-          :key="cell"
+          v-for="(slot, index) in cells"
+          :key="index"
           class="inventory-grid__cell"
-          :class="{ 'inventory-grid__cell--selected': (combining ? sourceIndex : selectedIndex) === cell - 1 }"
+          :aria-label="cellLabel(slot, index)"
+          @mousemove="emit('hover', index)"
+          @click="emit('select', index)"
         >
           <BlueSlotBackground :rows="cellRows" />
-          <button
-            :id="`inventory-slot-${cell - 1}`"
-            class="inventory-grid__item"
-            type="button"
-            :disabled="menuOpen"
-            :aria-label="`Slot ${cell}: ${items[cell - 1]?.name ?? 'empty'}${items[cell - 1]?.amountLabel ? ', ' + items[cell - 1].amountLabel : ''}`"
-            :aria-haspopup="!combining && items[cell - 1] ? 'menu' : undefined"
-            :tabindex="selectedIndex === cell - 1 || (selectedIndex < 0 && cell === 1) ? 0 : -1"
-            @focus="emit('select', cell - 1)"
-            @pointerenter="!menuOpen && emit('select', cell - 1)"
-            @click="(combining || items[cell - 1]) && emit('open', cell - 1)"
-            @keydown="move($event, cell - 1)"
-          >
-            <img v-if="items[cell - 1]?.image" :src="items[cell - 1].image" alt="" />
-            <span
-              v-else-if="items[cell - 1]?.sprite"
-              class="inventory-grid__sprite"
-              :style="{ '--sprite-column': items[cell - 1].sprite.column, '--sprite-row': items[cell - 1].sprite.row }"
-              aria-hidden="true"
-            ></span>
-            <span v-if="items[cell - 1]?.count" class="inventory-grid__amount" aria-hidden="true">{{ items[cell - 1].amount }}</span>
-          </button>
-          <ItemSelectionOverlay class="inventory-grid__selector" />
-          <ItemCombinationCursor v-if="combining && selectedIndex === cell - 1" />
+          <template v-if="slot">
+            <SpriteFrame :sprite="slot.sprite" />
+            <span v-if="slot.amount !== undefined" class="inventory-grid__amount" aria-hidden="true">{{ slot.amount }}</span>
+          </template>
+          <ItemSelectionOverlay v-if="index === cursorSlot" :locked="locked" />
         </li>
       </ol>
     </div>
@@ -146,42 +115,11 @@ function move(event, index) {
 
 .inventory-grid__cell {
   position: relative;
+  display: grid;
+  place-items: center;
   /* Keep the negative background layer inside its own cell, below the selector. */
   isolation: isolate;
   overflow: hidden;
-}
-
-.inventory-grid__selector {
-  /* Removing the SVG from layout also restarts its pulse on the next hover. */
-  display: none;
-}
-
-.inventory-grid__item {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-.inventory-grid__item img {
-  width: calc(39 * var(--ui-pixel));
-  image-rendering: pixelated;
-}
-
-.inventory-grid__sprite {
-  /* Crop inside the sheet's 43 × 33 cells to exclude its blue dividers. */
-  width: calc(40 * var(--ui-pixel));
-  height: calc(30 * var(--ui-pixel));
-  background-image: url('../assets/item-sprites.png');
-  background-size: calc(216 * var(--ui-pixel)) calc(496 * var(--ui-pixel));
-  background-position:
-    calc((-43 * var(--sprite-column) - 2) * var(--ui-pixel))
-    calc((-33 * var(--sprite-row) - 2) * var(--ui-pixel));
-  image-rendering: pixelated;
 }
 
 .inventory-grid__amount {
@@ -194,19 +132,10 @@ function move(event, index) {
   font-weight: 400;
   line-height: 1;
   letter-spacing: var(--ui-pixel);
+  /* Same widened digits as the equipped ammo, anchored to the right edge. */
   transform: scaleX(1.4);
   transform-origin: right bottom;
   text-shadow: var(--ui-pixel) 0 #003800;
   pointer-events: none;
-}
-
-.inventory-grid__cell--selected .inventory-grid__selector {
-  display: block;
-}
-
-@media (hover: hover) {
-  .inventory-grid:not(.inventory-grid--locked) .inventory-grid__cell:hover .inventory-grid__selector {
-    display: block;
-  }
 }
 </style>

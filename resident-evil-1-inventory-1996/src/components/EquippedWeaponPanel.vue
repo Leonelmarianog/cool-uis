@@ -1,6 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import BlueSlotBackground from './BlueSlotBackground.vue'
-defineProps({ item: { type: Object, default: null } })
+import SpriteFrame from './SpriteFrame.vue'
+import type { ItemView } from '../types/item-view'
+
+// null leaves the screen empty.
+const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
 
 // Each background row represents one art pixel of the screen's height.
 const screenRows = 35
@@ -15,10 +19,10 @@ const screenRows = 35
       <span class="equipped-weapon-panel__connector-frame" aria-hidden="true"></span>
       <div class="equipped-weapon-panel__screen">
         <BlueSlotBackground :rows="screenRows" />
-        <slot v-if="item">
-          <img class="equipped-weapon-panel__gun" :src="item.image" :alt="item.name" width="156" height="110" />
-          <span v-if="item.count" class="equipped-weapon-panel__ammo" :aria-label="item.amountLabel">{{ item.amount }}</span>
-        </slot>
+        <template v-if="weapon">
+          <SpriteFrame class="equipped-weapon-panel__gun" :sprite="weapon.sprite" :label="weapon.name" />
+          <span class="equipped-weapon-panel__ammo" :aria-label="`${weapon.amount} rounds`">{{ weapon.amount }}</span>
+        </template>
       </div>
     </div>
     <div class="equipped-weapon-panel__connector" aria-hidden="true">
@@ -203,13 +207,11 @@ const screenRows = 35
     0 var(--ui-pixel) var(--weapon-edge);
 }
 
+/* Center the 40 × 30 sprite frame in the 47 × 35 screen. */
 .equipped-weapon-panel__gun {
   position: absolute;
-  top: calc(3.5 * var(--ui-pixel));
-  left: calc(3 * var(--ui-pixel));
-  width: calc(39 * var(--ui-pixel));
-  height: calc(27.5 * var(--ui-pixel));
-  image-rendering: pixelated;
+  top: calc(2.5 * var(--ui-pixel));
+  left: calc(3.5 * var(--ui-pixel));
 }
 
 .equipped-weapon-panel__ammo {
