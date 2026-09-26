@@ -6,7 +6,13 @@ import SpriteFrame from './SpriteFrame.vue'
 import type { ItemView } from '../types/item-view'
 
 // Items fill the first cells; the rest are empty.
-const { slots = [] } = defineProps<{ slots?: ItemView[] }>()
+const {
+  slots = [],
+  cursorSlot = 0,
+  locked = false,
+} = defineProps<{ slots?: ItemView[]; cursorSlot?: number; locked?: boolean }>()
+
+const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>()
 
 const cellRows = 34
 const cellCount = 8
@@ -30,13 +36,15 @@ function cellLabel(slot: ItemView | null, index: number): string {
           :key="index"
           class="inventory-grid__cell"
           :aria-label="cellLabel(slot, index)"
+          @mousemove="emit('hover', index)"
+          @click="emit('select', index)"
         >
           <BlueSlotBackground :rows="cellRows" />
           <template v-if="slot">
             <SpriteFrame :sprite="slot.sprite" />
             <span v-if="slot.amount !== undefined" class="inventory-grid__amount" aria-hidden="true">{{ slot.amount }}</span>
           </template>
-          <ItemSelectionOverlay class="inventory-grid__selector" />
+          <ItemSelectionOverlay v-if="index === cursorSlot" :locked="locked" />
         </li>
       </ol>
     </div>
@@ -129,16 +137,5 @@ function cellLabel(slot: ItemView | null, index: number): string {
   transform-origin: right bottom;
   text-shadow: var(--ui-pixel) 0 #003800;
   pointer-events: none;
-}
-
-.inventory-grid__selector {
-  /* Removing the SVG from layout also restarts its pulse on the next hover. */
-  display: none;
-}
-
-@media (hover: hover) {
-  .inventory-grid__cell:hover .inventory-grid__selector {
-    display: block;
-  }
 }
 </style>

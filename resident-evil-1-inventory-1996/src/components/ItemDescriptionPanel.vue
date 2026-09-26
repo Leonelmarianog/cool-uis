@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { itemName = 'F.-AID SPRAY' } = defineProps<{ itemName?: string }>()
+const { itemName = '' } = defineProps<{ itemName?: string }>()
 </script>
 
 <template>

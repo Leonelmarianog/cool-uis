@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted } from 'vue'
 import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
 import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue'
 import HealthStatusPanel from './components/HealthStatusPanel.vue'
@@ -6,9 +7,18 @@ import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
 import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
+import { useInventoryStore } from './stores/inventory'
 import { usePlayerStore } from './stores/player'
 
 const player = usePlayerStore()
+const inventory = useInventoryStore()
+
+function onKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') inventory.backOut()
+}
+
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
@@ -22,9 +32,16 @@ const player = usePlayerStore()
       </div>
       <div class="project-shell__items">
         <MenuPanel class="project-shell__menu" />
-        <InventoryGrid class="project-shell__grid" :slots="player.inventorySlots" />
+        <InventoryGrid
+          class="project-shell__grid"
+          :slots="player.inventorySlots"
+          :cursor-slot="inventory.cursorSlot"
+          :locked="inventory.isSelecting"
+          @hover="inventory.moveCursor"
+          @select="inventory.selectItemAt"
+        />
       </div>
-      <ItemDescriptionPanel class="project-shell__description" />
+      <ItemDescriptionPanel class="project-shell__description" :item-name="inventory.itemUnderCursor?.name" />
     </div>
   </main>
 </template>
