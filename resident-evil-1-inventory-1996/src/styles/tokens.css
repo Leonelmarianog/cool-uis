@@ -2,8 +2,13 @@
 :root {
   color-scheme: dark;
 
-  /* One pixel in the recreated UI artwork. */
-  --ui-pixel: 0.25rem;
+  /* One pixel of the game's 320 × 240 screen: the largest whole number of CSS
+     pixels at which the layout (320 × 239.5625 game pixels) fits the viewport,
+     and at least 2. Whole pixels keep pixel-art edges the same in every browser. */
+  --game-pixel: max(2px, round(down, min(100vw / 320, 100svh / 239.5625), 1px));
+
+  /* One pixel in the earlier CSS artwork: 4 pixels of the 4.5× reference screenshot. */
+  --ui-pixel: calc(var(--game-pixel) * 8 / 9);
 
   /* Shared inventory/equipped panel artwork palettes. */
   --color-slot-blue-light: #0c0054;
