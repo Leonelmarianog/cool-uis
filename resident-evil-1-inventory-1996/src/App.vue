@@ -55,16 +55,16 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   display: grid;
   place-content: start;
   min-height: 100svh;
-  /* Center the layout (320 × 239.5625 game pixels) on whole CSS pixels,
+  /* Center the layout (320 × 240 game pixels) on whole CSS pixels,
      so every game pixel stays aligned to the screen's pixels. */
-  padding-top: max(0px, round(down, (100svh - 239.5625 * var(--game-pixel)) / 2, 1px));
+  padding-top: max(0px, round(down, (100svh - 240 * var(--game-pixel)) / 2, 1px));
   padding-left: max(0px, round(down, (100vw - 320 * var(--game-pixel)) / 2, 1px));
   background: var(--color-preview-background);
 }
 
 .project-shell__inventory {
-  --layout-edge: calc(9 * var(--ui-pixel));
-  --layout-panel-gap: calc(2 * var(--ui-pixel));
+  --layout-edge: calc(8 * var(--game-pixel));
+  --layout-panel-gap: calc(2 * var(--game-pixel));
   --layout-frame-overlap: calc(8 * var(--ui-pixel));
 
   display: grid;
@@ -76,8 +76,8 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   /* The left panels set the rows. The taller inventory continues behind
      the description instead of stretching the space above the status row. */
   grid-template-rows:
-    calc(144 * var(--ui-pixel))
-    calc(45 * var(--ui-pixel))
+    calc(128 * var(--game-pixel))
+    calc(40 * var(--game-pixel))
     var(--layout-panel-gap)
     auto;
   grid-template-areas:
@@ -86,7 +86,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     ". .       .     ."
     "description description description description";
   width: calc(360 * var(--ui-pixel));
-  padding-block: calc(13.5 * var(--ui-pixel)) var(--layout-edge);
+  padding-block: calc(12 * var(--game-pixel)) var(--layout-edge);
 }
 
 .project-shell__preview {
