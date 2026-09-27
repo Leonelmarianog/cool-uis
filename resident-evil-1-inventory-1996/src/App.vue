@@ -70,7 +70,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   display: grid;
   grid-template-columns:
     var(--layout-edge)
-    calc(220.5 * var(--ui-pixel))
+    calc(196 * var(--game-pixel))
     minmax(0, 1fr)
     var(--layout-edge);
   /* The left panels set the rows. The taller inventory continues behind
@@ -85,7 +85,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     ". status  items ."
     ". .       .     ."
     "description description description description";
-  width: calc(360 * var(--ui-pixel));
+  width: calc(320 * var(--game-pixel));
   padding-block: calc(12 * var(--game-pixel)) var(--layout-edge);
 }
 

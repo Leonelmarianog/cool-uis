@@ -17,8 +17,8 @@ in `src/types/sprite-sheet.ts`. Items point at a picture with
 ## Measurements
 
 All numbers are in **source pixels**, measured on the original PNG. On screen,
-one source pixel is one art pixel (`--ui-pixel`), so the UI scale never changes
-the data.
+one source pixel is one game pixel (`--game-pixel`), so the UI scale never
+changes the data.
 
 | Field                     | What to measure                                                     |
 | ------------------------- | ------------------------------------------------------------------- |
@@ -70,9 +70,9 @@ frame top edge   = row    × cellHeight + frame.y
 Handgun `{ column: 1, row: 0 }`: left = `1 × 43 + 2 = 45`, top = `0 × 33 + 2 = 2`.
 
 The component passes the numbers as CSS variables. The CSS multiplies every
-value by `--ui-pixel`:
+value by `--game-pixel`:
 
-| CSS property          | Value (× `--ui-pixel`)             |
+| CSS property          | Value (× `--game-pixel`)           |
 | --------------------- | ---------------------------------- |
 | `width`, `height`     | `frame.width`, `frame.height`      |
 | `background-size`     | `width`, `height`                  |
