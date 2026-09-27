@@ -3,9 +3,11 @@
   color-scheme: dark;
 
   /* One pixel of the game's 320 × 240 screen: the largest whole number of CSS
-     pixels at which the layout (320 × 239.5625 game pixels) fits the viewport,
-     and at least 2. Whole pixels keep pixel-art edges the same in every browser. */
-  --game-pixel: max(2px, round(down, min(100vw / 320, 100svh / 239.5625), 1px));
+     pixels at which the layout (320 × 240 game pixels) fits the viewport,
+     and at least 2. Whole pixels keep pixel-art edges the same in every browser.
+     Firefox stores lengths in 1/60 px and can land one step short on an exact
+     fit (960px / 240 = 3.983px); the added 0.02px covers that step. */
+  --game-pixel: max(2px, round(down, min(100vw / 320, 100svh / 240) + 0.02px, 1px));
 
   /* One pixel in the earlier CSS artwork: 4 pixels of the 4.5× reference screenshot. */
   --ui-pixel: calc(var(--game-pixel) * 8 / 9);
