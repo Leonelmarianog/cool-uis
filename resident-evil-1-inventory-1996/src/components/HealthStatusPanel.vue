@@ -8,8 +8,8 @@ import traceDanger from '../assets/ui/ecg-trace-danger.svg'
 import tracePoison from '../assets/ui/ecg-trace-poison.svg'
 
 const states = [
-  { name: 'Fine', accessibleName: 'Fine, green', labelColor: '#009900', image: traceFine, blinking: false },
-  { name: 'Fine', accessibleName: 'Fine, yellow', labelColor: '#009900', image: traceFineYellow, blinking: false },
+  { name: 'Fine', accessibleName: 'Fine, green', labelColor: '#29a229', image: traceFine, blinking: false },
+  { name: 'Fine', accessibleName: 'Fine, yellow', labelColor: '#29a229', image: traceFineYellow, blinking: false },
   { name: 'Caution', accessibleName: 'Caution', labelColor: '#e59b00', image: traceCaution, blinking: true },
   { name: 'Danger!', accessibleName: 'Danger', labelColor: '#e50030', image: traceDanger, blinking: true },
   { name: 'Poison!', accessibleName: 'Poison', labelColor: '#c78bea', image: tracePoison, blinking: true },
@@ -82,13 +82,17 @@ function cycleState() {
 
 .health-status-panel__status {
   position: absolute;
-  bottom: 0;
-  left: calc(18 * var(--game-pixel));
+  /* Capitals (0.56em tall, their top 0.24em below the line's top) fill rows 22–27. */
+  top: calc(22 * var(--game-pixel) - 0.24em);
+  left: calc(18 * var(--game-pixel) - 0.06em);
   color: var(--ecg-label-color);
   font-family: 'VT323', monospace;
-  font-size: calc(10 * var(--ui-pixel));
+  font-size: calc(10.71 * var(--game-pixel));
   font-weight: 400;
   line-height: 1;
+  /* Narrow the letters to the game's width ("Fine" is 14 pixels wide). */
+  transform: scaleX(0.87);
+  transform-origin: left;
 }
 
 .health-status-panel__status--blinking {
