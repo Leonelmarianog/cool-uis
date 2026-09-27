@@ -52,18 +52,16 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
 
 .equipped-weapon-panel__ammo {
   position: absolute;
-  left: calc(4.5 * var(--ui-pixel));
-  bottom: calc(2.25 * var(--ui-pixel));
-  color: #009900;
+  /* Same digits as the inventory's weapon amounts: rows 20–26, from column 6. */
+  top: calc(17 * var(--game-pixel));
+  left: calc(4.5 * var(--game-pixel));
+  color: #29a229;
   font-family: 'VT323', monospace;
-  font-size: calc(14 * var(--ui-pixel));
+  font-size: calc(12.5 * var(--game-pixel));
   font-weight: 400;
   line-height: 1;
-  letter-spacing: var(--ui-pixel);
-  /* Match the reference's wider digits without increasing their height. */
   transform: scaleX(1.4);
-  transform-origin: left bottom;
-  /* The horizontal scale also stretches this right-only shadow. */
-  text-shadow: var(--ui-pixel) 0 0 #003800;
+  transform-origin: left;
+  text-shadow: calc(var(--game-pixel) / 1.4) var(--game-pixel) #065909;
 }
 </style>

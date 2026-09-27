@@ -32,10 +32,11 @@ function amountOf(playerItem: PlayerItem): number | undefined {
 }
 
 function toItemView(playerItem: PlayerItem): ItemView {
-  const { name, sprite } = findItem(playerItem.itemId);
+  const { name, type, sprite } = findItem(playerItem.itemId);
   return {
     id: playerItem.id,
     name,
+    type,
     sprite: { sheet: findSpriteSheet(sprite.sheetId), column: sprite.column, row: sprite.row },
     amount: amountOf(playerItem),
   };

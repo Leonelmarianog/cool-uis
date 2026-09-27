@@ -1,3 +1,4 @@
+import type { Item } from './item';
 import type { SpriteSheet } from './sprite-sheet';
 
 /** One picture on a sprite sheet, addressed by zero-based grid position. */
@@ -12,6 +13,7 @@ export interface ItemView {
   /** The player item's ID. */
   id: string;
   name: string;
+  type: Item['type'];
   sprite: SpriteView;
   /** Loaded rounds for weapons, stack size for ammunition; other items have none. */
   amount?: number;

@@ -37,7 +37,12 @@ function cellLabel(slot: ItemView | null, index: number): string {
       >
         <template v-if="slot">
           <SpriteFrame :sprite="slot.sprite" />
-          <span v-if="slot.amount !== undefined" class="inventory-grid__amount" aria-hidden="true">{{ slot.amount }}</span>
+          <span
+            v-if="slot.amount !== undefined"
+            class="inventory-grid__amount"
+            :class="{ 'inventory-grid__amount--weapon': slot.type === 'weapon' }"
+            aria-hidden="true"
+          >{{ slot.amount }}</span>
         </template>
         <span
           v-if="index === cursorSlot"
@@ -80,19 +85,27 @@ function cellLabel(slot: ItemView | null, index: number): string {
 
 .inventory-grid__amount {
   position: absolute;
-  right: calc(2 * var(--ui-pixel));
-  bottom: calc(1.5 * var(--ui-pixel));
-  color: #009900;
+  /* The digits fill rows 20–26 of the slot; stacks end at column 35. */
+  top: calc(17 * var(--game-pixel));
+  right: calc(3.5 * var(--game-pixel));
+  color: #29a229;
   font-family: 'VT323', monospace;
-  font-size: calc(12 * var(--ui-pixel));
+  /* 7 game pixels tall; widened to the game's 5-pixel digits and 7-pixel spacing. */
+  font-size: calc(12.5 * var(--game-pixel));
   font-weight: 400;
   line-height: 1;
-  letter-spacing: var(--ui-pixel);
-  /* Same widened digits as the equipped ammo, anchored to the right edge. */
   transform: scaleX(1.4);
-  transform-origin: right bottom;
-  text-shadow: var(--ui-pixel) 0 #003800;
+  transform-origin: right;
+  /* The horizontal offset is divided by the scale so the shadow stays one pixel wide. */
+  text-shadow: calc(var(--game-pixel) / 1.4) var(--game-pixel) #065909;
   pointer-events: none;
+}
+
+/* A weapon's loaded rounds start at column 6 instead. */
+.inventory-grid__amount--weapon {
+  right: auto;
+  left: calc(4.5 * var(--game-pixel));
+  transform-origin: left;
 }
 
 /* item-selection-frame.png holds the bright frame above the dark one. */
