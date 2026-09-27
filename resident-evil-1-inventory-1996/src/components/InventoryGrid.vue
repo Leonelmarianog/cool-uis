@@ -3,19 +3,18 @@ import { computed } from 'vue'
 import SpriteFrame from './SpriteFrame.vue'
 import type { ItemView } from '../types/item-view'
 
-// Items fill the first cells; the rest are empty.
+// `size` is the number of cells. Items fill the first cells; the rest are empty.
 const {
+  size,
   slots = [],
   cursorSlot = 0,
   locked = false,
-} = defineProps<{ slots?: ItemView[]; cursorSlot?: number; locked?: boolean }>()
+} = defineProps<{ size: number; slots?: ItemView[]; cursorSlot?: number; locked?: boolean }>()
 
 const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>()
 
-const cellCount = 8
-
 // Always render every cell; cells beyond the given slots are empty.
-const cells = computed(() => Array.from({ length: cellCount }, (_, index) => slots[index] ?? null))
+const cells = computed(() => Array.from({ length: size }, (_, index) => slots[index] ?? null))
 
 function cellLabel(slot: ItemView | null, index: number): string {
   if (!slot) return `Slot ${index + 1}: empty`
