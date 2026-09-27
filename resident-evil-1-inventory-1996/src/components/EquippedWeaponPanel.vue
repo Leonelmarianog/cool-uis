@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import panel from '../assets/ui/equipped-weapon-panel.png'
-import BlueSlotBackground from './BlueSlotBackground.vue'
 import SpriteFrame from './SpriteFrame.vue'
 import type { ItemView } from '../types/item-view'
 
@@ -12,7 +11,6 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
   <section class="equipped-weapon-panel" aria-label="Equipped weapon panel">
     <img class="equipped-weapon-panel__artwork" :src="panel" alt="" />
     <div class="equipped-weapon-panel__screen">
-      <BlueSlotBackground :rows="30" />
       <template v-if="weapon">
         <SpriteFrame class="equipped-weapon-panel__gun" :sprite="weapon.sprite" :label="weapon.name" />
         <span class="equipped-weapon-panel__ammo" :aria-label="`${weapon.amount} rounds`">{{ weapon.amount }}</span>
@@ -38,12 +36,13 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
 /* Fills the artwork's transparent screen opening. */
 .equipped-weapon-panel__screen {
   position: absolute;
-  isolation: isolate;
   top: calc(4 * var(--game-pixel));
   left: calc(12 * var(--game-pixel));
   width: calc(40 * var(--game-pixel));
   height: calc(30 * var(--game-pixel));
   overflow: hidden;
+  background: url('../assets/ui/item-slot.png') 0 0 / 100% 100%;
+  image-rendering: pixelated;
 }
 
 .equipped-weapon-panel__gun {

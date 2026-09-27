@@ -65,7 +65,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 .project-shell__inventory {
   --layout-edge: calc(8 * var(--game-pixel));
   --layout-panel-gap: calc(2 * var(--game-pixel));
-  --layout-frame-overlap: calc(8 * var(--ui-pixel));
+  --layout-frame-overlap: calc(4 * var(--game-pixel));
 
   display: grid;
   grid-template-columns:
@@ -128,7 +128,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 .project-shell__grid {
   grid-column: 1;
   grid-row: 2 / 4;
-  margin-left: calc(4.5 * var(--ui-pixel));
+  margin-left: calc(4 * var(--game-pixel));
 }
 
 .project-shell__description {
