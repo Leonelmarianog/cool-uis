@@ -26,19 +26,23 @@ const { itemName = '' } = defineProps<{ itemName?: string }>()
 
 .item-description-panel__name {
   position: absolute;
-  top: calc(3 * var(--game-pixel));
+  /* Capitals (0.58em tall, their top 0.14em below the line's top) fill rows 187–196. */
+  top: calc(5 * var(--game-pixel) - 0.14em);
   left: calc(48 * var(--game-pixel));
   margin: 0;
   color: #c1beb2;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: calc(14 * var(--ui-pixel));
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: var(--ui-pixel);
+  font-family: 'Courier Prime', monospace;
+  font-size: calc(17.24 * var(--game-pixel));
+  font-weight: 400;
+  line-height: 1;
+  white-space: pre;
+  /* Narrow each character to the game's 8-pixel cell. */
+  transform: scaleX(0.774);
+  transform-origin: left;
 
   /* A stroke straddles the glyph edge. Paint the fill last to preserve the
-     letter face and leave one art pixel of outline visible on the outside. */
-  -webkit-text-stroke: calc(2 * var(--ui-pixel)) #434356;
+     letter face and leave one game pixel of outline visible on the outside. */
+  -webkit-text-stroke: calc(2 * var(--game-pixel)) #303048;
   paint-order: stroke fill;
 }
 </style>
