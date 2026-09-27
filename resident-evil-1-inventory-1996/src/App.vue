@@ -38,6 +38,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         <MenuPanel class="project-shell__menu" />
         <InventoryGrid
           class="project-shell__grid"
+          :size="player.inventorySize"
           :slots="player.inventorySlots"
           :cursor-slot="inventory.cursorSlot"
           :locked="inventory.isSelecting"

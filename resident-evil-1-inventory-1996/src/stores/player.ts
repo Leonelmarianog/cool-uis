@@ -1,17 +1,26 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import charactersData from '../data/characters.json';
 import initialPlayer from '../data/initial-player.json';
 import itemsData from '../data/items.json';
 import spriteSheetsData from '../data/sprite-sheets.json';
+import type { Character } from '../types/character';
 import type { Item } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerItem, PlayerState } from '../types/player';
 import type { SpriteSheet } from '../types/sprite-sheet';
 
 // JSON imports are not type-checked, so the data is cast to its type.
+const characters = charactersData as Character[];
 const initialState = initialPlayer as PlayerState;
 const items = itemsData as Item[];
 const spriteSheets = spriteSheetsData as SpriteSheet[];
+
+function findCharacter(id: string): Character {
+  const character = characters.find(character => character.id === id);
+  if (!character) throw new Error(`Unknown character "${id}"`);
+  return character;
+}
 
 function findItem(id: string): Item {
   const item = items.find(item => item.id === id);
@@ -51,6 +60,7 @@ export const usePlayerStore = defineStore('player', () => {
   const equippedItemId = ref<string | null>(state.equippedItemId);
   const itemBox = ref<(PlayerItem | null)[]>(state.itemBox);
 
+  const inventorySize = computed(() => findCharacter(characterId.value).inventorySize);
   const inventorySlots = computed(() => inventory.value.map(toItemView));
 
   const equippedWeapon = computed(() => {
@@ -58,5 +68,5 @@ export const usePlayerStore = defineStore('player', () => {
     return weapon ? toItemView(weapon) : null;
   });
 
-  return { characterId, inventory, equippedItemId, itemBox, inventorySlots, equippedWeapon };
+  return { characterId, inventory, equippedItemId, itemBox, inventorySize, inventorySlots, equippedWeapon };
 });
