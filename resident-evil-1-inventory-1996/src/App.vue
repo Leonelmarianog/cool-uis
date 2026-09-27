@@ -98,17 +98,16 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   align-self: end;
   display: grid;
   grid-template-columns:
-    calc(70 * var(--ui-pixel))
-    calc(72 * var(--ui-pixel))
-    calc(76 * var(--ui-pixel));
-  column-gap: var(--layout-panel-gap);
+    calc(64 * var(--game-pixel))
+    calc(64 * var(--game-pixel))
+    calc(68 * var(--game-pixel));
   align-items: end;
 }
 
 .project-shell__weapon {
-  /* Match the housing's right edge to the inventory's left edge;
-     the component's reserved connector space is not housing width. */
-  margin-left: calc(11 * var(--ui-pixel));
+  /* The connector overlaps the inventory's left edge. */
+  z-index: 1;
+  margin-left: calc(12 * var(--game-pixel));
 }
 
 .project-shell__items {
