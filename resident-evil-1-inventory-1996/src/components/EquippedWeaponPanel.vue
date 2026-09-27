@@ -47,8 +47,7 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
 
 .equipped-weapon-panel__gun {
   position: absolute;
-  top: calc(2.5 * var(--ui-pixel));
-  left: calc(3.5 * var(--ui-pixel));
+  inset: 0;
 }
 
 .equipped-weapon-panel__ammo {
