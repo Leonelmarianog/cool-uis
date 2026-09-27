@@ -9,9 +9,6 @@
      fit (960px / 240 = 3.983px); the added 0.02px covers that step. */
   --game-pixel: max(2px, round(down, min(100vw / 320, 100svh / 240) + 0.02px, 1px));
 
-  /* One pixel in the earlier CSS artwork: 4 pixels of the 4.5× reference screenshot. */
-  --ui-pixel: calc(var(--game-pixel) * 8 / 9);
-
   --color-background: #141414;
   --color-surface: #242424;
   --color-text: #ededed;
