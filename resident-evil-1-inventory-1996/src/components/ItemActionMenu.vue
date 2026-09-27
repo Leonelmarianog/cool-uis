@@ -25,7 +25,7 @@ const { options = [], highlighted = null } = defineProps<{ options?: string[]; h
   position: absolute;
   z-index: 1;
   /* Against the display's 4-pixel right edge strip. */
-  right: calc(4 * var(--ui-pixel));
+  right: calc(4 * var(--game-pixel));
   bottom: calc(7 * var(--ui-pixel));
   display: grid;
   /* Twice the 2 pixels the red frame reaches above and below a button,
