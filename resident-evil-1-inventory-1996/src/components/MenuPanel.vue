@@ -27,9 +27,6 @@ defineEmits<{ map: []; file: []; exit: [] }>()
 
 <style scoped>
 .menu-panel {
-  --menu-ink: #050704;
-  --menu-label-shadow: #424340;
-
   position: relative;
   width: calc(104 * var(--game-pixel));
   height: calc(40 * var(--game-pixel));
@@ -53,26 +50,31 @@ defineEmits<{ map: []; file: []; exit: [] }>()
 
 /* menu-button.png holds the normal state above the hover state. */
 .menu-panel__button {
+  position: relative;
   display: grid;
   place-items: center;
   padding: 0;
   border: 0;
   border-radius: 0;
-  color: var(--menu-ink);
+  color: #000;
   background: url('../assets/ui/menu-button.png') 0 0 / 100% 200%;
   image-rendering: pixelated;
   cursor: pointer;
 }
 
 .menu-panel__label {
-  display: block;
+  position: absolute;
+  /* Capitals (0.63em tall, their top 0.11em below the line's top) fill rows 2–13. */
+  top: calc(2 * var(--game-pixel) - 0.11em);
+  right: 0;
+  left: 0;
   font-family: 'Teko', 'Arial Narrow', sans-serif;
-  font-size: calc(20 * var(--ui-pixel));
+  font-size: calc(19 * var(--game-pixel));
   font-weight: 400;
-  line-height: 0.8;
-  letter-spacing: calc(0.25 * var(--ui-pixel));
-  transform: translateY(calc(1 * var(--ui-pixel))) scaleX(1.15);
-  text-shadow: calc(0.5 * var(--ui-pixel)) 0 var(--menu-label-shadow);
+  line-height: 1;
+  text-align: center;
+  /* Widen the condensed letters to the game's 2-pixel strokes and word widths. */
+  transform: scaleX(1.22);
 }
 
 .menu-panel__dash {
@@ -83,8 +85,6 @@ defineEmits<{ map: []; file: []; exit: [] }>()
 
 @media (hover: hover) {
   .menu-panel__button:hover {
-    --menu-label-shadow: #747476;
-
     color: #c5242c;
     background-position: 0 100%;
   }
