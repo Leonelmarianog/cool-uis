@@ -43,16 +43,18 @@ const { options = [], highlighted = null } = defineProps<{ options?: string[]; h
 }
 
 .item-action-menu__label {
+  position: absolute;
+  /* Capitals (0.63em tall, their top 0.11em below the line's top) fill rows 4–16. */
+  top: calc(4 * var(--game-pixel) - 0.11em);
+  right: 0;
+  left: 0;
   font-family: 'Teko', 'Arial Narrow', sans-serif;
-  font-size: calc(23 * var(--ui-pixel));
+  font-size: calc(20.63 * var(--game-pixel));
   font-weight: 300;
-  line-height: 0.8;
-  letter-spacing: calc(0.5 * var(--ui-pixel));
-  transform: translateY(calc(1.5 * var(--ui-pixel))) scaleX(0.85);
-  /* Thin gray edge on both sides of each stroke, as in the game's lettering. */
-  text-shadow:
-    calc(0.5 * var(--ui-pixel)) 0 #7c7b82,
-    calc(-0.5 * var(--ui-pixel)) 0 #7c7b82;
+  line-height: 1;
+  text-align: center;
+  /* The widest word (COMBN) matches the game's 34-pixel width. */
+  transform: scaleX(0.92);
 }
 
 .item-action-menu__frame {
