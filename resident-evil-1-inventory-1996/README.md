@@ -12,6 +12,7 @@ npm run dev
 `npm run typecheck` checks types with `vue-tsc`; Vite itself only strips them.
 `npm run build` type-checks, then creates the production bundle in `dist/`.
 `npm run preview` serves that bundle locally after building.
+`npm test` runs Vitest; it passes while there are no test files yet.
 
 ## Docker
 
@@ -40,20 +41,33 @@ Rebuild after source changes; this setup serves a production build without hot r
 ## Structure
 
 ```text
-design/             UI reference images
+design/               Reference screenshots, sprite sheets and recordings
+docs/data-model/      Data model diagram and open questions
+scripts/              extract-item-sprites.py: cuts item images from the sheet
 src/
-  App.vue           Root UI and its scoped styles
-  main.ts           Vue entry point; imports shared CSS once
+  App.vue             Layout of the 320 × 240 inventory screen
+  main.ts             Vue entry point; imports shared CSS once
+  components/         One component per panel
+  data/               Static game data (items, recipes, characters) as JSON
+  stores/             Pinia stores: player data and inventory UI state
+  types/              TypeScript types for the data
+  assets/
+    characters/       One 30 × 30 portrait per character
+    fonts/            Bundled fonts and their licenses
+    items/            One 40 × 30 image per item
+    ui/               Panel artwork, one image pixel per game pixel
   styles/
-    main.css        Shared stylesheet import order
-    tokens.css      Global CSS variables on :root
-    reset.css       Small browser reset
-    base.css        Document defaults and shared focus styles
+    main.css          Shared stylesheet import order
+    tokens.css        Global CSS variables on :root
+    reset.css         Small browser reset
+    base.css          Document defaults and shared focus styles
+UI_FEATURES.md        What the UI does today and what is planned
+INVENTORY_ACTIONS.md  What the reference recordings show about each action
 ```
 
-Keep values shared across components (colors, spacing, typography) in
-`tokens.css`. Use semantic names such as `--color-text-muted` and reference
-them with `var(--color-text-muted)`.
+Keep values shared across components in `tokens.css`, such as
+`--game-pixel` (one pixel of the game's screen), and reference them with
+`var(--game-pixel)`.
 
 Keep component layout and appearance in each Vue file's `<style scoped>` block.
 Global variables inherit into scoped styles. Variables used only by one component
@@ -66,15 +80,17 @@ Keep the base class alongside modifier classes. Each component owns its block;
 parent layout classes such as `project-shell__preview-panel` can be added to a
 child component. CSS variables retain their semantic names.
 
-Add reusable UI pieces under `src/components/` as needed. Put imported images and
-fonts under `src/assets/`; use `public/` for files that need a fixed public URL.
-Create these directories when there are assets or components to put in them.
-
-The initial screen and token values are placeholders for the future recreation.
+Put imported images and fonts under `src/assets/`; use `public/` for files
+that need a fixed public URL.
 
 ## Reference
 
 [Game UI Database](https://www.gameuidatabase.com/gameData.php?id=2179)
+
+## Credits
+
+Item and UI sprites ripped by Badassbill, from
+[The Spriters Resource](https://www.spriters-resource.com/playstation/residentevildirectorscut/).
 
 ## Menu panel
 

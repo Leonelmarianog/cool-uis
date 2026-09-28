@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import panel from '../assets/ui/character-portrait-panel.png'
-import portrait from '../assets/jill-valentine-portrait.png'
+import portrait from '../assets/characters/jill.png'
 </script>
 
 <template>
@@ -10,8 +10,8 @@ import portrait from '../assets/jill-valentine-portrait.png'
       class="character-portrait-panel__portrait"
       :src="portrait"
       alt="Jill Valentine"
-      width="136"
-      height="137"
+      width="30"
+      height="30"
     />
   </section>
 </template>

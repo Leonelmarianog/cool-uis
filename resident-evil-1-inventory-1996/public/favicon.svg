@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Umbrella logo: an octagon of 8 wedges, red and white, with a red wedge at the top.
+       The red wedges are drawn over a white octagon, so no seams show between wedges. -->
+  <path fill="#ffffff" d="M10.07 1.68H21.93L30.32 10.07V21.93L21.93 30.32H10.07L1.68 21.93V10.07Z" />
+  <path fill="#d7000f" d="M16 16L10.07 1.68H21.93Z M16 16L30.32 10.07V21.93Z M16 16L21.93 30.32H10.07Z M16 16L1.68 21.93V10.07Z" />
+</svg>

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "typecheck": "vue-tsc --build",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview"
