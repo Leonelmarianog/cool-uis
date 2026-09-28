@@ -26,7 +26,7 @@ features are built; more controls may be added later.
 | Close item actions | Implemented | Escape shrinks the menu closed and unlocks the cursor. |
 | Equip a weapon — EQUIP | Implemented | Equips the weapon, replacing the equipped one, and the equipped weapon panel shows it. Choosing EQUIP on the equipped weapon unequips it. The menu then closes and the item is released. |
 | Use an item — USE | Implemented | Herbs, mixed herbs, the spray and the serum raise the health status (rules in INVENTORY_ACTIONS.md) and are used up, even when they have no effect; the items after them move up. The ECG plays its heal animation and the menu closes. Ammunition and the red herb type "You can't use this alone." and key items "You can't use it here." into the description panel; the menu stays open. |
-| Examine an item — CHECK | Planned | Clicking the option only logs it. Should show the item as a 3D model that can be rotated. |
+| Examine an item — CHECK | Implemented | The menu hides and the item's 3D model (Three.js) tumbles into the preview area. W/A/S/D or the red arrows rotate it, Q/E roll it, Z/C zoom; holding keeps it moving. K types the description and freezes the model. Escape removes the description, then tumbles the model out and returns to the menu with CHECK framed. Every item uses one low-poly placeholder model and the Beretta's description for now (rules in INVENTORY_ACTIONS.md). |
 | Combine items — COMBN | Implemented | A green target cursor picks a second item. A weapon and its ammunition reload in either order; two stacks of the same ammunition stack up to 255. Herbs with a recipe ask "Will you mix the herbs?" with Yes/No; herbs without one type "Mixing these does not seem to work." After a combination the menu closes. Other pairs do nothing. The V-JOLT bottles are not mixed yet (rules in INVENTORY_ACTIONS.md). |
 
 ## Main menu
@@ -44,7 +44,7 @@ features are built; more controls may be added later.
 | --- | --- | --- |
 | Character portrait | Implemented | Shows Jill's portrait in its housing. No character switch is connected. |
 | Equipped weapon display | Implemented | Shows the equipped weapon's image and loaded rounds; empty when nothing is equipped. |
-| Item preview area | Partial | Hosts the item action menu. It does not yet show an examined item. |
+| Item preview area | Implemented | Hosts the item action menu and CHECK's 3D model. |
 | Animated health display | Implemented | The ECG shows the player's health status: Fine (green), Fine (yellow), Caution, Danger!, or Poison!; the last three labels blink. |
 | Cycle health status | Demo | Clicking the ECG sets the next worse status, wrapping from Poison! to Fine, so healing can be tried. |
 | Pixel-exact layout | Implemented | The 320 × 240 layout scales by the largest whole number of screen pixels per game pixel that fits the viewport. |
