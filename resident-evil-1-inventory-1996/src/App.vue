@@ -37,7 +37,11 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
             @choose="inventory.chooseAction"
           />
         </Transition>
-        <ItemModelViewer v-if="inventory.isChecking" />
+        <ItemModelViewer
+          v-if="inventory.isChecking"
+          :frozen="inventory.isDescribing"
+          @describe="inventory.showDescription"
+        />
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
@@ -66,6 +70,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         :item-name="inventory.itemUnderCursor?.name"
         :message="inventory.message"
         :choices="inventory.messageChoices"
+        :keep-message="inventory.isDescribing"
         @message-end="inventory.clearMessage"
         @choose="inventory.answerMix"
       />

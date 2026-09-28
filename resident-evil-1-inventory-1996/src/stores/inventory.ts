@@ -3,6 +3,10 @@ import { computed, ref } from 'vue';
 import { usePlayerStore } from './player';
 
 // The inventory's UI state, such as the cursor, as opposed to the player's data.
+// Every item shows the Beretta's description (from check-item-in-out.gif)
+// until real descriptions exist.
+const PLACEHOLDER_DESCRIPTION = 'Beretta M92FS. Automatic\nloaded with 9mm bullets.';
+
 export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
 
@@ -18,6 +22,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   const mixTargetId = ref<string | null>(null);
   // While CHECK shows the selected item's 3D model in place of the menu.
   const isChecking = ref(false);
+  // While CHECK types the item's description; the model is frozen until Escape.
+  const isDescribing = ref(false);
 
   // The item whose name the description panel shows: the target while choosing one.
   const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
@@ -65,6 +71,12 @@ export const useInventoryStore = defineStore('inventory', () => {
     // Escape answers No to "Will you mix the herbs?".
     if (isConfirmingMix.value) {
       cancelMix();
+      return;
+    }
+    // Escape removes CHECK's description and gives the model's controls back.
+    if (isDescribing.value) {
+      isDescribing.value = false;
+      message.value = null;
       return;
     }
     // From CHECK, back out to the menu only.
@@ -117,6 +129,12 @@ export const useInventoryStore = defineStore('inventory', () => {
     }
   }
 
+  function showDescription() {
+    if (!isChecking.value) return;
+    isDescribing.value = true;
+    message.value = PLACEHOLDER_DESCRIPTION;
+  }
+
   // Items that do not combine, such as the source itself or an empty slot, do
   // nothing and the target cursor stays; herbs that do not mix show a message.
   function combineWith(slot: number) {
@@ -167,6 +185,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     message,
     mixTargetId,
     isChecking,
+    isDescribing,
     itemUnderCursor,
     isSelecting,
     isChoosingTarget,
@@ -180,5 +199,6 @@ export const useInventoryStore = defineStore('inventory', () => {
     clearMessage,
     chooseAction,
     answerMix,
+    showDescription,
   };
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, reactive, useTemplateRef } from 'vue';
+import { onMounted, onUnmounted, reactive, useTemplateRef, watch } from 'vue';
 import { AmbientLight, Color, DirectionalLight, Mesh, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three';
 import type { Object3D } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -41,6 +41,12 @@ const SCREEN_X = new Vector3(1, 0, 0);
 const SCREEN_Y = new Vector3(0, 1, 0);
 const SCREEN_Z = new Vector3(0, 0, 1);
 
+// While frozen, such as when the description is shown, the model stays in its
+// current position, the controls do nothing and the arrows are hidden.
+const { frozen = false } = defineProps<{ frozen?: boolean }>();
+
+const emit = defineEmits<{ describe: [] }>();
+
 const canvas = useTemplateRef<HTMLCanvasElement>('canvas');
 // Reactive, so each arrow lights up while its control is held.
 const heldControls = reactive(new Set<Control>());
@@ -58,7 +64,13 @@ function release(control: Control) {
 }
 
 function onKeydown(event: KeyboardEvent) {
-  const control = KEY_CONTROLS[event.key.toLowerCase()];
+  if (frozen) return;
+  const key = event.key.toLowerCase();
+  if (key === 'k') {
+    emit('describe');
+    return;
+  }
+  const control = KEY_CONTROLS[key];
   if (!control) return;
   event.preventDefault();
   hold(control);
@@ -73,6 +85,10 @@ function onKeyup(event: KeyboardEvent) {
 function releaseAll() {
   heldControls.clear();
 }
+
+watch(() => frozen, isFrozen => {
+  if (isFrozen) releaseAll();
+});
 
 // Turns or zooms the model for each held control, by how long the frame took.
 function move(model: Object3D, camera: PerspectiveCamera, seconds: number) {
@@ -148,21 +164,23 @@ onUnmounted(() => {
 <template>
   <div class="item-model-viewer">
     <canvas ref="canvas" class="item-model-viewer__canvas" aria-label="Item model"></canvas>
-    <!-- mousedown.prevent keeps focus off the arrow, so the next key press
-         does not draw a focus outline around it. -->
-    <button
-      v-for="arrow in ARROWS"
-      :key="arrow"
-      class="item-model-viewer__arrow"
-      :class="[`item-model-viewer__arrow--${arrow}`, { 'item-model-viewer__arrow--lit': heldControls.has(arrow) }]"
-      type="button"
-      :aria-label="`Rotate ${arrow}`"
-      @mousedown.prevent
-      @pointerdown="hold(arrow)"
-      @pointerup="release(arrow)"
-      @pointerleave="release(arrow)"
-      @pointercancel="release(arrow)"
-    ></button>
+    <template v-if="!frozen">
+      <!-- mousedown.prevent keeps focus off the arrow, so the next key press
+           does not draw a focus outline around it. -->
+      <button
+        v-for="arrow in ARROWS"
+        :key="arrow"
+        class="item-model-viewer__arrow"
+        :class="[`item-model-viewer__arrow--${arrow}`, { 'item-model-viewer__arrow--lit': heldControls.has(arrow) }]"
+        type="button"
+        :aria-label="`Rotate ${arrow}`"
+        @mousedown.prevent
+        @pointerdown="hold(arrow)"
+        @pointerup="release(arrow)"
+        @pointerleave="release(arrow)"
+        @pointercancel="release(arrow)"
+      ></button>
+    </template>
   </div>
 </template>
 
