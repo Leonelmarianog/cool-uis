@@ -26,8 +26,18 @@ export interface AmmunitionItem extends BaseItem {
   };
 }
 
+/** How a recovery item changes the health status when used. */
+export interface Recovery {
+  /** Statuses to move up, stopping at Fine (green). */
+  steps: number;
+  /** Whether it cures poison first, which sets the status to Danger. */
+  curesPoison: boolean;
+}
+
 export interface ConsumableItem extends BaseItem {
   type: 'consumable';
+  /** Missing on items that cannot be used alone, such as the red herb. */
+  recovery?: Recovery;
 }
 
 export interface KeyItem extends BaseItem {

@@ -4,7 +4,8 @@ import charactersData from '../data/characters.json';
 import initialPlayer from '../data/initial-player.json';
 import itemsData from '../data/items.json';
 import type { Character } from '../types/character';
-import type { Item } from '../types/item';
+import type { HealthStatus } from '../types/health';
+import type { Item, Recovery } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerItem, PlayerState } from '../types/player';
 
@@ -21,6 +22,19 @@ const itemImages = import.meta.glob<string>('../assets/items/**/*.png', {
   import: 'default',
   query: '?no-inline',
 });
+
+// Health statuses from worst to best. Healing moves a status up this list.
+const healthOrder: HealthStatus[] = ['poison', 'danger', 'caution', 'fine-yellow', 'fine'];
+
+// Without a poison cure, a poisoned status does not change.
+function recover(status: HealthStatus, recovery: Recovery): HealthStatus {
+  if (status === 'poison') {
+    if (!recovery.curesPoison) return status;
+    status = 'danger';
+  }
+  const index = Math.min(healthOrder.indexOf(status) + recovery.steps, healthOrder.length - 1);
+  return healthOrder[index];
+}
 
 function findCharacter(id: string): Character {
   const character = characters.find(character => character.id === id);
@@ -62,6 +76,9 @@ export const usePlayerStore = defineStore('player', () => {
   const state = structuredClone(initialState);
 
   const characterId = ref(state.characterId);
+  const healthStatus = ref(state.healthStatus);
+  // How many recovery items were used; the ECG plays its heal animation on each one.
+  const recoveriesUsed = ref(0);
   const inventory = ref<PlayerItem[]>(state.inventory);
   const equippedItemId = ref<string | null>(state.equippedItemId);
   const itemBox = ref<(PlayerItem | null)[]>(state.itemBox);
@@ -81,8 +98,33 @@ export const usePlayerStore = defineStore('player', () => {
     equippedItemId.value = equippedItemId.value === playerItemId ? null : playerItemId;
   }
 
+  // Uses up a recovery item, even when it has no effect. Returns false for items
+  // that cannot be used this way; those stay in the inventory.
+  function useItem(playerItemId: string): boolean {
+    const index = inventory.value.findIndex(playerItem => playerItem.id === playerItemId);
+    const playerItem = inventory.value[index];
+    if (!playerItem) return false;
+
+    const item = findItem(playerItem.itemId);
+    if (item.type !== 'consumable' || !item.recovery) return false;
+
+    healthStatus.value = recover(healthStatus.value, item.recovery);
+    recoveriesUsed.value++;
+    // The items after it move up to fill its slot.
+    inventory.value.splice(index, 1);
+    return true;
+  }
+
+  // Demo control for the ECG: each call shows the next worse status, then wraps to Fine.
+  function cycleHealthStatus() {
+    const index = healthOrder.indexOf(healthStatus.value);
+    healthStatus.value = healthOrder[(index - 1 + healthOrder.length) % healthOrder.length];
+  }
+
   return {
     characterId,
+    healthStatus,
+    recoveriesUsed,
     inventory,
     equippedItemId,
     itemBox,
@@ -90,5 +132,7 @@ export const usePlayerStore = defineStore('player', () => {
     inventorySlots,
     equippedWeapon,
     toggleEquipped,
+    useItem,
+    cycleHealthStatus,
   };
 });

@@ -1,13 +1,42 @@
 <script setup lang="ts">
+import { computed, onUnmounted, ref, watch } from 'vue';
 import panel from '../assets/ui/item-description-panel.png'
 
-const { itemName = '' } = defineProps<{ itemName?: string }>()
+// A message replaces the item name while it is typed out and held.
+const { itemName = '', message = null } = defineProps<{ itemName?: string; message?: string | null }>();
+
+const emit = defineEmits<{ 'message-end': [] }>();
+
+// As in use-item-1.gif: one character every 4 frames at 60 fps, then the full
+// message stays for about 420 ms before the item name returns.
+const CHARACTER_MS = 4 * 1000 / 60;
+const HOLD_MS = 420;
+
+const typedLength = ref(0);
+let timer: ReturnType<typeof setTimeout> | undefined;
+
+function typeNextCharacter(text: string) {
+  typedLength.value++;
+  timer = typedLength.value < text.length
+    ? setTimeout(() => typeNextCharacter(text), CHARACTER_MS)
+    : setTimeout(() => emit('message-end'), HOLD_MS);
+}
+
+watch(() => message, text => {
+  clearTimeout(timer);
+  typedLength.value = 0;
+  if (text) timer = setTimeout(() => typeNextCharacter(text), CHARACTER_MS);
+});
+
+onUnmounted(() => clearTimeout(timer));
+
+const text = computed(() => (message === null ? itemName : message.slice(0, typedLength.value)));
 </script>
 
 <template>
   <section class="item-description-panel" aria-label="Item description panel">
     <img class="item-description-panel__artwork" :src="panel" alt="" />
-    <p class="item-description-panel__name">{{ itemName }}</p>
+    <p class="item-description-panel__name">{{ text }}</p>
   </section>
 </template>
 

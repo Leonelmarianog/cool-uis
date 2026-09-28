@@ -32,7 +32,11 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
-        <HealthStatusPanel />
+        <HealthStatusPanel
+          :status="player.healthStatus"
+          :recoveries-used="player.recoveriesUsed"
+          @cycle="player.cycleHealthStatus"
+        />
         <EquippedWeaponPanel class="project-shell__weapon" :weapon="player.equippedWeapon" />
       </div>
       <div class="project-shell__items">
@@ -47,7 +51,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
           @select="inventory.selectItemAt"
         />
       </div>
-      <ItemDescriptionPanel class="project-shell__description" :item-name="inventory.itemUnderCursor?.name" />
+      <ItemDescriptionPanel
+        class="project-shell__description"
+        :item-name="inventory.itemUnderCursor?.name"
+        :message="inventory.message"
+        @message-end="inventory.clearMessage"
+      />
     </div>
   </main>
 </template>

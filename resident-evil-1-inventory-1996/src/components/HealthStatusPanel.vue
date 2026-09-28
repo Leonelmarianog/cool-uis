@@ -1,24 +1,52 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import panel from '../assets/ui/health-status-panel.png'
 import traceFine from '../assets/ui/ecg-trace-fine.svg'
 import traceFineYellow from '../assets/ui/ecg-trace-fine-yellow.svg'
 import traceCaution from '../assets/ui/ecg-trace-caution.svg'
 import traceDanger from '../assets/ui/ecg-trace-danger.svg'
 import tracePoison from '../assets/ui/ecg-trace-poison.svg'
+import heal from '../assets/ui/ecg-heal.svg'
+import type { HealthStatus } from '../types/health'
 
-const states = [
-  { name: 'Fine', accessibleName: 'Fine, green', labelColor: '#29a229', image: traceFine, blinking: false },
-  { name: 'Fine', accessibleName: 'Fine, yellow', labelColor: '#29a229', image: traceFineYellow, blinking: false },
-  { name: 'Caution', accessibleName: 'Caution', labelColor: '#e59b00', image: traceCaution, blinking: true },
-  { name: 'Danger!', accessibleName: 'Danger', labelColor: '#e50030', image: traceDanger, blinking: true },
-  { name: 'Poison!', accessibleName: 'Poison', labelColor: '#c78bea', image: tracePoison, blinking: true },
-]
-const stateIndex = ref(0)
-const state = computed(() => states[stateIndex.value])
-function cycleState() {
-  stateIndex.value = (stateIndex.value + 1) % states.length
+// `recoveriesUsed` counts used recovery items; each change plays the heal animation.
+const { status, recoveriesUsed = 0 } = defineProps<{ status: HealthStatus; recoveriesUsed?: number }>();
+
+// Clicking the screen asks for the next status (a demo control).
+const emit = defineEmits<{ cycle: [] }>();
+
+const states: Record<HealthStatus, { name: string; accessibleName: string; labelColor: string; image: string; blinking: boolean }> = {
+  'fine': { name: 'Fine', accessibleName: 'Fine, green', labelColor: '#29a229', image: traceFine, blinking: false },
+  'fine-yellow': { name: 'Fine', accessibleName: 'Fine, yellow', labelColor: '#29a229', image: traceFineYellow, blinking: false },
+  'caution': { name: 'Caution', accessibleName: 'Caution', labelColor: '#e59b00', image: traceCaution, blinking: true },
+  'danger': { name: 'Danger!', accessibleName: 'Danger', labelColor: '#e50030', image: traceDanger, blinking: true },
+  'poison': { name: 'Poison!', accessibleName: 'Poison', labelColor: '#c78bea', image: tracePoison, blinking: true },
 }
+const state = computed(() => states[status])
+
+// The heal sequence from use-item-2.gif: the green band rises (23 frames at 60 fps)
+// and the screen stays empty for about 4 more frames; then the new label shows alone,
+// then the trace starts. `normal` shows the label and trace.
+const BAND_MS = (23 + 4) * 1000 / 60;
+const LABEL_MS = 270;
+const phase = ref<'band' | 'label' | 'normal'>('normal');
+let timers: ReturnType<typeof setTimeout>[] = [];
+
+function clearTimers() {
+  timers.forEach(clearTimeout);
+  timers = [];
+}
+
+watch(() => recoveriesUsed, () => {
+  clearTimers();
+  phase.value = 'band';
+  timers = [
+    setTimeout(() => (phase.value = 'label'), BAND_MS),
+    setTimeout(() => (phase.value = 'normal'), BAND_MS + LABEL_MS),
+  ];
+});
+
+onUnmounted(clearTimers);
 </script>
 
 <template>
@@ -29,10 +57,11 @@ function cycleState() {
       type="button"
       :aria-label="`Health: ${state.accessibleName}. Click to cycle health status.`"
       :style="{ '--ecg-label-color': state.labelColor }"
-      @click="cycleState"
+      @click="emit('cycle')"
     >
-      <span :key="stateIndex" class="health-status-panel__animation" aria-hidden="true">
-        <img class="health-status-panel__trace" :src="state.image" alt="" />
+      <img v-if="phase === 'band'" class="health-status-panel__heal" :src="heal" alt="" />
+      <span v-else :key="status" class="health-status-panel__animation" aria-hidden="true">
+        <img v-if="phase === 'normal'" class="health-status-panel__trace" :src="state.image" alt="" />
         <span class="health-status-panel__status" :class="{ 'health-status-panel__status--blinking': state.blinking }">{{ state.name }}</span>
       </span>
     </button>
@@ -55,6 +84,7 @@ function cycleState() {
 /* Covers the artwork's ECG screen; the grid and status box are part of the artwork. */
 .health-status-panel__screen {
   position: absolute;
+  overflow: hidden;
   top: calc(6 * var(--game-pixel));
   left: calc(12 * var(--game-pixel));
   width: calc(48 * var(--game-pixel));
@@ -78,6 +108,25 @@ function cycleState() {
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+/* The band starts below the screen and rises 2 rows per frame until it is above it.
+   Its light adds to the screen's, so the grid lines still show through it. */
+.health-status-panel__heal {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: calc(16 * var(--game-pixel));
+  image-rendering: pixelated;
+  mix-blend-mode: plus-lighter;
+  animation: health-status-heal calc(23s / 60) steps(23, jump-start) forwards;
+}
+
+@keyframes health-status-heal {
+  to {
+    transform: translateY(calc(-46 * var(--game-pixel)));
+  }
 }
 
 .health-status-panel__status {

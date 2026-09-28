@@ -10,6 +10,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   const cursorSlot = ref(0);
   // The selected item is tracked by ID, so it stays attached to its item.
   const selectedItemId = ref<string | null>(null);
+  // A message typed into the description panel in place of the item name.
+  const message = ref<string | null>(null);
 
   const itemUnderCursor = computed(() => player.inventorySlots[cursorSlot.value] ?? null);
   const isSelecting = computed(() => selectedItemId.value !== null);
@@ -38,6 +40,11 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   function backOut() {
     selectedItemId.value = null;
+    message.value = null;
+  }
+
+  function clearMessage() {
+    message.value = null;
   }
 
   function chooseAction(action: string) {
@@ -50,6 +57,17 @@ export const useInventoryStore = defineStore('inventory', () => {
       return;
     }
 
+    if (action === 'USE') {
+      if (player.useItem(selectedItem.value.id)) {
+        // The game closes the menu once the item is used up.
+        backOut();
+      } else {
+        // Key items only work in the game world; ammunition and the red herb only work combined.
+        message.value = selectedItem.value.type === 'key' ? "You can't use it here." : "You can't use this alone.";
+      }
+      return;
+    }
+
     // Placeholder until the other actions are implemented.
     console.log(`${action}: ${selectedItem.value.name}`);
   }
@@ -57,6 +75,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   return {
     cursorSlot,
     selectedItemId,
+    message,
     itemUnderCursor,
     isSelecting,
     selectedItem,
@@ -64,6 +83,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     moveCursor,
     selectItemAt,
     backOut,
+    clearMessage,
     chooseAction,
   };
 });

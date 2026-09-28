@@ -22,13 +22,15 @@
     "id": "first-aid-spray",
     "type": "consumable",
     "name": "F.-AID SPRAY",
-    "sprite": "recovery-items/first-aid-spray.png"
+    "sprite": "recovery-items/first-aid-spray.png",
+    "recovery": { "steps": 3, "curesPoison": true }
   },
   {
     "id": "green-herb",
     "type": "consumable",
     "name": "GREEN HERB",
-    "sprite": "recovery-items/green-herb.png"
+    "sprite": "recovery-items/green-herb.png",
+    "recovery": { "steps": 1, "curesPoison": false }
   },
   {
     "id": "red-herb",
@@ -40,12 +42,42 @@
     "id": "mixed-herbs-g-g",
     "type": "consumable",
     "name": "MIXED HERBS",
-    "sprite": "recovery-items/mixed-herbs-g-g.png"
+    "sprite": "recovery-items/mixed-herbs-g-g.png",
+    "recovery": { "steps": 2, "curesPoison": false }
   },
   {
     "id": "mixed-herbs-g-r",
     "type": "consumable",
     "name": "MIXED HERBS",
-    "sprite": "recovery-items/mixed-herbs-g-r.png"
+    "sprite": "recovery-items/mixed-herbs-g-r.png",
+    "recovery": { "steps": 3, "curesPoison": false }
+  },
+  {
+    "id": "blue-herb",
+    "type": "consumable",
+    "name": "BLUE HERB",
+    "sprite": "recovery-items/blue-herb.png",
+    "recovery": { "steps": 0, "curesPoison": true }
+  },
+  {
+    "id": "mixed-herbs-g-b",
+    "type": "consumable",
+    "name": "MIXED HERBS",
+    "sprite": "recovery-items/mixed-herbs-g-b.png",
+    "recovery": { "steps": 1, "curesPoison": true }
+  },
+  {
+    "id": "mixed-herbs-g-r-b",
+    "type": "consumable",
+    "name": "MIXED HERBS",
+    "sprite": "recovery-items/mixed-herbs-g-r-b.png",
+    "recovery": { "steps": 3, "curesPoison": true }
+  },
+  {
+    "id": "serum",
+    "type": "consumable",
+    "name": "SERUM",
+    "sprite": "recovery-items/serum.png",
+    "recovery": { "steps": 0, "curesPoison": true }
   }
 ]
