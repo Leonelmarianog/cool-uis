@@ -50,6 +50,12 @@ export const useInventoryStore = defineStore('inventory', () => {
       return;
     }
 
+    if (action === 'USE' && player.useItem(selectedItem.value.id)) {
+      // The game closes the menu once the item is used up.
+      backOut();
+      return;
+    }
+
     // Placeholder until the other actions are implemented.
     console.log(`${action}: ${selectedItem.value.name}`);
   }
