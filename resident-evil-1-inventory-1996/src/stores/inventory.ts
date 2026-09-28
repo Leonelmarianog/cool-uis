@@ -22,6 +22,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   const mixTargetId = ref<string | null>(null);
   // While CHECK shows the selected item's 3D model in place of the menu.
   const isChecking = ref(false);
+  // While CHECK's model spins out, before the menu returns.
+  const isLeavingCheck = ref(false);
   // While CHECK types the item's description; the model is frozen until Escape.
   const isDescribing = ref(false);
 
@@ -79,9 +81,9 @@ export const useInventoryStore = defineStore('inventory', () => {
       message.value = null;
       return;
     }
-    // From CHECK, back out to the menu only.
+    // From CHECK, back out to the menu only, once the model has spun out.
     if (isChecking.value) {
-      isChecking.value = false;
+      isLeavingCheck.value = true;
       return;
     }
     // From choosing a target, back out to the menu only.
@@ -127,6 +129,12 @@ export const useInventoryStore = defineStore('inventory', () => {
       // The target cursor starts on the selected item.
       targetSlot.value = cursorSlot.value;
     }
+  }
+
+  // Called once CHECK's model has spun out.
+  function finishCheck() {
+    isChecking.value = false;
+    isLeavingCheck.value = false;
   }
 
   function showDescription() {
@@ -185,6 +193,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     message,
     mixTargetId,
     isChecking,
+    isLeavingCheck,
     isDescribing,
     itemUnderCursor,
     isSelecting,
@@ -200,5 +209,6 @@ export const useInventoryStore = defineStore('inventory', () => {
     chooseAction,
     answerMix,
     showDescription,
+    finishCheck,
   };
 });

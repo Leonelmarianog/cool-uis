@@ -40,7 +40,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         <ItemModelViewer
           v-if="inventory.isChecking"
           :frozen="inventory.isDescribing"
+          :leaving="inventory.isLeavingCheck"
           @describe="inventory.showDescription"
+          @left="inventory.finishCheck"
         />
       </ItemPreviewPanel>
       <div class="project-shell__status">
