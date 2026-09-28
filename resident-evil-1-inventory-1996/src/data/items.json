@@ -1,8 +1,8 @@
 [
   {
-    "id": "handgun",
+    "id": "beretta",
     "type": "weapon",
-    "name": "HANDGUN",
+    "name": "BERETTA",
     "sprite": "weapon/beretta.png",
     "weapon": {
       "capacity": 15,
@@ -37,15 +37,15 @@
     "sprite": "recovery-items/red-herb.png"
   },
   {
-    "id": "green-green-herb",
+    "id": "mixed-herbs-g-g",
     "type": "consumable",
-    "name": "G+G HERB",
+    "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-g.png"
   },
   {
-    "id": "green-red-herb",
+    "id": "mixed-herbs-g-r",
     "type": "consumable",
-    "name": "G+R HERB",
+    "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-r.png"
   }
 ]

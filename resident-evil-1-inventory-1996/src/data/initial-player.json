@@ -4,7 +4,7 @@
   "inventory": [
     {
       "id": "player-item-1",
-      "itemId": "handgun",
+      "itemId": "beretta",
       "type": "weapon",
       "loadedRounds": 10
     },

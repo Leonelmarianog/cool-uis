@@ -1,10 +1,10 @@
 [
   {
     "ingredients": ["green-herb", "green-herb"],
-    "result": "green-green-herb"
+    "result": "mixed-herbs-g-g"
   },
   {
     "ingredients": ["green-herb", "red-herb"],
-    "result": "green-red-herb"
+    "result": "mixed-herbs-g-r"
   }
 ]
