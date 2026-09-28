@@ -31,7 +31,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   <main class="project-shell">
     <div class="project-shell__inventory">
       <ItemPreviewPanel class="project-shell__preview">
-        <ItemActionMenu v-if="inventory.isSelecting" :options="inventory.itemActions" @choose="onChooseAction" />
+        <Transition enter-active-class="item-action-menu--opening" leave-active-class="item-action-menu--closing">
+          <ItemActionMenu v-if="inventory.isSelecting" :options="inventory.itemActions" @choose="onChooseAction" />
+        </Transition>
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
