@@ -61,7 +61,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         class="project-shell__description"
         :item-name="inventory.itemUnderCursor?.name"
         :message="inventory.message"
+        :choices="inventory.messageChoices"
         @message-end="inventory.clearMessage"
+        @choose="inventory.answerMix"
       />
     </div>
   </main>

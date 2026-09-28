@@ -171,6 +171,13 @@ export const usePlayerStore = defineStore('player', () => {
     return true;
   }
 
+  function canMix(sourceId: string, targetId: string): boolean {
+    const source = inventory.value.find(playerItem => playerItem.id === sourceId);
+    const target = inventory.value.find(playerItem => playerItem.id === targetId);
+    if (!source || !target) return false;
+    return findRecipe(source.itemId, target.itemId) !== undefined;
+  }
+
   // Puts the recipe's result in the source's slot and removes the target.
   // Returns false when the two items have no recipe.
   function mix(sourceId: string, targetId: string): boolean {
@@ -225,6 +232,7 @@ export const usePlayerStore = defineStore('player', () => {
     useItem,
     reload,
     stack,
+    canMix,
     mix,
     isHerb,
     cycleHealthStatus,
