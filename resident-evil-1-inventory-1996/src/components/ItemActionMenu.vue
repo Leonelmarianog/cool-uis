@@ -1,13 +1,27 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import frame from '../assets/ui/item-action-frame.png'
 
-// `highlighted` is the index of the option under the red frame, or null for none.
-const { options = [], highlighted = null } = defineProps<{ options?: string[]; highlighted?: number | null }>()
+const { options = [] } = defineProps<{ options?: string[] }>()
+
+const emit = defineEmits<{ choose: [option: string] }>();
+
+// Index of the option under the red frame. It starts on the first option
+// and stays on the last hovered one when the pointer leaves the menu.
+const highlighted = ref(0);
 </script>
 
 <template>
   <div class="item-action-menu" role="menu" aria-label="Item actions">
-    <button v-for="(option, index) in options" :key="option" class="item-action-menu__option" type="button" role="menuitem">
+    <button
+      v-for="(option, index) in options"
+      :key="option"
+      class="item-action-menu__option"
+      type="button"
+      role="menuitem"
+      @mouseenter="highlighted = index"
+      @click="emit('choose', option)"
+    >
       <span class="item-action-menu__label">{{ option }}</span>
       <img v-if="index === highlighted" class="item-action-menu__frame" :src="frame" alt="" />
     </button>
@@ -65,5 +79,50 @@ const { options = [], highlighted = null } = defineProps<{ options?: string[]; h
   height: calc(100% + 4 * var(--game-pixel));
   image-rendering: pixelated;
   pointer-events: none;
+}
+
+/* Opening and closing, applied by the <Transition> around the menu in App.vue.
+   The game grows the red frame's 43 × 24 area (starting 2 pixels above the
+   button) from its top-left corner in 8 steps, one per frame at 60 fps: 1/8
+   of its width and 3 pixels of height per step. Each button shows the part
+   inside that area. The frame itself appears only once the menu is open. */
+@property --step {
+  syntax: '<integer>';
+  inherits: true;
+  initial-value: 0;
+}
+
+@keyframes grow {
+  from {
+    --step: 0;
+  }
+  to {
+    --step: 7;
+  }
+}
+
+.item-action-menu--opening .item-action-menu__option,
+.item-action-menu--closing .item-action-menu__option {
+  clip-path: inset(
+    0
+    calc((43 - round(43 * var(--step) / 8)) * var(--game-pixel))
+    calc(max(0, 22 - 3 * var(--step)) * var(--game-pixel))
+    0
+  );
+}
+
+/* Steps 1 to 7; step 8 is the open menu without the animation. The menu
+   itself is animated, so the <Transition> waits for it before removing it. */
+.item-action-menu--opening {
+  animation: grow calc(7s / 60) steps(7, jump-start);
+}
+
+.item-action-menu--closing {
+  animation: grow calc(7s / 60) steps(7, jump-start) reverse;
+}
+
+.item-action-menu--opening .item-action-menu__frame,
+.item-action-menu--closing .item-action-menu__frame {
+  visibility: hidden;
 }
 </style>
