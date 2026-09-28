@@ -100,9 +100,13 @@ export const usePlayerStore = defineStore('player', () => {
     return weapon ? toItemView(weapon) : null;
   });
 
+  function findPlayerItem(playerItemId: string): PlayerItem | undefined {
+    return inventory.value.find(playerItem => playerItem.id === playerItemId);
+  }
+
   // Equips a weapon, replacing the equipped one. Choosing the equipped weapon again unequips it.
   function toggleEquipped(playerItemId: string) {
-    const playerItem = inventory.value.find(playerItem => playerItem.id === playerItemId);
+    const playerItem = findPlayerItem(playerItemId);
     if (playerItem?.type !== 'weapon') return;
     equippedItemId.value = equippedItemId.value === playerItemId ? null : playerItemId;
   }
@@ -110,8 +114,7 @@ export const usePlayerStore = defineStore('player', () => {
   // Uses up a recovery item, even when it has no effect. Returns false for items
   // that cannot be used this way; those stay in the inventory.
   function useItem(playerItemId: string): boolean {
-    const index = inventory.value.findIndex(playerItem => playerItem.id === playerItemId);
-    const playerItem = inventory.value[index];
+    const playerItem = findPlayerItem(playerItemId);
     if (!playerItem) return false;
 
     const item = findItem(playerItem.itemId);
@@ -119,16 +122,15 @@ export const usePlayerStore = defineStore('player', () => {
 
     healthStatus.value = recover(healthStatus.value, item.recovery);
     recoveriesUsed.value++;
-    // The items after it move up to fill its slot.
-    inventory.value.splice(index, 1);
+    removeItem(playerItem.id);
     return true;
   }
 
   // Reloads a weapon from its ammunition, with the two items in either order.
   // Returns false when they are not a weapon and ammunition it loads.
   function reload(sourceId: string, targetId: string): boolean {
-    const source = inventory.value.find(playerItem => playerItem.id === sourceId);
-    const target = inventory.value.find(playerItem => playerItem.id === targetId);
+    const source = findPlayerItem(sourceId);
+    const target = findPlayerItem(targetId);
     if (source?.type === 'weapon' && target?.type === 'ammunition') return loadWeapon(source, target);
     if (source?.type === 'ammunition' && target?.type === 'weapon') return loadWeapon(target, source);
     return false;
@@ -152,8 +154,8 @@ export const usePlayerStore = defineStore('player', () => {
   // either stack is full, it still counts as stacked, with no rounds moved.
   // Returns false for any other pair.
   function stack(sourceId: string, targetId: string): boolean {
-    const source = inventory.value.find(playerItem => playerItem.id === sourceId);
-    const target = inventory.value.find(playerItem => playerItem.id === targetId);
+    const source = findPlayerItem(sourceId);
+    const target = findPlayerItem(targetId);
     if (source?.type !== 'ammunition' || target?.type !== 'ammunition') return false;
     if (source.id === target.id || source.itemId !== target.itemId) return false;
 
@@ -172,8 +174,8 @@ export const usePlayerStore = defineStore('player', () => {
   }
 
   function canMix(sourceId: string, targetId: string): boolean {
-    const source = inventory.value.find(playerItem => playerItem.id === sourceId);
-    const target = inventory.value.find(playerItem => playerItem.id === targetId);
+    const source = findPlayerItem(sourceId);
+    const target = findPlayerItem(targetId);
     if (!source || !target) return false;
     return findRecipe(source.itemId, target.itemId) !== undefined;
   }
@@ -181,8 +183,8 @@ export const usePlayerStore = defineStore('player', () => {
   // Puts the recipe's result in the source's slot and removes the target.
   // Returns false when the two items have no recipe.
   function mix(sourceId: string, targetId: string): boolean {
-    const source = inventory.value.find(playerItem => playerItem.id === sourceId);
-    const target = inventory.value.find(playerItem => playerItem.id === targetId);
+    const source = findPlayerItem(sourceId);
+    const target = findPlayerItem(targetId);
     if (!source || !target || source.id === target.id) return false;
 
     const recipe = findRecipe(source.itemId, target.itemId);
@@ -200,7 +202,7 @@ export const usePlayerStore = defineStore('player', () => {
   }
 
   function isHerb(playerItemId: string): boolean {
-    const playerItem = inventory.value.find(playerItem => playerItem.id === playerItemId);
+    const playerItem = findPlayerItem(playerItemId);
     if (!playerItem) return false;
     const item = findItem(playerItem.itemId);
     return item.type === 'consumable' && item.herb === true;
