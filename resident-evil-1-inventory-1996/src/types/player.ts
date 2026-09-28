@@ -1,3 +1,5 @@
+import type { HealthStatus } from './health';
+
 // A player item is one copy of an item the player owns. Its definition
 // (name, sprite, capacity, …) comes from the item with the same `itemId`.
 interface BasePlayerItem {
@@ -33,6 +35,8 @@ export type PlayerItem =
 
 export interface PlayerState {
   characterId: string;
+
+  healthStatus: HealthStatus;
 
   /** Packed: items fill the first slots and empty slots follow the last item. */
   inventory: PlayerItem[];

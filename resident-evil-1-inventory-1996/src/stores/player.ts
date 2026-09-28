@@ -4,6 +4,7 @@ import charactersData from '../data/characters.json';
 import initialPlayer from '../data/initial-player.json';
 import itemsData from '../data/items.json';
 import type { Character } from '../types/character';
+import type { HealthStatus } from '../types/health';
 import type { Item } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerItem, PlayerState } from '../types/player';
@@ -21,6 +22,9 @@ const itemImages = import.meta.glob<string>('../assets/items/**/*.png', {
   import: 'default',
   query: '?no-inline',
 });
+
+// Health statuses from worst to best. Healing moves a status up this list.
+const healthOrder: HealthStatus[] = ['poison', 'danger', 'caution', 'fine-yellow', 'fine'];
 
 function findCharacter(id: string): Character {
   const character = characters.find(character => character.id === id);
@@ -62,6 +66,7 @@ export const usePlayerStore = defineStore('player', () => {
   const state = structuredClone(initialState);
 
   const characterId = ref(state.characterId);
+  const healthStatus = ref(state.healthStatus);
   const inventory = ref<PlayerItem[]>(state.inventory);
   const equippedItemId = ref<string | null>(state.equippedItemId);
   const itemBox = ref<(PlayerItem | null)[]>(state.itemBox);
@@ -81,8 +86,15 @@ export const usePlayerStore = defineStore('player', () => {
     equippedItemId.value = equippedItemId.value === playerItemId ? null : playerItemId;
   }
 
+  // Demo control for the ECG: each call shows the next worse status, then wraps to Fine.
+  function cycleHealthStatus() {
+    const index = healthOrder.indexOf(healthStatus.value);
+    healthStatus.value = healthOrder[(index - 1 + healthOrder.length) % healthOrder.length];
+  }
+
   return {
     characterId,
+    healthStatus,
     inventory,
     equippedItemId,
     itemBox,
@@ -90,5 +102,6 @@ export const usePlayerStore = defineStore('player', () => {
     inventorySlots,
     equippedWeapon,
     toggleEquipped,
+    cycleHealthStatus,
   };
 });

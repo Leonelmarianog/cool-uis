@@ -1,24 +1,26 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import panel from '../assets/ui/health-status-panel.png'
 import traceFine from '../assets/ui/ecg-trace-fine.svg'
 import traceFineYellow from '../assets/ui/ecg-trace-fine-yellow.svg'
 import traceCaution from '../assets/ui/ecg-trace-caution.svg'
 import traceDanger from '../assets/ui/ecg-trace-danger.svg'
 import tracePoison from '../assets/ui/ecg-trace-poison.svg'
+import type { HealthStatus } from '../types/health'
 
-const states = [
-  { name: 'Fine', accessibleName: 'Fine, green', labelColor: '#29a229', image: traceFine, blinking: false },
-  { name: 'Fine', accessibleName: 'Fine, yellow', labelColor: '#29a229', image: traceFineYellow, blinking: false },
-  { name: 'Caution', accessibleName: 'Caution', labelColor: '#e59b00', image: traceCaution, blinking: true },
-  { name: 'Danger!', accessibleName: 'Danger', labelColor: '#e50030', image: traceDanger, blinking: true },
-  { name: 'Poison!', accessibleName: 'Poison', labelColor: '#c78bea', image: tracePoison, blinking: true },
-]
-const stateIndex = ref(0)
-const state = computed(() => states[stateIndex.value])
-function cycleState() {
-  stateIndex.value = (stateIndex.value + 1) % states.length
+const { status } = defineProps<{ status: HealthStatus }>()
+
+// Clicking the screen asks for the next status (a demo control).
+const emit = defineEmits<{ cycle: [] }>();
+
+const states: Record<HealthStatus, { name: string; accessibleName: string; labelColor: string; image: string; blinking: boolean }> = {
+  'fine': { name: 'Fine', accessibleName: 'Fine, green', labelColor: '#29a229', image: traceFine, blinking: false },
+  'fine-yellow': { name: 'Fine', accessibleName: 'Fine, yellow', labelColor: '#29a229', image: traceFineYellow, blinking: false },
+  'caution': { name: 'Caution', accessibleName: 'Caution', labelColor: '#e59b00', image: traceCaution, blinking: true },
+  'danger': { name: 'Danger!', accessibleName: 'Danger', labelColor: '#e50030', image: traceDanger, blinking: true },
+  'poison': { name: 'Poison!', accessibleName: 'Poison', labelColor: '#c78bea', image: tracePoison, blinking: true },
 }
+const state = computed(() => states[status])
 </script>
 
 <template>
@@ -29,9 +31,9 @@ function cycleState() {
       type="button"
       :aria-label="`Health: ${state.accessibleName}. Click to cycle health status.`"
       :style="{ '--ecg-label-color': state.labelColor }"
-      @click="cycleState"
+      @click="emit('cycle')"
     >
-      <span :key="stateIndex" class="health-status-panel__animation" aria-hidden="true">
+      <span :key="status" class="health-status-panel__animation" aria-hidden="true">
         <img class="health-status-panel__trace" :src="state.image" alt="" />
         <span class="health-status-panel__status" :class="{ 'health-status-panel__status--blinking': state.blinking }">{{ state.name }}</span>
       </span>
