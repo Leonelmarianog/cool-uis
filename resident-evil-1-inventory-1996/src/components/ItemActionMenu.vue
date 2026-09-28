@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import frame from '../assets/ui/item-action-frame.png'
 
-// `highlighted` is the index of the option under the red frame, or null for none.
-const { options = [], highlighted = null } = defineProps<{ options?: string[]; highlighted?: number | null }>()
+const { options = [] } = defineProps<{ options?: string[] }>()
 
 const emit = defineEmits<{ choose: [option: string] }>();
+
+// Index of the option under the red frame. It starts on the first option
+// and stays on the last hovered one when the pointer leaves the menu.
+const highlighted = ref(0);
 </script>
 
 <template>
@@ -15,6 +19,7 @@ const emit = defineEmits<{ choose: [option: string] }>();
       class="item-action-menu__option"
       type="button"
       role="menuitem"
+      @mouseenter="highlighted = index"
       @click="emit('choose', option)"
     >
       <span class="item-action-menu__label">{{ option }}</span>

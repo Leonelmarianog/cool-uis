@@ -31,13 +31,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   <main class="project-shell">
     <div class="project-shell__inventory">
       <ItemPreviewPanel class="project-shell__preview">
-        <!-- The red frame stays on the first option until hover moves it. -->
-        <ItemActionMenu
-          v-if="inventory.isSelecting"
-          :options="inventory.itemActions"
-          :highlighted="0"
-          @choose="onChooseAction"
-        />
+        <ItemActionMenu v-if="inventory.isSelecting" :options="inventory.itemActions" @choose="onChooseAction" />
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
