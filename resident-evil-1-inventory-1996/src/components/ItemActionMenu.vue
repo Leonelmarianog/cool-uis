@@ -3,11 +3,20 @@ import frame from '../assets/ui/item-action-frame.png'
 
 // `highlighted` is the index of the option under the red frame, or null for none.
 const { options = [], highlighted = null } = defineProps<{ options?: string[]; highlighted?: number | null }>()
+
+const emit = defineEmits<{ choose: [option: string] }>();
 </script>
 
 <template>
   <div class="item-action-menu" role="menu" aria-label="Item actions">
-    <button v-for="(option, index) in options" :key="option" class="item-action-menu__option" type="button" role="menuitem">
+    <button
+      v-for="(option, index) in options"
+      :key="option"
+      class="item-action-menu__option"
+      type="button"
+      role="menuitem"
+      @click="emit('choose', option)"
+    >
       <span class="item-action-menu__label">{{ option }}</span>
       <img v-if="index === highlighted" class="item-action-menu__frame" :src="frame" alt="" />
     </button>

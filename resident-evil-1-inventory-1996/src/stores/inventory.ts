@@ -13,6 +13,14 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   const itemUnderCursor = computed(() => player.inventorySlots[cursorSlot.value] ?? null);
   const isSelecting = computed(() => selectedItemId.value !== null);
+  const selectedItem = computed(() => player.inventorySlots.find(item => item.id === selectedItemId.value) ?? null);
+
+  // Weapons are equipped; every other item is used.
+  const itemActions = computed(() => {
+    if (!selectedItem.value) return [];
+    const firstAction = selectedItem.value.type === 'weapon' ? 'EQUIP' : 'USE';
+    return [firstAction, 'CHECK', 'COMBN'];
+  });
 
   function moveCursor(slot: number) {
     // While an item is selected, the cursor stays on it.
@@ -32,5 +40,15 @@ export const useInventoryStore = defineStore('inventory', () => {
     selectedItemId.value = null;
   }
 
-  return { cursorSlot, selectedItemId, itemUnderCursor, isSelecting, moveCursor, selectItemAt, backOut };
+  return {
+    cursorSlot,
+    selectedItemId,
+    itemUnderCursor,
+    isSelecting,
+    selectedItem,
+    itemActions,
+    moveCursor,
+    selectItemAt,
+    backOut,
+  };
 });

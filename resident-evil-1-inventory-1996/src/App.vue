@@ -18,6 +18,11 @@ function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') inventory.backOut()
 }
 
+// Placeholder until each action is implemented.
+function onChooseAction(action: string) {
+  console.log(`${action}: ${inventory.selectedItem?.name}`);
+}
+
 onMounted(() => window.addEventListener('keydown', onKeydown))
 onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
@@ -26,8 +31,13 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
   <main class="project-shell">
     <div class="project-shell__inventory">
       <ItemPreviewPanel class="project-shell__preview">
-        <!-- Temporary: shown statically to review the visuals; behavior comes later. -->
-        <ItemActionMenu :options="['EQUIP', 'CHECK', 'COMBN']" :highlighted="0" />
+        <!-- The red frame stays on the first option until hover moves it. -->
+        <ItemActionMenu
+          v-if="inventory.isSelecting"
+          :options="inventory.itemActions"
+          :highlighted="0"
+          @choose="onChooseAction"
+        />
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
