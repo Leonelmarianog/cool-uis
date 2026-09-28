@@ -3,18 +3,24 @@ import { computed, ref } from 'vue';
 import charactersData from '../data/characters.json';
 import initialPlayer from '../data/initial-player.json';
 import itemsData from '../data/items.json';
-import spriteSheetsData from '../data/sprite-sheets.json';
 import type { Character } from '../types/character';
 import type { Item } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerItem, PlayerState } from '../types/player';
-import type { SpriteSheet } from '../types/sprite-sheet';
 
 // JSON imports are not type-checked, so the data is cast to its type.
 const characters = charactersData as Character[];
 const initialState = initialPlayer as PlayerState;
 const items = itemsData as Item[];
-const spriteSheets = spriteSheetsData as SpriteSheet[];
+
+// URLs of every item image, keyed by the path Vite imported it from.
+// `?no-inline` keeps each image a separate file; Vite would otherwise embed
+// small images in the JavaScript bundle.
+const itemImages = import.meta.glob<string>('../assets/items/**/*.png', {
+  eager: true,
+  import: 'default',
+  query: '?no-inline',
+});
 
 function findCharacter(id: string): Character {
   const character = characters.find(character => character.id === id);
@@ -28,10 +34,10 @@ function findItem(id: string): Item {
   return item;
 }
 
-function findSpriteSheet(id: string): SpriteSheet {
-  const sheet = spriteSheets.find(sheet => sheet.id === id);
-  if (!sheet) throw new Error(`Unknown sprite sheet "${id}"`);
-  return sheet;
+function findItemImage(path: string): string {
+  const url = itemImages[`../assets/items/${path}`];
+  if (!url) throw new Error(`Unknown item image "${path}"`);
+  return url;
 }
 
 function amountOf(playerItem: PlayerItem): number | undefined {
@@ -46,7 +52,7 @@ function toItemView(playerItem: PlayerItem): ItemView {
     id: playerItem.id,
     name,
     type,
-    sprite: { sheet: findSpriteSheet(sprite.sheetId), column: sprite.column, row: sprite.row },
+    sprite: findItemImage(sprite),
     amount: amountOf(playerItem),
   };
 }

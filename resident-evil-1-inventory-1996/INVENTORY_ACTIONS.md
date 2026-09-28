@@ -52,11 +52,13 @@ subsequent branches above. Preserve the approved panel artwork and dimensions.
   quantities or health mutate in this step. Message wording is provisional.
 - Browser checks cover message dismissal, focus restoration, background locking,
   unavailable actions, empty slots, runtime errors, and 1440/800px layouts.
-- Runtime sprite sheet is extracted with `python3 scripts/extract-item-sprites.py`
-  (requires ffmpeg). It preserves the original 216 × 496 dimensions and all RGB
-  values, clearing alpha for the atlas dividers and its specific background
-  palette. The original design sheet remains untouched. Generated-image output
-  was rejected because it changed the sprite pixels and atlas dimensions.
+- Item images are cut from the reference sheet with
+  `python3 scripts/extract-item-sprites.py` (requires ffmpeg), one 40 × 30 PNG
+  per item under `src/assets/items/<category>/`. It clears alpha for the sheet's
+  specific background palette and lowers the blue that background blended into
+  the artwork, except for blue items listed in `KEEP_BLUE`. The original design
+  sheet remains untouched. Generated-image output was rejected because it
+  changed the sprite pixels.
 
 ## Item system — reference findings and scope
 

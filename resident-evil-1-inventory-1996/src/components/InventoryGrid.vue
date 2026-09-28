@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import SpriteFrame from './SpriteFrame.vue'
 import type { ItemView } from '../types/item-view'
 
 // `size` is the number of cells. Items fill the first cells; the rest are empty.
@@ -35,7 +34,7 @@ function cellLabel(slot: ItemView | null, index: number): string {
         @click="emit('select', index)"
       >
         <template v-if="slot">
-          <SpriteFrame :sprite="slot.sprite" />
+          <img class="inventory-grid__sprite" :src="slot.sprite" alt="" />
           <span
             v-if="slot.amount !== undefined"
             class="inventory-grid__amount"
@@ -80,6 +79,13 @@ function cellLabel(slot: ItemView | null, index: number): string {
   place-items: center;
   overflow: hidden;
   background: url('../assets/ui/item-slot.png') 0 0 / 100% 100%;
+}
+
+/* Item images are one slot in size. */
+.inventory-grid__sprite {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
 }
 
 .inventory-grid__amount {
