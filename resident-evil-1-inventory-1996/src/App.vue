@@ -51,7 +51,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
           @select="inventory.selectItemAt"
         />
       </div>
-      <ItemDescriptionPanel class="project-shell__description" :item-name="inventory.itemUnderCursor?.name" />
+      <ItemDescriptionPanel
+        class="project-shell__description"
+        :item-name="inventory.itemUnderCursor?.name"
+        :message="inventory.message"
+        @message-end="inventory.clearMessage"
+      />
     </div>
   </main>
 </template>
