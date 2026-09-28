@@ -111,9 +111,9 @@ CHECK shows the item as a 3D model in the preview area, built with Three.js.
 
 - `check-item.gif`: after CHECK the menu closes and the preview area turns dark
   navy. The model appears small and spinning in the middle, then grows to full
-  size in about 0.3–0.4 s. Four small red triangles at the top, bottom, left
-  and right edges of the area blink dimly; while the model turns toward one of
-  them, that one lights bright red. The model turns on both axes and zooms in
+  size in about 0.3–0.4 s. Four small dark red triangles sit at the top,
+  bottom, left and right edges of the area (they do not blink); while the model
+  turns toward one of them, that one lights bright red. The model turns on both axes and zooms in
   until it fills the area and back out. The name panel keeps the item's name.
 - `check-item-in-out.gif`: the description types into the description panel
   in mixed case, wrapping onto a second line ("Beretta M92FS. Automatic loaded
