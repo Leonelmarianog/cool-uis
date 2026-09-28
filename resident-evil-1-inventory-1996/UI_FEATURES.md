@@ -25,7 +25,7 @@ features are built; more controls may be added later.
 | Choose an item action | Implemented | Weapons offer EQUIP / CHECK / COMBN; other items offer USE / CHECK / COMBN. The red frame starts on the first option and follows the hovered one. |
 | Close item actions | Implemented | Escape shrinks the menu closed and unlocks the cursor. |
 | Equip a weapon — EQUIP | Planned | Clicking the option only logs it. Should equip the weapon and update the equipped weapon panel. |
-| Use an item — USE | Planned | Clicking the option only logs it. Should heal or cure with recovery items and consume them. |
+| Use an item — USE | Planned | Clicking the option only logs it. Should heal or cure with recovery items and consume them; on other items it does nothing. |
 | Examine an item — CHECK | Planned | Clicking the option only logs it. Should show the item as a 3D model that can be rotated. |
 | Combine items — COMBN | Planned | Clicking the option only logs it. Should pick a second item, then reload a weapon, merge ammunition stacks, or mix herbs from `recipes.json`. |
 
@@ -50,18 +50,16 @@ features are built; more controls may be added later.
 | Pixel-exact layout | Implemented | The 320 × 240 layout scales by the largest whole number of screen pixels per game pixel that fits the viewport. |
 | Sample inventory | Demo | Every page load starts with Beretta 10 (equipped), clips 15 and 250, green herb, red herb, and first aid spray. Nothing is saved. |
 
-## Related actions requiring future integration
+## Planned screens and characters
 
-These actions are not available in the current UI. Their detailed behavior
-requires the corresponding item rules, assets, or game context.
-
-| Feature / action | Status | Remaining scope |
+| Feature | Status | Remaining scope |
 | --- | --- | --- |
-| Use keys or puzzle items | Planned | Supply a world-use context and item-specific rules. |
-| Pick up an item | Planned | Add pickup confirmation, inventory insertion, and full-inventory feedback. |
-| Transfer items through an item box | Planned | Add the item box screen and transfers into and out of the inventory. |
-| Discard a spent key | Planned | Add the prompt and rules for a key that is no longer needed. |
+| Map screen | Planned | Opened by MAP. |
+| Files screen | Planned | Opened by FILE; lists and shows the documents. |
+| Item box | Planned | Opened by the dash button; moves items into and out of the inventory. |
 | Other characters | Planned | Add Chris (6 slots) with his portrait and a shorter inventory grid. |
 
-General drop, manual move, and sort commands are not established features of
-this recreation; they require reference support before being added to scope.
+This is a clone of the inventory UI, not a game: there is no game world, so
+items are never picked up and key items are never used on anything. General
+drop, manual move, and sort commands are not established features of this
+recreation; they require reference support before being added to scope.
