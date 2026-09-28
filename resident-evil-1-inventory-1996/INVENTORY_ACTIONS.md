@@ -59,8 +59,8 @@ ECG statuses, in order: Poison < Danger < Caution < Fine (yellow) < Fine
 - USE on ammunition shows "You can't use this alone."
 - USE on a key item shows "You can't use it here." Key items only work where
   the character stands in the game world, so none can be used here.
-- When an item is used up, the items after it move up to fill its slot. The
-  user will provide a recording of that animation.
+- When an item is used up, the items after it move up to fill its slot at
+  once, with no animation (checked by the user in the game).
 
 ## COMBN
 
