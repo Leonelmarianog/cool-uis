@@ -40,6 +40,20 @@ export const useInventoryStore = defineStore('inventory', () => {
     selectedItemId.value = null;
   }
 
+  function chooseAction(action: string) {
+    if (!selectedItem.value) return;
+
+    if (action === 'EQUIP') {
+      player.toggleEquipped(selectedItem.value.id);
+      // The game closes the menu and releases the item right after equipping.
+      backOut();
+      return;
+    }
+
+    // Placeholder until the other actions are implemented.
+    console.log(`${action}: ${selectedItem.value.name}`);
+  }
+
   return {
     cursorSlot,
     selectedItemId,
@@ -50,5 +64,6 @@ export const useInventoryStore = defineStore('inventory', () => {
     moveCursor,
     selectItemAt,
     backOut,
+    chooseAction,
   };
 });

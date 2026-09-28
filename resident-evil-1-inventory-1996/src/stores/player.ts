@@ -74,5 +74,21 @@ export const usePlayerStore = defineStore('player', () => {
     return weapon ? toItemView(weapon) : null;
   });
 
-  return { characterId, inventory, equippedItemId, itemBox, inventorySize, inventorySlots, equippedWeapon };
+  // Equips a weapon, replacing the equipped one. Choosing the equipped weapon again unequips it.
+  function toggleEquipped(playerItemId: string) {
+    const playerItem = inventory.value.find(playerItem => playerItem.id === playerItemId);
+    if (playerItem?.type !== 'weapon') return;
+    equippedItemId.value = equippedItemId.value === playerItemId ? null : playerItemId;
+  }
+
+  return {
+    characterId,
+    inventory,
+    equippedItemId,
+    itemBox,
+    inventorySize,
+    inventorySlots,
+    equippedWeapon,
+    toggleEquipped,
+  };
 });
