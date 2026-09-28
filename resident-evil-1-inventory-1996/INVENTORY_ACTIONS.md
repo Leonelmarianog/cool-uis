@@ -21,8 +21,12 @@ recipes still need reference material before they are coded.
 
 ## EQUIP
 
-- `equip-item.gif`: not reviewed yet. Check it before building EQUIP,
-  including what choosing EQUIP on the equipped weapon does.
+- `equip-item.gif`: with nothing equipped, EQUIP on the Beretta shows it in the
+  equipped weapon panel at once, in the frame the menu starts closing. The menu
+  closes by itself and the item is released (the slot's frame blinks again).
+  The slot itself shows no "equipped" marker.
+- Stated by the user: EQUIP on the equipped weapon unequips it; EQUIP on
+  another weapon swaps to it (only one weapon is equipped).
 
 ## USE
 
