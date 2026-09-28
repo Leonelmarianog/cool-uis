@@ -72,5 +72,12 @@
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-r-b.png",
     "recovery": { "steps": 3, "curesPoison": true }
+  },
+  {
+    "id": "serum",
+    "type": "consumable",
+    "name": "SERUM",
+    "sprite": "recovery-items/serum.png",
+    "recovery": { "steps": 0, "curesPoison": true }
   }
 ]
