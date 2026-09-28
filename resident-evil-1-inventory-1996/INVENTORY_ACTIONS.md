@@ -99,6 +99,8 @@ Rules stated by the user:
   that do not mix show "Mixing these does not seem to work."
 - "Will you mix the herbs?": Yes mixes; No or Escape returns to choosing a
   target.
+  The choices appear as soon as the question is typed out; the user dropped
+  the recording's 0.85 s wait.
 - After a successful combine, the menu closes and the item is released.
 - The recipes are in `src/data/recipes.json`; capacities and stack limits are in
   `src/data/items.json`.
