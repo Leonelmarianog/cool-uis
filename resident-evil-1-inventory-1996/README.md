@@ -52,6 +52,7 @@ src/
   stores/             Pinia stores: player data and inventory UI state
   types/              TypeScript types for the data
   assets/
+    characters/       One 30 × 30 portrait per character
     fonts/            Bundled fonts and their licenses
     items/            One 40 × 30 image per item
     ui/               Panel artwork, one image pixel per game pixel
