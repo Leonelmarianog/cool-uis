@@ -2,7 +2,8 @@
 import { ref } from 'vue';
 import frame from '../assets/ui/item-action-frame.png'
 
-const { options = [] } = defineProps<{ options?: string[] }>()
+// `inactive` freezes the menu while COMBN waits for a second item.
+const { options = [], inactive = false } = defineProps<{ options?: string[]; inactive?: boolean }>();
 
 const emit = defineEmits<{ choose: [option: string] }>();
 
@@ -19,7 +20,8 @@ const highlighted = ref(0);
       class="item-action-menu__option"
       type="button"
       role="menuitem"
-      @mouseenter="highlighted = index"
+      :disabled="inactive"
+      @mouseenter="inactive || (highlighted = index)"
       @click="emit('choose', option)"
     >
       <span class="item-action-menu__label">{{ option }}</span>

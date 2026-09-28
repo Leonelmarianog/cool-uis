@@ -8,7 +8,8 @@ const {
   slots = [],
   cursorSlot = 0,
   locked = false,
-} = defineProps<{ size: number; slots?: ItemView[]; cursorSlot?: number; locked?: boolean }>()
+  targetSlot = null,
+} = defineProps<{ size: number; slots?: ItemView[]; cursorSlot?: number; locked?: boolean; targetSlot?: number | null }>()
 
 const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>()
 
@@ -48,6 +49,12 @@ function cellLabel(slot: ItemView | null, index: number): string {
           :class="{ 'inventory-grid__selection--locked': locked }"
           aria-hidden="true"
         ></span>
+        <template v-if="index === targetSlot">
+          <span class="inventory-grid__target inventory-grid__target--top" aria-hidden="true"></span>
+          <span class="inventory-grid__target inventory-grid__target--bottom" aria-hidden="true"></span>
+          <span class="inventory-grid__target inventory-grid__target--left" aria-hidden="true"></span>
+          <span class="inventory-grid__target inventory-grid__target--right" aria-hidden="true"></span>
+        </template>
       </li>
     </ol>
   </section>
@@ -126,6 +133,42 @@ function cellLabel(slot: ItemView | null, index: number): string {
 .inventory-grid__selection--locked {
   animation: none;
   background-position: 0 100%;
+}
+
+/* COMBN's target cursor: four arrows pointing in at the cell, blinking between
+   the bright and dark halves of their images like the selection frame. */
+.inventory-grid__target {
+  position: absolute;
+  width: calc(4 * var(--game-pixel));
+  height: calc(4 * var(--game-pixel));
+  background: 0 0 / 100% 200% no-repeat;
+  image-rendering: pixelated;
+  animation: inventory-selection-blink 1s steps(1, end) infinite;
+  pointer-events: none;
+}
+
+.inventory-grid__target--top {
+  top: 0;
+  left: calc(18 * var(--game-pixel));
+  background-image: url('../assets/ui/target-arrow-down.png');
+}
+
+.inventory-grid__target--bottom {
+  top: calc(26 * var(--game-pixel));
+  left: calc(18 * var(--game-pixel));
+  background-image: url('../assets/ui/target-arrow-up.png');
+}
+
+.inventory-grid__target--left {
+  top: calc(13 * var(--game-pixel));
+  left: calc(2 * var(--game-pixel));
+  background-image: url('../assets/ui/target-arrow-right.png');
+}
+
+.inventory-grid__target--right {
+  top: calc(13 * var(--game-pixel));
+  left: calc(34 * var(--game-pixel));
+  background-image: url('../assets/ui/target-arrow-left.png');
 }
 
 @keyframes inventory-selection-blink {

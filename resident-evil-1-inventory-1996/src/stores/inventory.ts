@@ -10,11 +10,15 @@ export const useInventoryStore = defineStore('inventory', () => {
   const cursorSlot = ref(0);
   // The selected item is tracked by ID, so it stays attached to its item.
   const selectedItemId = ref<string | null>(null);
+  // While COMBN waits for a second item, the slot under the green target cursor.
+  const targetSlot = ref<number | null>(null);
   // A message typed into the description panel in place of the item name.
   const message = ref<string | null>(null);
 
-  const itemUnderCursor = computed(() => player.inventorySlots[cursorSlot.value] ?? null);
+  // The item whose name the description panel shows: the target while choosing one.
+  const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
   const isSelecting = computed(() => selectedItemId.value !== null);
+  const isChoosingTarget = computed(() => targetSlot.value !== null);
   const selectedItem = computed(() => player.inventorySlots.find(item => item.id === selectedItemId.value) ?? null);
 
   // Weapons are equipped; every other item is used.
@@ -25,12 +29,20 @@ export const useInventoryStore = defineStore('inventory', () => {
   });
 
   function moveCursor(slot: number) {
+    if (isChoosingTarget.value) {
+      targetSlot.value = slot;
+      return;
+    }
     // While an item is selected, the cursor stays on it.
     if (isSelecting.value) return;
     cursorSlot.value = slot;
   }
 
   function selectItemAt(slot: number) {
+    if (isChoosingTarget.value) {
+      combineWith(slot);
+      return;
+    }
     if (isSelecting.value) return;
     const item = player.inventorySlots[slot];
     if (!item) return;
@@ -39,6 +51,11 @@ export const useInventoryStore = defineStore('inventory', () => {
   }
 
   function backOut() {
+    // From choosing a target, back out to the menu only.
+    if (isChoosingTarget.value) {
+      targetSlot.value = null;
+      return;
+    }
     selectedItemId.value = null;
     message.value = null;
   }
@@ -68,16 +85,31 @@ export const useInventoryStore = defineStore('inventory', () => {
       return;
     }
 
+    if (action === 'COMBN') {
+      // The target cursor starts on the selected item.
+      targetSlot.value = cursorSlot.value;
+      return;
+    }
+
     // Placeholder until the other actions are implemented.
     console.log(`${action}: ${selectedItem.value.name}`);
+  }
+
+  // Placeholder until reloading, stacking and mixing are implemented: nothing
+  // combines yet, so the target cursor stays, as it does for unrelated items.
+  function combineWith(slot: number) {
+    const target = player.inventorySlots[slot];
+    console.log(`COMBN: ${selectedItem.value?.name} + ${target?.name ?? 'empty slot'}`);
   }
 
   return {
     cursorSlot,
     selectedItemId,
+    targetSlot,
     message,
     itemUnderCursor,
     isSelecting,
+    isChoosingTarget,
     selectedItem,
     itemActions,
     moveCursor,
