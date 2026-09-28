@@ -16,6 +16,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   const message = ref<string | null>(null);
   // While "Will you mix the herbs?" waits for Yes or No, the herb chosen as the target.
   const mixTargetId = ref<string | null>(null);
+  // While CHECK shows the selected item's 3D model in place of the menu.
+  const isChecking = ref(false);
 
   // The item whose name the description panel shows: the target while choosing one.
   const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
@@ -65,6 +67,11 @@ export const useInventoryStore = defineStore('inventory', () => {
       cancelMix();
       return;
     }
+    // From CHECK, back out to the menu only.
+    if (isChecking.value) {
+      isChecking.value = false;
+      return;
+    }
     // From choosing a target, back out to the menu only.
     if (isChoosingTarget.value) {
       targetSlot.value = null;
@@ -99,14 +106,15 @@ export const useInventoryStore = defineStore('inventory', () => {
       return;
     }
 
-    if (action === 'COMBN') {
-      // The target cursor starts on the selected item.
-      targetSlot.value = cursorSlot.value;
+    if (action === 'CHECK') {
+      isChecking.value = true;
       return;
     }
 
-    // Placeholder until the other actions are implemented.
-    console.log(`${action}: ${selectedItem.value.name}`);
+    if (action === 'COMBN') {
+      // The target cursor starts on the selected item.
+      targetSlot.value = cursorSlot.value;
+    }
   }
 
   // Items that do not combine, such as the source itself or an empty slot, do
@@ -158,6 +166,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     targetSlot,
     message,
     mixTargetId,
+    isChecking,
     itemUnderCursor,
     isSelecting,
     isChoosingTarget,
