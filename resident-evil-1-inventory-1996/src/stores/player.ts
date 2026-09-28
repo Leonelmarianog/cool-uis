@@ -80,9 +80,16 @@ function toItemView(playerItem: PlayerItem): ItemView {
   };
 }
 
-export const usePlayerStore = defineStore('player', () => {
+// On the dev server, end-to-end tests can replace parts of the starting state
+// (see e2e/fixtures.ts). A production build ignores it.
+function startingState(): PlayerState {
+  const testState = import.meta.env.DEV ? window.__TEST_PLAYER__ : undefined;
   // A deep copy, so changes to the store never alter the imported data.
-  const state = structuredClone(initialState);
+  return structuredClone({ ...initialState, ...testState });
+}
+
+export const usePlayerStore = defineStore('player', () => {
+  const state = startingState();
 
   const characterId = ref(state.characterId);
   const healthStatus = ref(state.healthStatus);
