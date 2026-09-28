@@ -77,6 +77,8 @@ export const usePlayerStore = defineStore('player', () => {
 
   const characterId = ref(state.characterId);
   const healthStatus = ref(state.healthStatus);
+  // How many recovery items were used; the ECG plays its heal animation on each one.
+  const recoveriesUsed = ref(0);
   const inventory = ref<PlayerItem[]>(state.inventory);
   const equippedItemId = ref<string | null>(state.equippedItemId);
   const itemBox = ref<(PlayerItem | null)[]>(state.itemBox);
@@ -107,6 +109,7 @@ export const usePlayerStore = defineStore('player', () => {
     if (item.type !== 'consumable' || !item.recovery) return false;
 
     healthStatus.value = recover(healthStatus.value, item.recovery);
+    recoveriesUsed.value++;
     // The items after it move up to fill its slot.
     inventory.value.splice(index, 1);
     return true;
@@ -121,6 +124,7 @@ export const usePlayerStore = defineStore('player', () => {
   return {
     characterId,
     healthStatus,
+    recoveriesUsed,
     inventory,
     equippedItemId,
     itemBox,

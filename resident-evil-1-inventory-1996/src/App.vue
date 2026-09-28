@@ -32,7 +32,11 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
-        <HealthStatusPanel :status="player.healthStatus" @cycle="player.cycleHealthStatus" />
+        <HealthStatusPanel
+          :status="player.healthStatus"
+          :recoveries-used="player.recoveriesUsed"
+          @cycle="player.cycleHealthStatus"
+        />
         <EquippedWeaponPanel class="project-shell__weapon" :weapon="player.equippedWeapon" />
       </div>
       <div class="project-shell__items">
