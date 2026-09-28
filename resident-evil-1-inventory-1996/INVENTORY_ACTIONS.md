@@ -5,9 +5,9 @@ inventory action, to build the actions from. For what the UI does today, see
 [UI_FEATURES.md](UI_FEATURES.md). Questions still open about the data model are
 in [docs/data-model/open-questions.md](docs/data-model/open-questions.md).
 
-Only rules backed by a recording or stated by the user belong here. Exact
-healing amounts, item descriptions, other weapons' capacities, and other
-recipes still need reference material before they are coded.
+Only rules backed by a recording or stated by the user belong here. Item
+descriptions and other weapons' capacities still need reference material
+before they are coded.
 
 ## Action menu
 
@@ -30,11 +30,37 @@ recipes still need reference material before they are coded.
 
 ## USE
 
-- `use-item-2.gif`: a mixed herb disappears after use and health changes.
-  Healing amounts are not known; item data does not invent them.
-- `use-item-1.gif`: not reviewed yet. Check it before building USE.
-- USE on an item that is not consumable (ammunition, key items) does nothing
-  and shows no message (stated by the user).
+- `use-item-2.gif`: MIXED HERBS (G+G) used at Danger. The menu closes and the
+  herbs leave their slot; the name panel goes blank. On the ECG screen the
+  trace and label vanish, a green band sweeps up from the bottom (about 5
+  frames, ~350 ms), the screen stays empty for ~0.3 s, then the label returns
+  as Fine and the trace restarts as yellow Fine.
+- `use-item-1.gif`: USE on a CLIP types "You can't use this alone." into the
+  description panel, one letter at a time; it stays about a second, then the
+  panel shows "CLIP" again. The menu stays open.
+
+Health rules (stated by the user). There are no health points, only the five
+ECG statuses, in order: Poison < Danger < Caution < Fine (yellow) < Fine
+(green). A status never goes past Fine (green).
+
+| Item | From Poison | From any other status |
+| --- | --- | --- |
+| Green herb | nothing | +1 |
+| Mixed herbs G+G | nothing | +2 |
+| Mixed herbs G+R | nothing | +3 |
+| Blue herb, serum | → Danger | nothing |
+| Mixed herbs G+B | → Caution | +1 |
+| Mixed herbs G+R+B, F.-aid spray | → Fine (green) | → Fine (green) |
+
+- A consumable is always used up, even when it has no effect, with no message.
+- USE on a red herb shows "You can't use this alone.": its only effect is to
+  strengthen a green herb in a mix. A blue herb can be used alone (it cures
+  poison).
+- USE on ammunition shows "You can't use this alone."
+- USE on a key item shows "You can't use it here." Key items only work where
+  the character stands in the game world, so none can be used here.
+- When an item is used up, the items after it move up to fill its slot. The
+  user will provide a recording of that animation.
 
 ## COMBN
 
@@ -46,7 +72,11 @@ recipes still need reference material before they are coded.
 - `combine-item-2.gif`: clips of 14 and 15 become 29; then 29 and 15 become 44.
   A clip stack holds at most **255** rounds (stated by the user, not shown).
 - `combine-item-3.gif`: two green herbs become MIXED HERBS, which has no amount.
-  Green + red is also a recipe (user's request); no recording shows it.
+- The allowed herb mixes are G+G, G+R, G+B and G+R+B (stated by the user).
+  Red and blue herbs cannot be mixed with each other alone.
+- Combining two herbs that do not make a mix shows "Mixing these does not seem
+  to work." Combining any other two unrelated items does nothing, with no
+  message (stated by the user).
 - The recipes are in `src/data/recipes.json`; capacities and stack limits are in
   `src/data/items.json`.
 

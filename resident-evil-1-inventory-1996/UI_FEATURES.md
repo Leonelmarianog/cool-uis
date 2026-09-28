@@ -25,9 +25,9 @@ features are built; more controls may be added later.
 | Choose an item action | Implemented | Weapons offer EQUIP / CHECK / COMBN; other items offer USE / CHECK / COMBN. The red frame starts on the first option and follows the hovered one. |
 | Close item actions | Implemented | Escape shrinks the menu closed and unlocks the cursor. |
 | Equip a weapon — EQUIP | Implemented | Equips the weapon, replacing the equipped one, and the equipped weapon panel shows it. Choosing EQUIP on the equipped weapon unequips it. The menu then closes and the item is released. |
-| Use an item — USE | Planned | Clicking the option only logs it. Should heal or cure with recovery items and consume them; on other items it does nothing. |
+| Use an item — USE | Planned | Clicking the option only logs it. Should use up herbs, the spray and the serum and raise the health status (rules in INVENTORY_ACTIONS.md), and show "You can't use this alone." (ammunition, red herb) or "You can't use it here." (key items). |
 | Examine an item — CHECK | Planned | Clicking the option only logs it. Should show the item as a 3D model that can be rotated. |
-| Combine items — COMBN | Planned | Clicking the option only logs it. Should pick a second item, then reload a weapon, merge ammunition stacks, or mix herbs from `recipes.json`. |
+| Combine items — COMBN | Planned | Clicking the option only logs it. Should pick a second item, then reload a weapon, merge ammunition stacks, or mix herbs (G+G, G+R, G+B, G+R+B). Herbs that do not mix show "Mixing these does not seem to work."; other unrelated items do nothing. |
 
 ## Main menu
 
