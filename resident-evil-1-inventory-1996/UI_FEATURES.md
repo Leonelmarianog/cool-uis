@@ -27,7 +27,7 @@ features are built; more controls may be added later.
 | Equip a weapon — EQUIP | Implemented | Equips the weapon, replacing the equipped one, and the equipped weapon panel shows it. Choosing EQUIP on the equipped weapon unequips it. The menu then closes and the item is released. |
 | Use an item — USE | Implemented | Herbs, mixed herbs, the spray and the serum raise the health status (rules in INVENTORY_ACTIONS.md) and are used up, even when they have no effect; the items after them move up. The ECG plays its heal animation and the menu closes. Ammunition and the red herb type "You can't use this alone." and key items "You can't use it here." into the description panel; the menu stays open. |
 | Examine an item — CHECK | Planned | Clicking the option only logs it. Should show the item as a 3D model that can be rotated. |
-| Combine items — COMBN | Planned | Clicking the option only logs it. Should pick a second item, then reload a weapon, merge ammunition stacks, or mix herbs (G+G, G+R, G+B, G+R+B). Herbs that do not mix show "Mixing these does not seem to work."; other unrelated items do nothing. |
+| Combine items — COMBN | Planned | Clicking the option only logs it. Should pick a second item with a green target cursor, then reload a weapon, stack ammunition, or mix herbs after a Yes/No prompt (rules in INVENTORY_ACTIONS.md). |
 
 ## Main menu
 
