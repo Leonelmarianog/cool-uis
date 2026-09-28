@@ -27,7 +27,12 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     <div class="project-shell__inventory">
       <ItemPreviewPanel class="project-shell__preview">
         <Transition enter-active-class="item-action-menu--opening" leave-active-class="item-action-menu--closing">
-          <ItemActionMenu v-if="inventory.isSelecting" :options="inventory.itemActions" @choose="inventory.chooseAction" />
+          <ItemActionMenu
+            v-if="inventory.isSelecting"
+            :options="inventory.itemActions"
+            :inactive="inventory.isChoosingTarget"
+            @choose="inventory.chooseAction"
+          />
         </Transition>
       </ItemPreviewPanel>
       <div class="project-shell__status">
@@ -47,6 +52,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
           :slots="player.inventorySlots"
           :cursor-slot="inventory.cursorSlot"
           :locked="inventory.isSelecting"
+          :target-slot="inventory.targetSlot"
           @hover="inventory.moveCursor"
           @select="inventory.selectItemAt"
         />
@@ -55,7 +61,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         class="project-shell__description"
         :item-name="inventory.itemUnderCursor?.name"
         :message="inventory.message"
+        :choices="inventory.messageChoices"
         @message-end="inventory.clearMessage"
+        @choose="inventory.answerMix"
       />
     </div>
   </main>

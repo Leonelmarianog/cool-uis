@@ -35,6 +35,11 @@
       "id": "player-item-6",
       "itemId": "first-aid-spray",
       "type": "consumable"
+    },
+    {
+      "id": "player-item-7",
+      "itemId": "blue-herb",
+      "type": "consumable"
     }
   ],
 

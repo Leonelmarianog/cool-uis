@@ -30,19 +30,22 @@
     "type": "consumable",
     "name": "GREEN HERB",
     "sprite": "recovery-items/green-herb.png",
+    "herb": true,
     "recovery": { "steps": 1, "curesPoison": false }
   },
   {
     "id": "red-herb",
     "type": "consumable",
     "name": "RED HERB",
-    "sprite": "recovery-items/red-herb.png"
+    "sprite": "recovery-items/red-herb.png",
+    "herb": true
   },
   {
     "id": "mixed-herbs-g-g",
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-g.png",
+    "herb": true,
     "recovery": { "steps": 2, "curesPoison": false }
   },
   {
@@ -50,6 +53,7 @@
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-r.png",
+    "herb": true,
     "recovery": { "steps": 3, "curesPoison": false }
   },
   {
@@ -57,6 +61,7 @@
     "type": "consumable",
     "name": "BLUE HERB",
     "sprite": "recovery-items/blue-herb.png",
+    "herb": true,
     "recovery": { "steps": 0, "curesPoison": true }
   },
   {
@@ -64,6 +69,7 @@
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-b.png",
+    "herb": true,
     "recovery": { "steps": 1, "curesPoison": true }
   },
   {
@@ -71,6 +77,7 @@
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-r-b.png",
+    "herb": true,
     "recovery": { "steps": 3, "curesPoison": true }
   },
   {

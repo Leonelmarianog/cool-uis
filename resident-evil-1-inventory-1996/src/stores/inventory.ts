@@ -10,11 +10,18 @@ export const useInventoryStore = defineStore('inventory', () => {
   const cursorSlot = ref(0);
   // The selected item is tracked by ID, so it stays attached to its item.
   const selectedItemId = ref<string | null>(null);
+  // While COMBN waits for a second item, the slot under the green target cursor.
+  const targetSlot = ref<number | null>(null);
   // A message typed into the description panel in place of the item name.
   const message = ref<string | null>(null);
+  // While "Will you mix the herbs?" waits for Yes or No, the herb chosen as the target.
+  const mixTargetId = ref<string | null>(null);
 
-  const itemUnderCursor = computed(() => player.inventorySlots[cursorSlot.value] ?? null);
+  // The item whose name the description panel shows: the target while choosing one.
+  const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
   const isSelecting = computed(() => selectedItemId.value !== null);
+  const isChoosingTarget = computed(() => targetSlot.value !== null);
+  const isConfirmingMix = computed(() => mixTargetId.value !== null);
   const selectedItem = computed(() => player.inventorySlots.find(item => item.id === selectedItemId.value) ?? null);
 
   // Weapons are equipped; every other item is used.
@@ -24,13 +31,27 @@ export const useInventoryStore = defineStore('inventory', () => {
     return [firstAction, 'CHECK', 'COMBN'];
   });
 
+  // The choices the description panel offers under the message.
+  const messageChoices = computed(() => (isConfirmingMix.value ? ['Yes', 'No'] : []));
+
   function moveCursor(slot: number) {
+    // While Yes or No is asked, the target cursor stays on the target.
+    if (isConfirmingMix.value) return;
+    if (isChoosingTarget.value) {
+      targetSlot.value = slot;
+      return;
+    }
     // While an item is selected, the cursor stays on it.
     if (isSelecting.value) return;
     cursorSlot.value = slot;
   }
 
   function selectItemAt(slot: number) {
+    if (isConfirmingMix.value) return;
+    if (isChoosingTarget.value) {
+      combineWith(slot);
+      return;
+    }
     if (isSelecting.value) return;
     const item = player.inventorySlots[slot];
     if (!item) return;
@@ -39,6 +60,16 @@ export const useInventoryStore = defineStore('inventory', () => {
   }
 
   function backOut() {
+    // Escape answers No to "Will you mix the herbs?".
+    if (isConfirmingMix.value) {
+      cancelMix();
+      return;
+    }
+    // From choosing a target, back out to the menu only.
+    if (isChoosingTarget.value) {
+      targetSlot.value = null;
+      return;
+    }
     selectedItemId.value = null;
     message.value = null;
   }
@@ -68,22 +99,77 @@ export const useInventoryStore = defineStore('inventory', () => {
       return;
     }
 
+    if (action === 'COMBN') {
+      // The target cursor starts on the selected item.
+      targetSlot.value = cursorSlot.value;
+      return;
+    }
+
     // Placeholder until the other actions are implemented.
     console.log(`${action}: ${selectedItem.value.name}`);
+  }
+
+  // Items that do not combine, such as the source itself or an empty slot, do
+  // nothing and the target cursor stays; herbs that do not mix show a message.
+  function combineWith(slot: number) {
+    const target = player.inventorySlots[slot];
+    if (!selectedItem.value || !target) return;
+    const sourceId = selectedItem.value.id;
+    if (target.id === sourceId) return;
+
+    if (player.reload(sourceId, target.id) || player.stack(sourceId, target.id)) {
+      finishCombination();
+    } else if (player.isHerb(sourceId) && player.isHerb(target.id)) {
+      if (player.canMix(sourceId, target.id)) {
+        mixTargetId.value = target.id;
+        message.value = 'Will you mix the herbs?';
+      } else {
+        message.value = 'Mixing these does not seem to work.';
+      }
+    }
+  }
+
+  // Yes mixes the herbs; No goes back to choosing a target.
+  function answerMix(choice: string) {
+    if (!selectedItem.value || !mixTargetId.value) return;
+    if (choice === 'Yes') {
+      player.mix(selectedItem.value.id, mixTargetId.value);
+      finishCombination();
+    } else {
+      cancelMix();
+    }
+  }
+
+  function cancelMix() {
+    mixTargetId.value = null;
+    message.value = null;
+  }
+
+  // The game closes the menu and releases the item after a combination.
+  function finishCombination() {
+    mixTargetId.value = null;
+    targetSlot.value = null;
+    backOut();
   }
 
   return {
     cursorSlot,
     selectedItemId,
+    targetSlot,
     message,
+    mixTargetId,
     itemUnderCursor,
     isSelecting,
+    isChoosingTarget,
+    isConfirmingMix,
     selectedItem,
     itemActions,
+    messageChoices,
     moveCursor,
     selectItemAt,
     backOut,
     clearMessage,
     chooseAction,
+    answerMix,
   };
 });

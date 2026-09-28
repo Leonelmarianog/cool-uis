@@ -36,6 +36,8 @@ export interface Recovery {
 
 export interface ConsumableItem extends BaseItem {
   type: 'consumable';
+  /** Herbs that have no recipe together show "Mixing these does not seem to work." */
+  herb?: boolean;
   /** Missing on items that cannot be used alone, such as the red herb. */
   recovery?: Recovery;
 }

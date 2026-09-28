@@ -64,19 +64,44 @@ ECG statuses, in order: Poison < Danger < Caution < Fine (yellow) < Fine
 
 ## COMBN
 
-- `combine-cursor.gif`: while choosing the second item, the first item keeps
-  its red frame and the action menu stays visible. Green inward arrows mark the
-  target slot.
-- `combine-item-1.gif`: Beretta 14 + clip 15 becomes Beretta 15 + clip 14, and
-  the equipped weapon panel updates too. The Beretta holds **15** rounds.
-- `combine-item-2.gif`: clips of 14 and 15 become 29; then 29 and 15 become 44.
-  A clip stack holds at most **255** rounds (stated by the user, not shown).
-- `combine-item-3.gif`: two green herbs become MIXED HERBS, which has no amount.
-- The allowed herb mixes are G+G, G+R, G+B and G+R+B (stated by the user).
-  Red and blue herbs cannot be mixed with each other alone.
-- Combining two herbs that do not make a mix shows "Mixing these does not seem
-  to work." Combining any other two unrelated items does nothing, with no
-  message (stated by the user).
+The source is the item COMBN was chosen on; the target is the second item.
+
+- `combine-cursor.gif`: after COMBN the menu stays on screen with COMBN framed,
+  and the source keeps its steady dark frame. A target cursor of four small
+  green triangles, pointing inward at the slot's top, bottom, left and right
+  (the green arrows in `design/ui-sprites.png`), follows the pointer. The name
+  panel shows the name of the item under it.
+- `combine-item-1.gif`: Beretta 14 (source) + clip 15 (target) becomes Beretta
+  15 + clip 14; the equipped weapon panel updates too. The Beretta holds **15**
+  rounds. The menu closes and the item is released.
+- `combine-item-2.gif`: clip 15 (source) + clip 14 (target) gives a clip of 29
+  in the source; the target is removed and the items after it move up. Then 15
+  and 29 make 44. A clip stack holds at most **255** rounds (stated by the user).
+- `combine-item-3.gif`: green herb + green herb types "Will you mix the herbs?"
+  into the description panel, then shows "▸Yes  No" on a second line at the
+  right, with the ▸ blinking. After Yes, MIXED HERBS (no amount) takes the
+  source's place and the target is removed.
+
+Rules stated by the user:
+
+- Escape while choosing a target goes back to the menu, COMBN still framed.
+- Choosing the source itself or an unrelated item does nothing: no message, and
+  the target cursor stays.
+- Reloading works both ways: a weapon and its ammunition, in either order, move
+  rounds from the ammunition into the weapon, up to its capacity.
+- Stacking moves rounds from the target into the source, up to 255; any
+  leftover stays in the target. A stack that reaches 0 is removed.
+- A full weapon or a full stack still combines as usual (the menu closes), but
+  no rounds move. For stacking, this holds when either stack is full, source
+  or target.
+- Herb mixes: G+G, G+R, G+B, then (G+R)+B and (G+B)+R, both making G+R+B. Red
+  and blue cannot be mixed with each other; every mix needs a green. Herbs
+  that do not mix show "Mixing these does not seem to work."
+- "Will you mix the herbs?": Yes mixes; No or Escape returns to choosing a
+  target.
+  The choices appear as soon as the question is typed out; the user dropped
+  the recording's 0.85 s wait.
+- After a successful combine, the menu closes and the item is released.
 - The recipes are in `src/data/recipes.json`; capacities and stack limits are in
   `src/data/items.json`.
 
