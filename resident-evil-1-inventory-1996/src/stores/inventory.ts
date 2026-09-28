@@ -96,15 +96,22 @@ export const useInventoryStore = defineStore('inventory', () => {
   }
 
   // Items that do not combine, such as the source itself or an empty slot, do
-  // nothing and the target cursor stays.
+  // nothing and the target cursor stays; herbs that do not mix show a message.
   function combineWith(slot: number) {
     const target = player.inventorySlots[slot];
     if (!selectedItem.value || !target) return;
     const sourceId = selectedItem.value.id;
-    if (player.reload(sourceId, target.id) || player.stack(sourceId, target.id)) {
+    if (target.id === sourceId) return;
+
+    const combined = player.reload(sourceId, target.id)
+      || player.stack(sourceId, target.id)
+      || player.mix(sourceId, target.id);
+    if (combined) {
       // The game closes the menu and releases the item after a combination.
       targetSlot.value = null;
       backOut();
+    } else if (player.isHerb(sourceId) && player.isHerb(target.id)) {
+      message.value = 'Mixing these does not seem to work.';
     }
   }
 
