@@ -4,12 +4,15 @@ import panel from '../assets/ui/item-description-panel.png'
 import choiceArrow from '../assets/ui/choice-arrow.svg';
 
 // A message replaces the item name while it is typed out and held. A message
-// with choices, such as Yes and No, stays until one is clicked.
+// with choices, such as Yes and No, stays until one is clicked; a kept message,
+// such as CHECK's description, stays until it is cleared. A "\n" in a message
+// starts its second line.
 const {
   itemName = '',
   message = null,
   choices = [],
-} = defineProps<{ itemName?: string; message?: string | null; choices?: string[] }>();
+  keepMessage = false,
+} = defineProps<{ itemName?: string; message?: string | null; choices?: string[]; keepMessage?: boolean }>();
 
 const emit = defineEmits<{ 'message-end': []; choose: [choice: string] }>();
 
@@ -34,7 +37,7 @@ function typeNextCharacter(text: string) {
   } else if (choices.length > 0) {
     // The choices appear as soon as the message is typed out.
     areChoicesShown.value = true;
-  } else {
+  } else if (!keepMessage) {
     timer = setTimeout(() => emit('message-end'), HOLD_MS);
   }
 }
@@ -50,6 +53,7 @@ watch(() => message, text => {
 onUnmounted(() => clearTimeout(timer));
 
 const text = computed(() => (message === null ? itemName : message.slice(0, typedLength.value)));
+const lines = computed(() => text.value.split('\n'));
 
 const choiceColumns = computed(() => {
   let column = FIRST_CHOICE_COLUMN;
@@ -64,7 +68,12 @@ const choiceColumns = computed(() => {
 <template>
   <section class="item-description-panel" aria-label="Item description panel">
     <img class="item-description-panel__artwork" :src="panel" alt="" />
-    <p class="item-description-panel__text item-description-panel__name">{{ text }}</p>
+    <p
+      v-for="(line, index) in lines"
+      :key="index"
+      class="item-description-panel__text item-description-panel__line"
+      :style="{ '--line': index }"
+    >{{ line }}</p>
     <template v-if="areChoicesShown">
       <img
         class="item-description-panel__choice-arrow"
@@ -120,9 +129,10 @@ const choiceColumns = computed(() => {
   paint-order: stroke fill;
 }
 
-.item-description-panel__name {
-  /* Capitals (0.58em tall, their top 0.14em below the line's top) fill rows 187–196. */
-  top: calc(5 * var(--game-pixel) - 0.14em);
+.item-description-panel__line {
+  /* On the first line, capitals (0.58em tall, their top 0.14em below the
+     line's top) fill rows 187–196. Each next line is 16 rows lower. */
+  top: calc((5 + 16 * var(--line)) * var(--game-pixel) - 0.14em);
   left: calc(48 * var(--game-pixel));
 }
 

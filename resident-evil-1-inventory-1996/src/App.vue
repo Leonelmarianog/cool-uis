@@ -8,6 +8,7 @@ import InventoryGrid from './components/InventoryGrid.vue'
 import MenuPanel from './components/MenuPanel.vue'
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
 import ItemActionMenu from './components/ItemActionMenu.vue'
+import ItemModelViewer from './components/ItemModelViewer.vue'
 import { useInventoryStore } from './stores/inventory'
 import { usePlayerStore } from './stores/player'
 
@@ -27,13 +28,22 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     <div class="project-shell__inventory">
       <ItemPreviewPanel class="project-shell__preview">
         <Transition enter-active-class="item-action-menu--opening" leave-active-class="item-action-menu--closing">
+          <!-- v-show keeps the menu's framed option while CHECK hides it. -->
           <ItemActionMenu
             v-if="inventory.isSelecting"
+            v-show="!inventory.isChecking"
             :options="inventory.itemActions"
             :inactive="inventory.isChoosingTarget"
             @choose="inventory.chooseAction"
           />
         </Transition>
+        <ItemModelViewer
+          v-if="inventory.isChecking"
+          :frozen="inventory.isDescribing"
+          :leaving="inventory.isLeavingCheck"
+          @describe="inventory.showDescription"
+          @left="inventory.finishCheck"
+        />
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
@@ -62,6 +72,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
         :item-name="inventory.itemUnderCursor?.name"
         :message="inventory.message"
         :choices="inventory.messageChoices"
+        :keep-message="inventory.isDescribing"
         @message-end="inventory.clearMessage"
         @choose="inventory.answerMix"
       />

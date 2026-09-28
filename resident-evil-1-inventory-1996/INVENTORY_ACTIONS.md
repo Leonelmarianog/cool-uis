@@ -107,9 +107,38 @@ Rules stated by the user:
 
 ## CHECK
 
-- The user wants CHECK to show the item as a 3D model that can be rotated,
-  built with Three.js. `check-item.gif` and `check-item-in-out.gif` are not
-  reviewed yet.
+CHECK shows the item as a 3D model in the preview area, built with Three.js.
+
+- `check-item.gif`: after CHECK the menu closes and the preview area turns dark
+  navy. The model appears small and spinning in the middle, then grows to full
+  size in about 0.3–0.4 s. Four small dark red triangles sit at the top,
+  bottom, left and right edges of the area (they do not blink); while the model
+  turns toward one of them, that one lights bright red. The model turns on both axes and zooms in
+  until it fills the area and back out. The name panel keeps the item's name.
+- `check-item-in-out.gif`: the description types into the description panel
+  in mixed case, wrapping onto a second line ("Beretta M92FS. Automatic loaded
+  with 9mm bullets.", "Clip for Beretta."). On leaving, the model spins and
+  shrinks back to a point, the area goes dark, and the menu opens again with
+  CHECK framed and the item still selected.
+
+Controls (stated by the user). CHECK is the one place that uses the keyboard;
+the rest of the inventory uses only left click and Escape.
+
+- W / A / S / D, or clicking the red arrows, rotate the model up, left, down
+  and right.
+- Q rotates it clockwise and E counter-clockwise.
+- Z zooms in and C zooms out.
+- Holding a key, or holding the mouse button on an arrow, keeps the model
+  moving until it is released.
+- K types the description into the description panel. While the description
+  is shown, the model is frozen in its current position and the controls do
+  nothing. The description stays until Escape.
+- Escape with the description shown removes it and gives the model's controls
+  back. Escape without it leaves CHECK and returns to the menu.
+
+Placeholders (stated by the user): until real models and texts exist, every
+item uses the same very low-poly model and the Beretta's description from
+`check-item-in-out.gif`.
 
 ## Amounts
 
