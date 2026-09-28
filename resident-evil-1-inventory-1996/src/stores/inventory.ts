@@ -95,11 +95,17 @@ export const useInventoryStore = defineStore('inventory', () => {
     console.log(`${action}: ${selectedItem.value.name}`);
   }
 
-  // Placeholder until reloading, stacking and mixing are implemented: nothing
-  // combines yet, so the target cursor stays, as it does for unrelated items.
+  // Items that do not combine, such as the source itself or an empty slot, do
+  // nothing and the target cursor stays.
   function combineWith(slot: number) {
     const target = player.inventorySlots[slot];
-    console.log(`COMBN: ${selectedItem.value?.name} + ${target?.name ?? 'empty slot'}`);
+    if (!selectedItem.value || !target) return;
+    const sourceId = selectedItem.value.id;
+    if (player.reload(sourceId, target.id) || player.stack(sourceId, target.id)) {
+      // The game closes the menu and releases the item after a combination.
+      targetSlot.value = null;
+      backOut();
+    }
   }
 
   return {

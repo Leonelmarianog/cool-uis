@@ -92,7 +92,8 @@ Rules stated by the user:
 - Stacking moves rounds from the target into the source, up to 255; any
   leftover stays in the target. A stack that reaches 0 is removed.
 - A full weapon or a full stack still combines as usual (the menu closes), but
-  no rounds move.
+  no rounds move. For stacking, this holds when either stack is full, source
+  or target.
 - Herb mixes: G+G, G+R, G+B, then (G+R)+B and (G+B)+R, both making G+R+B. Red
   and blue cannot be mixed with each other; every mix needs a green. Herbs
   that do not mix show "Mixing these does not seem to work."

@@ -7,7 +7,7 @@ import type { Character } from '../types/character';
 import type { HealthStatus } from '../types/health';
 import type { Item, Recovery } from '../types/item';
 import type { ItemView } from '../types/item-view';
-import type { PlayerItem, PlayerState } from '../types/player';
+import type { PlayerAmmunition, PlayerItem, PlayerState, PlayerWeapon } from '../types/player';
 
 // JSON imports are not type-checked, so the data is cast to its type.
 const characters = charactersData as Character[];
@@ -115,6 +115,59 @@ export const usePlayerStore = defineStore('player', () => {
     return true;
   }
 
+  // Reloads a weapon from its ammunition, with the two items in either order.
+  // Returns false when they are not a weapon and ammunition it loads.
+  function reload(sourceId: string, targetId: string): boolean {
+    const source = inventory.value.find(playerItem => playerItem.id === sourceId);
+    const target = inventory.value.find(playerItem => playerItem.id === targetId);
+    if (source?.type === 'weapon' && target?.type === 'ammunition') return loadWeapon(source, target);
+    if (source?.type === 'ammunition' && target?.type === 'weapon') return loadWeapon(target, source);
+    return false;
+  }
+
+  // Moves rounds into the weapon up to its capacity. A full weapon still counts
+  // as reloaded, with no rounds moved. A stack that reaches 0 is removed.
+  function loadWeapon(weapon: PlayerWeapon, ammunition: PlayerAmmunition): boolean {
+    const item = findItem(weapon.itemId);
+    if (item.type !== 'weapon' || !item.weapon.ammunition.includes(ammunition.itemId)) return false;
+
+    const rounds = Math.min(item.weapon.capacity - weapon.loadedRounds, ammunition.amount);
+    weapon.loadedRounds += rounds;
+    ammunition.amount -= rounds;
+    if (ammunition.amount === 0) removeItem(ammunition.id);
+    return true;
+  }
+
+  // Moves rounds from the target stack into the source stack of the same
+  // ammunition, up to its max stack; any leftover stays in the target. When
+  // either stack is full, it still counts as stacked, with no rounds moved.
+  // Returns false for any other pair.
+  function stack(sourceId: string, targetId: string): boolean {
+    const source = inventory.value.find(playerItem => playerItem.id === sourceId);
+    const target = inventory.value.find(playerItem => playerItem.id === targetId);
+    if (source?.type !== 'ammunition' || target?.type !== 'ammunition') return false;
+    if (source.id === target.id || source.itemId !== target.itemId) return false;
+
+    const item = findItem(source.itemId);
+    if (item.type !== 'ammunition') return false;
+
+    const { maxStack } = item.ammunition;
+    // Otherwise a full target would move almost all its rounds and look like a swap.
+    if (source.amount === maxStack || target.amount === maxStack) return true;
+
+    const rounds = Math.min(maxStack - source.amount, target.amount);
+    source.amount += rounds;
+    target.amount -= rounds;
+    if (target.amount === 0) removeItem(target.id);
+    return true;
+  }
+
+  // The items after it move up to fill its slot.
+  function removeItem(playerItemId: string) {
+    const index = inventory.value.findIndex(playerItem => playerItem.id === playerItemId);
+    inventory.value.splice(index, 1);
+  }
+
   // Demo control for the ECG: each call shows the next worse status, then wraps to Fine.
   function cycleHealthStatus() {
     const index = healthOrder.indexOf(healthStatus.value);
@@ -133,6 +186,8 @@ export const usePlayerStore = defineStore('player', () => {
     equippedWeapon,
     toggleEquipped,
     useItem,
+    reload,
+    stack,
     cycleHealthStatus,
   };
 });
