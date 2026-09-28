@@ -2,12 +2,8 @@ interface BaseItem {
   id: string;
   name: string;
 
-  /** One cell of a sprite sheet, addressed by zero-based grid position. */
-  sprite: {
-    sheetId: string;
-    column: number;
-    row: number;
-  };
+  /** Image path under `src/assets/items/`, e.g. `"weapon/beretta.png"`. */
+  sprite: string;
 }
 
 export interface WeaponItem extends BaseItem {

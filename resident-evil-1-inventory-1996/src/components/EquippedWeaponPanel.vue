@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import panel from '../assets/ui/equipped-weapon-panel.png'
-import SpriteFrame from './SpriteFrame.vue'
 import type { ItemView } from '../types/item-view'
 
 // null leaves the screen empty.
@@ -12,7 +11,7 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
     <img class="equipped-weapon-panel__artwork" :src="panel" alt="" />
     <div class="equipped-weapon-panel__screen">
       <template v-if="weapon">
-        <SpriteFrame class="equipped-weapon-panel__gun" :sprite="weapon.sprite" :label="weapon.name" />
+        <img class="equipped-weapon-panel__gun" :src="weapon.sprite" :alt="weapon.name" />
         <span class="equipped-weapon-panel__ammo" :aria-label="`${weapon.amount} rounds`">{{ weapon.amount }}</span>
       </template>
     </div>
@@ -48,6 +47,8 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
 .equipped-weapon-panel__gun {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .equipped-weapon-panel__ammo {
