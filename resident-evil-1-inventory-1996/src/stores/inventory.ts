@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { InventoryMode } from '../types/inventory-mode';
+import { useItemSelection } from '../composables/use-item-selection';
 import { ItemAction } from '../types/item-action';
 import { ItemType } from '../types/item';
 import { usePlayerStore } from './player';
@@ -16,14 +17,14 @@ export const useInventoryStore = defineStore('inventory', () => {
   const mode = ref<InventoryMode>(InventoryMode.Idle);
   // The cursor is a slot position, so it stays in place when items shift.
   const cursorSlot = ref(0);
-  // The selected item is tracked by ID, so it stays attached to its item.
-  const selectedItemId = ref<string | null>(null);
   // While COMBN waits for a second item, the slot under the green target cursor.
   const targetSlot = ref<number | null>(null);
   // A message typed into the description panel in place of the item name.
   const message = ref<string | null>(null);
   // While "Will you mix the herbs?" waits for Yes or No, the herb chosen as the target.
   const mixTargetId = ref<string | null>(null);
+
+  const selection = useItemSelection(mode, message);
 
   // The item whose name the description panel shows: the target while choosing one.
   const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
@@ -42,7 +43,9 @@ export const useInventoryStore = defineStore('inventory', () => {
   );
   const isDescribing = computed(() => mode.value === InventoryMode.ModelDescription);
   const isLeavingCheck = computed(() => mode.value === InventoryMode.ModelClosing);
-  const selectedItem = computed(() => player.inventorySlots.find(item => item.id === selectedItemId.value) ?? null);
+  const selectedItem = computed(
+    () => player.inventorySlots.find(item => item.id === selection.selectedItemId.value) ?? null,
+  );
 
   // Weapons are equipped; every other item is used.
   const itemActions = computed<ItemAction[]>(() => {
@@ -76,8 +79,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     const item = player.inventorySlots[slot];
     if (!item) return;
     cursorSlot.value = slot;
-    selectedItemId.value = item.id;
-    mode.value = InventoryMode.ItemSelected;
+    selection.select(item.id);
   }
 
   function backOut() {
@@ -103,9 +105,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       mode.value = InventoryMode.ItemSelected;
       return;
     }
-    selectedItemId.value = null;
-    message.value = null;
-    mode.value = InventoryMode.Idle;
+    selection.release();
   }
 
   function clearMessage() {
@@ -118,14 +118,14 @@ export const useInventoryStore = defineStore('inventory', () => {
     if (action === ItemAction.Equip) {
       player.toggleEquipped(selectedItem.value.id);
       // The game closes the menu and releases the item right after equipping.
-      backOut();
+      selection.release();
       return;
     }
 
     if (action === ItemAction.Use) {
       if (player.useItem(selectedItem.value.id)) {
         // The game closes the menu once the item is used up.
-        backOut();
+        selection.release();
       } else {
         // Key items only work in the game world; ammunition and the red herb only work combined.
         message.value =
@@ -199,14 +199,13 @@ export const useInventoryStore = defineStore('inventory', () => {
   function finishCombination() {
     mixTargetId.value = null;
     targetSlot.value = null;
-    mode.value = InventoryMode.ItemSelected;
-    backOut();
+    selection.release();
   }
 
   return {
     mode,
     cursorSlot,
-    selectedItemId,
+    selection,
     targetSlot,
     message,
     mixTargetId,
