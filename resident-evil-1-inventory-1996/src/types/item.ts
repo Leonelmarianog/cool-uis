@@ -8,10 +8,6 @@ export const ItemType = {
 
 export type ItemType = (typeof ItemType)[keyof typeof ItemType];
 
-export function isItemType(type: string): type is ItemType {
-  return Object.values(ItemType).some(itemType => itemType === type);
-}
-
 interface BaseItem {
   id: string;
   name: string;

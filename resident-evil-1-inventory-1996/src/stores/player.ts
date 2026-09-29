@@ -2,19 +2,17 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import charactersData from '../data/characters.json';
 import initialPlayer from '../data/initial-player.json';
-import recipesData from '../data/recipes.json';
 import { itemService } from '../services/item-service';
+import { recipeService } from '../services/recipe-service';
 import type { Character } from '../types/character';
 import type { HealthStatus } from '../types/health';
 import type { Recovery } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerAmmunition, PlayerItem, PlayerState, PlayerWeapon } from '../types/player';
-import type { Recipe } from '../types/recipe';
 
 // JSON imports are not type-checked, so the data is cast to its type.
 const characters = charactersData as Character[];
 const initialState = initialPlayer as PlayerState;
-const recipes = recipesData as Recipe[];
 
 // URLs of every item image, keyed by the path Vite imported it from.
 // `?no-inline` keeps each image a separate file; Vite would otherwise embed
@@ -42,12 +40,6 @@ function findCharacter(id: string): Character {
   const character = characters.find(character => character.id === id);
   if (!character) throw new Error(`Unknown character "${id}"`);
   return character;
-}
-
-// The ingredients match in either order.
-function findRecipe(firstItemId: string, secondItemId: string): Recipe | undefined {
-  return recipes.find(({ ingredients: [first, second] }) =>
-    (first === firstItemId && second === secondItemId) || (first === secondItemId && second === firstItemId));
 }
 
 function findItemImage(path: string): string {
@@ -177,7 +169,7 @@ export const usePlayerStore = defineStore('player', () => {
     const source = findPlayerItem(sourceId);
     const target = findPlayerItem(targetId);
     if (!source || !target) return false;
-    return findRecipe(source.itemId, target.itemId) !== undefined;
+    return recipeService.findByIngredients(source.itemId, target.itemId) !== undefined;
   }
 
   // Puts the recipe's result in the source's slot and removes the target.
@@ -187,7 +179,7 @@ export const usePlayerStore = defineStore('player', () => {
     const target = findPlayerItem(targetId);
     if (!source || !target || source.id === target.id) return false;
 
-    const recipe = findRecipe(source.itemId, target.itemId);
+    const recipe = recipeService.findByIngredients(source.itemId, target.itemId);
     if (!recipe) return false;
 
     const result = itemService.find(recipe.result);
