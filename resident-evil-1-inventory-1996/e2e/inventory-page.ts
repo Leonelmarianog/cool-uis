@@ -6,6 +6,8 @@ export class InventoryPage {
   readonly page: Page;
   readonly actionMenu: Locator;
   readonly descriptionPanel: Locator;
+  // Shows the equipped weapon's sprite, named after the weapon ("BERETTA").
+  readonly equippedWeaponPanel: Locator;
   // Named after the health status, as in "Health: Caution. Click to cycle health status.".
   readonly healthScreen: Locator;
 
@@ -13,6 +15,7 @@ export class InventoryPage {
     this.page = page;
     this.actionMenu = page.getByRole('menu', { name: 'Item actions' });
     this.descriptionPanel = page.getByRole('region', { name: 'Item description panel' });
+    this.equippedWeaponPanel = page.getByRole('region', { name: 'Equipped weapon panel' });
     this.healthScreen = page.getByRole('button', { name: /^Health:/ });
   }
 
