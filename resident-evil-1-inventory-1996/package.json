@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "test": "vitest run --passWithNoTests",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "typecheck": "vue-tsc --build",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview"
@@ -16,6 +18,7 @@
     "vue": "^3.5.42"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tsconfig/node24": "^24.0.5",
     "@types/node": "^24.13.6",
     "@types/three": "^0.186.0",
