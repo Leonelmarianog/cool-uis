@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { itemViewMapper } from '../mappers/item-view-mapper';
 import { characterService } from '../services/character-service';
 import { itemService } from '../services/item-service';
 import { playerService } from '../services/player-service';
@@ -8,15 +9,6 @@ import type { HealthStatus } from '../types/health';
 import type { Recovery } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerAmmunition, PlayerItem, PlayerWeapon } from '../types/player';
-
-// URLs of every item image, keyed by the path Vite imported it from.
-// `?no-inline` keeps each image a separate file; Vite would otherwise embed
-// small images in the JavaScript bundle.
-const itemImages = import.meta.glob<string>('../assets/items/**/*.png', {
-  eager: true,
-  import: 'default',
-  query: '?no-inline',
-});
 
 // Health statuses from worst to best. Healing moves a status up this list.
 const healthOrder: HealthStatus[] = ['poison', 'danger', 'caution', 'fine-yellow', 'fine'];
@@ -31,27 +23,8 @@ function recover(status: HealthStatus, recovery: Recovery): HealthStatus {
   return healthOrder[index];
 }
 
-function findItemImage(path: string): string {
-  const url = itemImages[`../assets/items/${path}`];
-  if (!url) throw new Error(`Unknown item image "${path}"`);
-  return url;
-}
-
-function amountOf(playerItem: PlayerItem): number | undefined {
-  if (playerItem.type === 'weapon') return playerItem.loadedRounds;
-  if (playerItem.type === 'ammunition') return playerItem.amount;
-  return undefined;
-}
-
 function toItemView(playerItem: PlayerItem): ItemView {
-  const { name, type, sprite } = itemService.find(playerItem.itemId);
-  return {
-    id: playerItem.id,
-    name,
-    type,
-    sprite: findItemImage(sprite),
-    amount: amountOf(playerItem),
-  };
+  return itemViewMapper.toItemView(playerItem, itemService.find(playerItem.itemId));
 }
 
 export const usePlayerStore = defineStore('player', () => {
