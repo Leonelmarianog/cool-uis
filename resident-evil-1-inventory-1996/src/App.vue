@@ -33,7 +33,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
             v-if="inventory.isSelecting"
             v-show="!inventory.check.isModelShown"
             :options="inventory.itemActions"
-            :inactive="inventory.isChoosingTarget"
+            :inactive="inventory.combine.isCombining"
             @choose="inventory.chooseAction"
           />
         </Transition>
@@ -62,7 +62,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
           :slots="player.inventorySlots"
           :cursor-slot="inventory.cursorSlot"
           :locked="inventory.isSelecting"
-          :target-slot="inventory.targetSlot"
+          :target-slot="inventory.combine.targetSlot"
           @hover="inventory.moveCursor"
           @select="inventory.selectItemAt"
         />
@@ -74,7 +74,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
         :choices="inventory.description.choices"
         :keep-message="inventory.description.isKept"
         @message-end="inventory.description.clear"
-        @choose="inventory.answerMix"
+        @choose="inventory.combine.answer"
       />
     </div>
   </main>

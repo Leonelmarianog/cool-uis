@@ -25,3 +25,5 @@ export function useItemSelection(mode: Ref<InventoryMode>, description: Descript
 
   return { selectedItemId, select, release };
 }
+
+export type ItemSelection = ReturnType<typeof useItemSelection>;

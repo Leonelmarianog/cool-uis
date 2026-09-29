@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { InventoryMode } from '../types/inventory-mode';
 import { useCheck } from '../composables/use-check';
+import { useCombine } from '../composables/use-combine';
 import { useDescriptionPanel } from '../composables/use-description-panel';
 import { useItemSelection } from '../composables/use-item-selection';
 import { ItemAction } from '../types/item-action';
@@ -16,23 +17,15 @@ export const useInventoryStore = defineStore('inventory', () => {
   const mode = ref<InventoryMode>(InventoryMode.Idle);
   // The cursor is a slot position, so it stays in place when items shift.
   const cursorSlot = ref(0);
-  // While COMBN waits for a second item, the slot under the green target cursor.
-  const targetSlot = ref<number | null>(null);
-  // While "Will you mix the herbs?" waits for Yes or No, the herb chosen as the target.
-  const mixTargetId = ref<string | null>(null);
 
   const description = useDescriptionPanel();
   const selection = useItemSelection(mode, description);
   const check = useCheck(mode, description);
+  const combine = useCombine(mode, selection, description);
 
   // The item whose name the description panel shows: the target while choosing one.
-  const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
+  const itemUnderCursor = computed(() => player.inventorySlots[combine.targetSlot.value ?? cursorSlot.value] ?? null);
   const isSelecting = computed(() => mode.value !== InventoryMode.Idle);
-  /** The green arrows stay on the target while Yes or No is asked. */
-  const isChoosingTarget = computed(
-    () => mode.value === InventoryMode.Combining || mode.value === InventoryMode.CombinePrompt,
-  );
-  const isConfirmingMix = computed(() => mode.value === InventoryMode.CombinePrompt);
   const selectedItem = computed(
     () => player.inventorySlots.find(item => item.id === selection.selectedItemId.value) ?? null,
   );
@@ -46,9 +39,9 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   function moveCursor(slot: number) {
     // While Yes or No is asked, the target cursor stays on the target.
-    if (isConfirmingMix.value) return;
-    if (isChoosingTarget.value) {
-      targetSlot.value = slot;
+    if (combine.isPrompting.value) return;
+    if (combine.isCombining.value) {
+      combine.moveTarget(slot);
       return;
     }
     // While an item is selected, the cursor stays on it.
@@ -57,9 +50,9 @@ export const useInventoryStore = defineStore('inventory', () => {
   }
 
   function selectItemAt(slot: number) {
-    if (isConfirmingMix.value) return;
-    if (isChoosingTarget.value) {
-      combineWith(slot);
+    if (combine.isPrompting.value) return;
+    if (combine.isCombining.value) {
+      combine.combineWith(slot);
       return;
     }
     if (isSelecting.value) return;
@@ -70,9 +63,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   }
 
   function backOut() {
-    // Escape answers No to "Will you mix the herbs?".
-    if (isConfirmingMix.value) {
-      cancelMix();
+    if (combine.isPrompting.value) {
+      combine.cancelPrompt();
       return;
     }
     if (check.isDescribing.value) {
@@ -83,10 +75,8 @@ export const useInventoryStore = defineStore('inventory', () => {
       check.close();
       return;
     }
-    // From choosing a target, back out to the menu only.
-    if (isChoosingTarget.value) {
-      targetSlot.value = null;
-      mode.value = InventoryMode.ItemSelected;
+    if (combine.isCombining.value) {
+      combine.stop();
       return;
     }
     selection.release();
@@ -122,74 +112,24 @@ export const useInventoryStore = defineStore('inventory', () => {
 
     if (action === ItemAction.Combine) {
       // The target cursor starts on the selected item.
-      targetSlot.value = cursorSlot.value;
-      mode.value = InventoryMode.Combining;
+      combine.start(cursorSlot.value);
     }
-  }
-
-  // Items that do not combine, such as the source itself or an empty slot, do
-  // nothing and the target cursor stays; herbs that do not mix show a message.
-  function combineWith(slot: number) {
-    const target = player.inventorySlots[slot];
-    if (!selectedItem.value || !target) return;
-    const sourceId = selectedItem.value.id;
-    if (target.id === sourceId) return;
-
-    if (player.reload(sourceId, target.id) || player.stack(sourceId, target.id)) {
-      finishCombination();
-    } else if (player.isHerb(sourceId) && player.isHerb(target.id)) {
-      if (player.canMix(sourceId, target.id)) {
-        mixTargetId.value = target.id;
-        description.ask('Will you mix the herbs?', ['Yes', 'No']);
-        mode.value = InventoryMode.CombinePrompt;
-      } else {
-        description.show('Mixing these does not seem to work.');
-      }
-    }
-  }
-
-  // Yes mixes the herbs; No goes back to choosing a target.
-  function answerMix(choice: string) {
-    if (!selectedItem.value || !mixTargetId.value) return;
-    if (choice === 'Yes') {
-      player.mix(selectedItem.value.id, mixTargetId.value);
-      finishCombination();
-    } else {
-      cancelMix();
-    }
-  }
-
-  function cancelMix() {
-    mixTargetId.value = null;
-    description.clear();
-    mode.value = InventoryMode.Combining;
-  }
-
-  // The game closes the menu and releases the item after a combination.
-  function finishCombination() {
-    mixTargetId.value = null;
-    targetSlot.value = null;
-    selection.release();
   }
 
   return {
     mode,
     cursorSlot,
     selection,
-    targetSlot,
     description,
     check,
-    mixTargetId,
+    combine,
     itemUnderCursor,
     isSelecting,
-    isChoosingTarget,
-    isConfirmingMix,
     selectedItem,
     itemActions,
     moveCursor,
     selectItemAt,
     backOut,
     chooseAction,
-    answerMix,
   };
 });
