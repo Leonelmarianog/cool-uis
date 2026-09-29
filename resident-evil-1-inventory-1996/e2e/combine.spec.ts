@@ -179,6 +179,146 @@ test.describe('stacking items', () => {
   });
 });
 
+test.describe('mixing herbs', () => {
+  test('choosing a green herb, then COMBN, then a red herb asks "Will you mix the herbs?"', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'green-herb', type: 'consumable' },
+        { id: 'player-item-2', itemId: 'red-herb', type: 'consumable' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.slot(2).click();
+
+    await expect(inventoryPage.descriptionPanel, 'the panel asks before mixing').toContainText('Will you mix the herbs?');
+  });
+
+  test('answering Yes to "Will you mix the herbs?" puts the mixed herbs in the green herb\'s slot and removes the red herb', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'green-herb', type: 'consumable' },
+        { id: 'player-item-2', itemId: 'red-herb', type: 'consumable' },
+        { id: 'player-item-3', itemId: 'first-aid-spray', type: 'consumable' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.slot(2).click();
+    await inventoryPage.answer('Yes');
+
+    await expect(inventoryPage.slot(1), 'the mixed herbs take the green herb\'s slot').toHaveAccessibleName('Slot 1: MIXED HERBS');
+    await expect(inventoryPage.slotSprite(1), 'the mixed herbs are the green and red mix').toHaveAttribute('src', /mixed-herbs-g-r\.png/);
+    await expect(inventoryPage.slot(2), 'the item after the red herb moves up').toHaveAccessibleName('Slot 2: F.-AID SPRAY');
+    await expect(inventoryPage.slot(3), 'the last slot is left empty').toHaveAccessibleName('Slot 3: empty');
+  });
+
+  test('answering Yes to "Will you mix the herbs?" closes the action menu', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'green-herb', type: 'consumable' },
+        { id: 'player-item-2', itemId: 'red-herb', type: 'consumable' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.slot(2).click();
+    await inventoryPage.answer('Yes');
+
+    await expect(inventoryPage.actionMenu, 'the menu closes and the item is released').toBeHidden();
+  });
+
+  test('answering No to "Will you mix the herbs?" goes back to choosing a second item', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'green-herb', type: 'consumable' },
+        { id: 'player-item-2', itemId: 'red-herb', type: 'consumable' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.slot(2).click();
+    await inventoryPage.answer('No');
+
+    await expect(inventoryPage.descriptionPanel.getByRole('button'), 'the Yes and No choices go away').toHaveCount(0);
+    await expect(inventoryPage.actionButton('COMBN'), 'the menu stays inactive while a second item is chosen').toBeDisabled();
+    await expect(inventoryPage.slot(1), 'the green herb is unchanged').toHaveAccessibleName('Slot 1: GREEN HERB');
+    await expect(inventoryPage.slot(2), 'the red herb is unchanged').toHaveAccessibleName('Slot 2: RED HERB');
+  });
+
+  test('pressing Escape while "Will you mix the herbs?" is asked goes back to choosing a second item', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'green-herb', type: 'consumable' },
+        { id: 'player-item-2', itemId: 'red-herb', type: 'consumable' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.slot(2).click();
+    await expect(inventoryPage.descriptionPanel.getByRole('button', { name: 'Yes' }), 'the question is asked before Escape').toBeVisible();
+    await inventoryPage.backOut();
+
+    await expect(inventoryPage.descriptionPanel.getByRole('button'), 'the Yes and No choices go away').toHaveCount(0);
+    await expect(inventoryPage.actionButton('COMBN'), 'the menu stays inactive while a second item is chosen').toBeDisabled();
+    await expect(inventoryPage.slot(1), 'the green herb is unchanged').toHaveAccessibleName('Slot 1: GREEN HERB');
+    await expect(inventoryPage.slot(2), 'the red herb is unchanged').toHaveAccessibleName('Slot 2: RED HERB');
+  });
+
+  test('choosing a red herb, then COMBN, then a blue herb shows "Mixing these does not seem to work."', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'red-herb', type: 'consumable' },
+        { id: 'player-item-2', itemId: 'blue-herb', type: 'consumable' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.slot(2).click();
+
+    // The message shows in full for only about 420 ms, so check it more often than toContainText() does.
+    await expect.poll(() => inventoryPage.descriptionPanel.textContent(), {
+      message: 'the panel says the herbs do not mix',
+      intervals: [50],
+    }).toContain('Mixing these does not seem to work.');
+  });
+
+  test('mixing a green herb with a red herb, then the mixed herbs with a blue herb, makes the green, red and blue mix', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'green-herb', type: 'consumable' },
+        { id: 'player-item-2', itemId: 'red-herb', type: 'consumable' },
+        { id: 'player-item-3', itemId: 'blue-herb', type: 'consumable' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.slot(2).click();
+    await inventoryPage.answer('Yes');
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.slot(2).click();
+    await inventoryPage.answer('Yes');
+
+    await expect(inventoryPage.slotSprite(1), 'the mixed herbs are the green, red and blue mix').toHaveAttribute('src', /mixed-herbs-g-r-b\.png/);
+    await expect(inventoryPage.slot(2), 'the blue herb is removed').toHaveAccessibleName('Slot 2: empty');
+  });
+});
+
 test.describe('choosing items that do not combine', () => {
   test('choosing a clip, then COMBN, then the same clip keeps waiting for a second item', async ({ inventoryPage }) => {
     await inventoryPage.open({

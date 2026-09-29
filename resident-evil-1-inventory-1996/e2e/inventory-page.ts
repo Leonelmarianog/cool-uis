@@ -5,10 +5,12 @@ import type { PlayerState } from '../src/types/player';
 export class InventoryPage {
   readonly page: Page;
   readonly actionMenu: Locator;
+  readonly descriptionPanel: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.actionMenu = page.getByRole('menu', { name: 'Item actions' });
+    this.descriptionPanel = page.getByRole('region', { name: 'Item description panel' });
   }
 
   // Opens the app with parts of the player's starting state replaced (see
@@ -25,6 +27,11 @@ export class InventoryPage {
     return this.page.getByLabel('Inventory slots').getByRole('listitem').nth(number - 1);
   }
 
+  // Items that share a name, such as every "MIXED HERBS", differ only in their sprite.
+  slotSprite(number: number): Locator {
+    return this.slot(number).locator('img');
+  }
+
   // Disabled while COMBN waits for a second item.
   actionButton(action: string): Locator {
     return this.actionMenu.getByRole('menuitem', { name: action });
@@ -32,6 +39,11 @@ export class InventoryPage {
 
   async chooseAction(action: string) {
     await this.actionButton(action).click();
+  }
+
+  // Answers a question in the description panel, such as "Will you mix the herbs?".
+  async answer(choice: string) {
+    await this.descriptionPanel.getByRole('button', { name: choice }).click();
   }
 
   async backOut() {
