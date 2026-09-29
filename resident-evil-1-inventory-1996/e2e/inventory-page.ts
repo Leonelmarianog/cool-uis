@@ -36,7 +36,10 @@ export class InventoryPage {
 
   // Slots are numbered from 1, as in their labels ("Slot 1: BERETTA, 15").
   slot(number: number): Locator {
-    return this.page.getByLabel('Inventory slots').getByRole('listitem').nth(number - 1);
+    return this.page
+      .getByLabel('Inventory slots')
+      .getByRole('listitem')
+      .nth(number - 1);
   }
 
   // Items that share a name, such as every "MIXED HERBS", differ only in their sprite.

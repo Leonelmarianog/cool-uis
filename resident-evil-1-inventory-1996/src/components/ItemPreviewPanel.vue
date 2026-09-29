@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import panel from '../assets/ui/item-preview-panel.png'
+import panel from '../assets/ui/item-preview-panel.png';
 </script>
 
 <template>

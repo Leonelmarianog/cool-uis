@@ -27,9 +27,7 @@ describe('find', () => {
 
   test('throws when no item has the given ID', async () => {
     vi.doMock('../../data/items.json', () => ({
-      default: [
-        { id: 'item-id', type: 'key', name: 'ITEM NAME', sprite: 'item.png' },
-      ],
+      default: [{ id: 'item-id', type: 'key', name: 'ITEM NAME', sprite: 'item.png' }],
     }));
     const { itemService } = await import('../item-service');
 

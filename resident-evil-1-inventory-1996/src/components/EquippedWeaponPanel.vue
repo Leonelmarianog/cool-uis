@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import panel from '../assets/ui/equipped-weapon-panel.png'
-import type { ItemView } from '../types/item-view'
+import panel from '../assets/ui/equipped-weapon-panel.png';
+import type { ItemView } from '../types/item-view';
 
 // null leaves the screen empty.
-const { weapon = null } = defineProps<{ weapon?: ItemView | null }>()
+const { weapon = null } = defineProps<{ weapon?: ItemView | null }>();
 </script>
 
 <template>

@@ -28,11 +28,7 @@ export interface PlayerKeyItem extends BasePlayerItem {
   type: typeof ItemType.Key;
 }
 
-export type PlayerItem =
-  | PlayerWeapon
-  | PlayerAmmunition
-  | PlayerConsumable
-  | PlayerKeyItem;
+export type PlayerItem = PlayerWeapon | PlayerAmmunition | PlayerConsumable | PlayerKeyItem;
 
 export interface PlayerState {
   characterId: string;

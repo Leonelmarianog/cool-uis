@@ -116,7 +116,8 @@ export const useInventoryStore = defineStore('inventory', () => {
         backOut();
       } else {
         // Key items only work in the game world; ammunition and the red herb only work combined.
-        message.value = selectedItem.value.type === ItemType.Key ? "You can't use it here." : "You can't use this alone.";
+        message.value =
+          selectedItem.value.type === ItemType.Key ? "You can't use it here." : "You can't use this alone.";
       }
       return;
     }

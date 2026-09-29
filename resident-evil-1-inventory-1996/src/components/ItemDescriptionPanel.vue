@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue';
-import panel from '../assets/ui/item-description-panel.png'
+import panel from '../assets/ui/item-description-panel.png';
 import choiceArrow from '../assets/ui/choice-arrow.svg';
 
 // A message replaces the item name while it is typed out and held. A message
@@ -18,7 +18,7 @@ const emit = defineEmits<{ 'message-end': []; choose: [choice: string] }>();
 
 // As in use-item-1.gif: one character every 4 frames at 60 fps, then the full
 // message stays for about 420 ms before the item name returns.
-const CHARACTER_MS = 4 * 1000 / 60;
+const CHARACTER_MS = (4 * 1000) / 60;
 const HOLD_MS = 420;
 // The first choice starts at column 214; each next one follows two spaces
 // after the one before, in 8-pixel characters.
@@ -42,13 +42,16 @@ function typeNextCharacter(text: string) {
   }
 }
 
-watch(() => message, text => {
-  clearTimeout(timer);
-  typedLength.value = 0;
-  areChoicesShown.value = false;
-  hoveredChoice.value = 0;
-  if (text) timer = setTimeout(() => typeNextCharacter(text), CHARACTER_MS);
-});
+watch(
+  () => message,
+  text => {
+    clearTimeout(timer);
+    typedLength.value = 0;
+    areChoicesShown.value = false;
+    hoveredChoice.value = 0;
+    if (text) timer = setTimeout(() => typeNextCharacter(text), CHARACTER_MS);
+  },
+);
 
 onUnmounted(() => clearTimeout(timer));
 
@@ -73,7 +76,9 @@ const choiceColumns = computed(() => {
       :key="index"
       class="item-description-panel__text item-description-panel__line"
       :style="{ '--line': index }"
-    >{{ line }}</p>
+    >
+      {{ line }}
+    </p>
     <template v-if="areChoicesShown">
       <img
         class="item-description-panel__choice-arrow"
@@ -89,7 +94,9 @@ const choiceColumns = computed(() => {
         type="button"
         @mouseenter="hoveredChoice = index"
         @click="emit('choose', choice)"
-      >{{ choice }}</button>
+      >
+        {{ choice }}
+      </button>
     </template>
   </section>
 </template>

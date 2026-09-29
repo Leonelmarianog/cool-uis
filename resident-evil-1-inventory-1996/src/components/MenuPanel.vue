@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import panel from '../assets/ui/menu-panel.png'
+import panel from '../assets/ui/menu-panel.png';
 
-defineEmits<{ map: []; file: []; exit: [] }>()
+defineEmits<{ map: []; file: []; exit: [] }>();
 </script>
 
 <template>

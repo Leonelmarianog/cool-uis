@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, useTemplateRef, watch } from 'vue';
-import { AmbientLight, Color, DirectionalLight, MathUtils, Mesh, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three';
+import {
+  AmbientLight,
+  Color,
+  DirectionalLight,
+  MathUtils,
+  Mesh,
+  PerspectiveCamera,
+  Scene,
+  Vector3,
+  WebGLRenderer,
+} from 'three';
 import type { Object3D } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
@@ -119,11 +129,14 @@ watch(isControllable, controllable => {
   if (!controllable) releaseAll();
 });
 
-watch(() => leaving, isLeaving => {
-  if (!isLeaving) return;
-  leaveStartScale = model?.scale.x ?? 0;
-  startPhase('leaving');
-});
+watch(
+  () => leaving,
+  isLeaving => {
+    if (!isLeaving) return;
+    leaveStartScale = model?.scale.x ?? 0;
+    startPhase('leaving');
+  },
+);
 
 function enter(model: Object3D, scene: Scene, phaseSeconds: number) {
   const progress = MathUtils.clamp((phaseSeconds - PAUSE_SECONDS) / SPIN_SECONDS, 0, 1);

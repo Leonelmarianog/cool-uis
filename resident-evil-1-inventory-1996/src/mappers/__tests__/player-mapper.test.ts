@@ -9,9 +9,7 @@ describe('toPlayerState', () => {
       const json = {
         characterId: 'character-id',
         healthStatus: 'caution',
-        inventory: [
-          { id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       };
@@ -21,9 +19,7 @@ describe('toPlayerState', () => {
       expect(state).toEqual({
         characterId: 'character-id',
         healthStatus: 'caution',
-        inventory: [
-          { id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       });
@@ -55,9 +51,7 @@ describe('toPlayerState', () => {
       const json = {
         characterId: 'character-id',
         healthStatus: 'fine',
-        inventory: [
-          { id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       };
@@ -74,9 +68,7 @@ describe('toPlayerState', () => {
       const json = {
         characterId: 'character-id',
         healthStatus: 'fine',
-        inventory: [
-          { id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       };
@@ -95,9 +87,7 @@ describe('toPlayerState', () => {
       const json = {
         characterId: 'character-id',
         healthStatus: 'fine',
-        inventory: [
-          { id: 'player-item-id', itemId: 'ammunition-id', type: 'ammunition', amount: 15 },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'ammunition-id', type: 'ammunition', amount: 15 }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       };
@@ -116,9 +106,7 @@ describe('toPlayerState', () => {
       const json = {
         characterId: 'character-id',
         healthStatus: 'fine',
-        inventory: [
-          { id: 'player-item-id', itemId: 'consumable-id', type: 'consumable' },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'consumable-id', type: 'consumable' }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       };

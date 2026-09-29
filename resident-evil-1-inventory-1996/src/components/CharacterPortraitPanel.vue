@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import panel from '../assets/ui/character-portrait-panel.png'
-import portrait from '../assets/characters/jill.png'
+import panel from '../assets/ui/character-portrait-panel.png';
+import portrait from '../assets/characters/jill.png';
 </script>
 
 <template>
   <section class="character-portrait-panel" aria-label="Character portrait">
     <img class="character-portrait-panel__artwork" :src="panel" alt="" />
-    <img
-      class="character-portrait-panel__portrait"
-      :src="portrait"
-      alt="Jill Valentine"
-      width="30"
-      height="30"
-    />
+    <img class="character-portrait-panel__portrait" :src="portrait" alt="Jill Valentine" width="30" height="30" />
   </section>
 </template>
 

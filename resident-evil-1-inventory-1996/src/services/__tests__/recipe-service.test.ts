@@ -24,9 +24,7 @@ describe('findByIngredients', () => {
 
   test('finds the recipe when the ingredients are given in the other order', async () => {
     vi.doMock('../../data/recipes.json', () => ({
-      default: [
-        { ingredients: ['first-item-id', 'second-item-id'], result: 'result-item-id' },
-      ],
+      default: [{ ingredients: ['first-item-id', 'second-item-id'], result: 'result-item-id' }],
     }));
     const { recipeService } = await import('../recipe-service');
 
@@ -40,9 +38,7 @@ describe('findByIngredients', () => {
 
   test('returns undefined when no recipe has the given ingredients', async () => {
     vi.doMock('../../data/recipes.json', () => ({
-      default: [
-        { ingredients: ['first-item-id', 'second-item-id'], result: 'result-item-id' },
-      ],
+      default: [{ ingredients: ['first-item-id', 'second-item-id'], result: 'result-item-id' }],
     }));
     const { recipeService } = await import('../recipe-service');
 
