@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { InventoryMode } from '../types/inventory-mode';
+import { ItemAction } from '../types/item-action';
 import { ItemType } from '../types/item';
 import { usePlayerStore } from './player';
 
@@ -44,10 +45,10 @@ export const useInventoryStore = defineStore('inventory', () => {
   const selectedItem = computed(() => player.inventorySlots.find(item => item.id === selectedItemId.value) ?? null);
 
   // Weapons are equipped; every other item is used.
-  const itemActions = computed(() => {
+  const itemActions = computed<ItemAction[]>(() => {
     if (!selectedItem.value) return [];
-    const firstAction = selectedItem.value.type === ItemType.Weapon ? 'EQUIP' : 'USE';
-    return [firstAction, 'CHECK', 'COMBN'];
+    const firstAction = selectedItem.value.type === ItemType.Weapon ? ItemAction.Equip : ItemAction.Use;
+    return [firstAction, ItemAction.Check, ItemAction.Combine];
   });
 
   // The choices the description panel offers under the message.
@@ -114,14 +115,14 @@ export const useInventoryStore = defineStore('inventory', () => {
   function chooseAction(action: string) {
     if (!selectedItem.value) return;
 
-    if (action === 'EQUIP') {
+    if (action === ItemAction.Equip) {
       player.toggleEquipped(selectedItem.value.id);
       // The game closes the menu and releases the item right after equipping.
       backOut();
       return;
     }
 
-    if (action === 'USE') {
+    if (action === ItemAction.Use) {
       if (player.useItem(selectedItem.value.id)) {
         // The game closes the menu once the item is used up.
         backOut();
@@ -133,12 +134,12 @@ export const useInventoryStore = defineStore('inventory', () => {
       return;
     }
 
-    if (action === 'CHECK') {
+    if (action === ItemAction.Check) {
       mode.value = InventoryMode.ModelView;
       return;
     }
 
-    if (action === 'COMBN') {
+    if (action === ItemAction.Combine) {
       // The target cursor starts on the selected item.
       targetSlot.value = cursorSlot.value;
       mode.value = InventoryMode.Combining;
