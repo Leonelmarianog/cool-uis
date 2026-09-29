@@ -1,5 +1,6 @@
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import type { Ref } from 'vue';
+import { usePlayerStore } from '../stores/player';
 import { InventoryMode } from '../types/inventory-mode';
 import type { DescriptionPanel } from './use-description-panel';
 
@@ -8,7 +9,10 @@ import type { DescriptionPanel } from './use-description-panel';
  * attached to its item when items shift.
  */
 export function useItemSelection(mode: Ref<InventoryMode>, description: DescriptionPanel) {
+  const player = usePlayerStore();
+
   const selectedItemId = ref<string | null>(null);
+  const selectedItem = computed(() => player.inventorySlots.find(item => item.id === selectedItemId.value) ?? null);
 
   /** Opens the action menu for the item. */
   function select(itemId: string) {
@@ -23,7 +27,7 @@ export function useItemSelection(mode: Ref<InventoryMode>, description: Descript
     mode.value = InventoryMode.Idle;
   }
 
-  return { selectedItemId, select, release };
+  return { selectedItemId, selectedItem, select, release };
 }
 
 export type ItemSelection = ReturnType<typeof useItemSelection>;

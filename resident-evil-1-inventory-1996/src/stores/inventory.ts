@@ -4,6 +4,7 @@ import { InventoryMode } from '../types/inventory-mode';
 import { useCheck } from '../composables/use-check';
 import { useCombine } from '../composables/use-combine';
 import { useDescriptionPanel } from '../composables/use-description-panel';
+import { useItemActions } from '../composables/use-item-actions';
 import { useItemSelection } from '../composables/use-item-selection';
 import { ItemAction } from '../types/item-action';
 import { ItemType } from '../types/item';
@@ -22,18 +23,17 @@ export const useInventoryStore = defineStore('inventory', () => {
   const selection = useItemSelection(mode, description);
   const check = useCheck(mode, description);
   const combine = useCombine(mode, selection, description);
+  const itemActions = useItemActions(selection, description);
 
   // The item whose name the description panel shows: the target while choosing one.
   const itemUnderCursor = computed(() => player.inventorySlots[combine.targetSlot.value ?? cursorSlot.value] ?? null);
   const isSelecting = computed(() => mode.value !== InventoryMode.Idle);
-  const selectedItem = computed(
-    () => player.inventorySlots.find(item => item.id === selection.selectedItemId.value) ?? null,
-  );
 
   // Weapons are equipped; every other item is used.
-  const itemActions = computed<ItemAction[]>(() => {
-    if (!selectedItem.value) return [];
-    const firstAction = selectedItem.value.type === ItemType.Weapon ? ItemAction.Equip : ItemAction.Use;
+  const menuOptions = computed<ItemAction[]>(() => {
+    const item = selection.selectedItem.value;
+    if (!item) return [];
+    const firstAction = item.type === ItemType.Weapon ? ItemAction.Equip : ItemAction.Use;
     return [firstAction, ItemAction.Check, ItemAction.Combine];
   });
 
@@ -83,25 +83,13 @@ export const useInventoryStore = defineStore('inventory', () => {
   }
 
   function chooseAction(action: string) {
-    if (!selectedItem.value) return;
-
     if (action === ItemAction.Equip) {
-      player.toggleEquipped(selectedItem.value.id);
-      // The game closes the menu and releases the item right after equipping.
-      selection.release();
+      itemActions.equip();
       return;
     }
 
     if (action === ItemAction.Use) {
-      if (player.useItem(selectedItem.value.id)) {
-        // The game closes the menu once the item is used up.
-        selection.release();
-      } else {
-        // Key items only work in the game world; ammunition and the red herb only work combined.
-        description.show(
-          selectedItem.value.type === ItemType.Key ? "You can't use it here." : "You can't use this alone.",
-        );
-      }
+      itemActions.use();
       return;
     }
 
@@ -125,8 +113,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     combine,
     itemUnderCursor,
     isSelecting,
-    selectedItem,
-    itemActions,
+    menuOptions,
     moveCursor,
     selectItemAt,
     backOut,

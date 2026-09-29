@@ -32,7 +32,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
           <ItemActionMenu
             v-if="inventory.isSelecting"
             v-show="!inventory.check.isModelShown"
-            :options="inventory.itemActions"
+            :options="inventory.menuOptions"
             :inactive="inventory.combine.isCombining"
             @choose="inventory.chooseAction"
           />
