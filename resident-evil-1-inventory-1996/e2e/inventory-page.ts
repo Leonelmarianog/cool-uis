@@ -6,6 +6,10 @@ export class InventoryPage {
   readonly page: Page;
   readonly actionMenu: Locator;
   readonly descriptionPanel: Locator;
+  // CHECK's 3D model, shown in place of the action menu.
+  readonly itemModel: Locator;
+  // CHECK's red arrows; they show only while the model can be turned.
+  readonly rotateArrows: Locator;
   // Shows the equipped weapon's sprite, named after the weapon ("BERETTA").
   readonly equippedWeaponPanel: Locator;
   // Named after the health status, as in "Health: Caution. Click to cycle health status.".
@@ -15,6 +19,8 @@ export class InventoryPage {
     this.page = page;
     this.actionMenu = page.getByRole('menu', { name: 'Item actions' });
     this.descriptionPanel = page.getByRole('region', { name: 'Item description panel' });
+    this.itemModel = page.getByLabel('Item model');
+    this.rotateArrows = page.getByRole('button', { name: /^Rotate / });
     this.equippedWeaponPanel = page.getByRole('region', { name: 'Equipped weapon panel' });
     this.healthScreen = page.getByRole('button', { name: /^Health:/ });
   }
@@ -50,6 +56,11 @@ export class InventoryPage {
   // Answers a question in the description panel, such as "Will you mix the herbs?".
   async answer(choice: string) {
     await this.descriptionPanel.getByRole('button', { name: choice }).click();
+  }
+
+  // K shows the checked item's description.
+  async showDescription() {
+    await this.page.keyboard.press('k');
   }
 
   async backOut() {
