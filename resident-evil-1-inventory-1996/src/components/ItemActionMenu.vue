@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import frame from '../assets/ui/item-action-frame.png'
+import frame from '../assets/ui/item-action-frame.png';
 
 // `inactive` freezes the menu while COMBN waits for a second item.
 const { options = [], inactive = false } = defineProps<{ options?: string[]; inactive?: boolean }>();
@@ -106,10 +106,8 @@ const highlighted = ref(0);
 .item-action-menu--opening .item-action-menu__option,
 .item-action-menu--closing .item-action-menu__option {
   clip-path: inset(
-    0
-    calc((43 - round(43 * var(--step) / 8)) * var(--game-pixel))
-    calc(max(0, 22 - 3 * var(--step)) * var(--game-pixel))
-    0
+    0 calc((43 - round(43 * var(--step) / 8)) * var(--game-pixel))
+      calc(max(0, 22 - 3 * var(--step)) * var(--game-pixel)) 0
   );
 }
 

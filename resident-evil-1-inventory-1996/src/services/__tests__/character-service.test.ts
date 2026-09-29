@@ -26,9 +26,7 @@ describe('find', () => {
 
   test('throws when no character has the given ID', async () => {
     vi.doMock('../../data/characters.json', () => ({
-      default: [
-        { id: 'character-id', name: 'Character Name', portrait: 'portrait.png', inventorySize: 6 },
-      ],
+      default: [{ id: 'character-id', name: 'Character Name', portrait: 'portrait.png', inventorySize: 6 }],
     }));
     const { characterService } = await import('../character-service');
 

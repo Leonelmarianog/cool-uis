@@ -56,8 +56,4 @@ export interface KeyItem extends BaseItem {
   type: typeof ItemType.Key;
 }
 
-export type Item =
-  | WeaponItem
-  | AmmunitionItem
-  | ConsumableItem
-  | KeyItem;
+export type Item = WeaponItem | AmmunitionItem | ConsumableItem | KeyItem;

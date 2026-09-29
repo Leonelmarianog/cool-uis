@@ -7,7 +7,12 @@ import { itemViewMapper } from '../item-view-mapper';
 describe('toItemView', () => {
   describe('mapping weapons', () => {
     test('maps a player weapon and its item to an item view', () => {
-      const playerItem: PlayerItem = { id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 };
+      const playerItem: PlayerItem = {
+        id: 'player-item-id',
+        itemId: 'weapon-id',
+        type: ItemType.Weapon,
+        loadedRounds: 10,
+      };
       const item: Item = {
         id: 'weapon-id',
         type: ItemType.Weapon,
@@ -30,7 +35,12 @@ describe('toItemView', () => {
 
   describe('mapping ammunition', () => {
     test('maps player ammunition and its item to an item view', () => {
-      const playerItem: PlayerItem = { id: 'player-item-id', itemId: 'ammunition-id', type: ItemType.Ammunition, amount: 15 };
+      const playerItem: PlayerItem = {
+        id: 'player-item-id',
+        itemId: 'ammunition-id',
+        type: ItemType.Ammunition,
+        amount: 15,
+      };
       const item: Item = {
         id: 'ammunition-id',
         type: ItemType.Ammunition,

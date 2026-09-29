@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
-import ItemPreviewPanel from './components/ItemPreviewPanel.vue'
-import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue'
-import HealthStatusPanel from './components/HealthStatusPanel.vue'
-import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue'
-import InventoryGrid from './components/InventoryGrid.vue'
-import MenuPanel from './components/MenuPanel.vue'
-import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue'
-import ItemActionMenu from './components/ItemActionMenu.vue'
-import ItemModelViewer from './components/ItemModelViewer.vue'
-import { useInventoryStore } from './stores/inventory'
-import { usePlayerStore } from './stores/player'
+import { onMounted, onUnmounted } from 'vue';
+import ItemPreviewPanel from './components/ItemPreviewPanel.vue';
+import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue';
+import HealthStatusPanel from './components/HealthStatusPanel.vue';
+import EquippedWeaponPanel from './components/EquippedWeaponPanel.vue';
+import InventoryGrid from './components/InventoryGrid.vue';
+import MenuPanel from './components/MenuPanel.vue';
+import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue';
+import ItemActionMenu from './components/ItemActionMenu.vue';
+import ItemModelViewer from './components/ItemModelViewer.vue';
+import { useInventoryStore } from './stores/inventory';
+import { usePlayerStore } from './stores/player';
 
-const player = usePlayerStore()
-const inventory = useInventoryStore()
+const player = usePlayerStore();
+const inventory = useInventoryStore();
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') inventory.backOut()
+  if (event.key === 'Escape') inventory.backOut();
 }
 
-onMounted(() => window.addEventListener('keydown', onKeydown))
-onUnmounted(() => window.removeEventListener('keydown', onKeydown))
+onMounted(() => window.addEventListener('keydown', onKeydown));
+onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 </script>
 
 <template>
@@ -111,10 +111,10 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
     var(--layout-panel-gap)
     auto;
   grid-template-areas:
-    ". preview items ."
-    ". status  items ."
-    ". .       .     ."
-    "description description description description";
+    '. preview items .'
+    '. status  items .'
+    '. .       .     .'
+    'description description description description';
   width: calc(320 * var(--game-pixel));
   padding-block: calc(12 * var(--game-pixel)) var(--layout-edge);
 }

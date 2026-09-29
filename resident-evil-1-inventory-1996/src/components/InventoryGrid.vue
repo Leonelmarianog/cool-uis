@@ -10,7 +10,13 @@ const {
   cursorSlot = 0,
   locked = false,
   targetSlot = null,
-} = defineProps<{ size: number; slots?: ItemView[]; cursorSlot?: number; locked?: boolean; targetSlot?: number | null }>();
+} = defineProps<{
+  size: number;
+  slots?: ItemView[];
+  cursorSlot?: number;
+  locked?: boolean;
+  targetSlot?: number | null;
+}>();
 
 const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>();
 
@@ -42,7 +48,8 @@ function cellLabel(slot: ItemView | null, index: number): string {
             class="inventory-grid__amount"
             :class="{ 'inventory-grid__amount--weapon': slot.type === ItemType.Weapon }"
             aria-hidden="true"
-          >{{ slot.amount }}</span>
+            >{{ slot.amount }}</span
+          >
         </template>
         <span
           v-if="index === cursorSlot"

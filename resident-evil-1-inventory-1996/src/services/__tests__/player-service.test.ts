@@ -16,9 +16,7 @@ describe('startingState', () => {
       default: {
         characterId: 'character-id',
         healthStatus: 'fine',
-        inventory: [
-          { id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       },
@@ -31,9 +29,7 @@ describe('startingState', () => {
     expect(state).toEqual({
       characterId: 'character-id',
       healthStatus: 'fine',
-      inventory: [
-        { id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 },
-      ],
+      inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 }],
       equippedItemId: 'player-item-id',
       itemBox: [],
     });
@@ -44,9 +40,7 @@ describe('startingState', () => {
       default: {
         characterId: 'character-id',
         healthStatus: 'fine',
-        inventory: [
-          { id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       },
@@ -65,9 +59,7 @@ describe('startingState', () => {
     expect(state).toEqual({
       characterId: 'character-id',
       healthStatus: 'danger',
-      inventory: [
-        { id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 },
-      ],
+      inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 }],
       equippedItemId: null,
       itemBox: [],
     });
@@ -78,9 +70,7 @@ describe('startingState', () => {
       default: {
         characterId: 'character-id',
         healthStatus: 'fine',
-        inventory: [
-          { id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 },
-        ],
+        inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: 'weapon', loadedRounds: 10 }],
         equippedItemId: 'player-item-id',
         itemBox: [],
       },
@@ -99,9 +89,7 @@ describe('startingState', () => {
     expect(state).toEqual({
       characterId: 'character-id',
       healthStatus: 'fine',
-      inventory: [
-        { id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 },
-      ],
+      inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon, loadedRounds: 10 }],
       equippedItemId: 'player-item-id',
       itemBox: [],
     });
