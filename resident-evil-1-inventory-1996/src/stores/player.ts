@@ -1,16 +1,13 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import initialPlayer from '../data/initial-player.json';
 import { characterService } from '../services/character-service';
 import { itemService } from '../services/item-service';
+import { playerService } from '../services/player-service';
 import { recipeService } from '../services/recipe-service';
 import type { HealthStatus } from '../types/health';
 import type { Recovery } from '../types/item';
 import type { ItemView } from '../types/item-view';
-import type { PlayerAmmunition, PlayerItem, PlayerState, PlayerWeapon } from '../types/player';
-
-// JSON imports are not type-checked, so the data is cast to its type.
-const initialState = initialPlayer as PlayerState;
+import type { PlayerAmmunition, PlayerItem, PlayerWeapon } from '../types/player';
 
 // URLs of every item image, keyed by the path Vite imported it from.
 // `?no-inline` keeps each image a separate file; Vite would otherwise embed
@@ -57,16 +54,8 @@ function toItemView(playerItem: PlayerItem): ItemView {
   };
 }
 
-// On the dev server, end-to-end tests can replace parts of the starting state
-// (see e2e/fixtures.ts). A production build ignores it.
-function startingState(): PlayerState {
-  const testState = import.meta.env.DEV ? window.__TEST_PLAYER__ : undefined;
-  // A deep copy, so changes to the store never alter the imported data.
-  return structuredClone({ ...initialState, ...testState });
-}
-
 export const usePlayerStore = defineStore('player', () => {
-  const state = startingState();
+  const state = playerService.startingState();
 
   const characterId = ref(state.characterId);
   const healthStatus = ref(state.healthStatus);
