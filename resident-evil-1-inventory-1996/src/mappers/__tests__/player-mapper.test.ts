@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { ItemType } from '../../types/item';
+import type { PlayerWeapon } from '../../types/player';
 import { playerMapper } from '../player-mapper';
 
 describe('toPlayerState', () => {
@@ -62,8 +63,7 @@ describe('toPlayerState', () => {
       };
 
       const state = playerMapper.toPlayerState(json);
-      const weapon = state.inventory[0];
-      if (weapon.type === ItemType.Weapon) weapon.loadedRounds = 5;
+      (state.inventory[0] as PlayerWeapon).loadedRounds = 5;
 
       expect(json.inventory[0].loadedRounds).toBe(10);
     });

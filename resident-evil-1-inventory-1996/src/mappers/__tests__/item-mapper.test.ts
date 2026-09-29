@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { ItemType } from '../../types/item';
+import type { AmmunitionItem, ConsumableItem, WeaponItem } from '../../types/item';
 import { itemMapper } from '../item-mapper';
 
 describe('toItem', () => {
@@ -34,7 +35,7 @@ describe('toItem', () => {
       };
 
       const item = itemMapper.toItem(json);
-      if (item.type === ItemType.Weapon) item.weapon.ammunition.push('other-ammunition-id');
+      (item as WeaponItem).weapon.ammunition.push('other-ammunition-id');
 
       expect(json.weapon.ammunition).toEqual(['ammunition-id']);
     });
@@ -71,7 +72,7 @@ describe('toItem', () => {
       };
 
       const item = itemMapper.toItem(json);
-      if (item.type === ItemType.Ammunition) item.ammunition.maxStack = 50;
+      (item as AmmunitionItem).ammunition.maxStack = 50;
 
       expect(json.ammunition.maxStack).toBe(100);
     });
@@ -153,7 +154,7 @@ describe('toItem', () => {
       };
 
       const item = itemMapper.toItem(json);
-      if (item.type === ItemType.Consumable && item.recovery) item.recovery.steps = 3;
+      (item as ConsumableItem).recovery!.steps = 3;
 
       expect(json.recovery.steps).toBe(1);
     });

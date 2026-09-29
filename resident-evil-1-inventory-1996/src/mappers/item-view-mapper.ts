@@ -3,6 +3,9 @@ import type { Item } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerItem } from '../types/player';
 
+// URLs of every item image, keyed by the path Vite imported it from.
+// `?no-inline` keeps each image a separate file; Vite would otherwise embed
+// small images in the JavaScript bundle.
 const itemImages = import.meta.glob<string>('../assets/items/**/*.png', {
   eager: true,
   import: 'default',

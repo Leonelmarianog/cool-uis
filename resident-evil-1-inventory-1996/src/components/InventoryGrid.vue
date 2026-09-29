@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 import { ItemType } from '../types/item';
-import type { ItemView } from '../types/item-view'
+import type { ItemView } from '../types/item-view';
 
 // `size` is the number of cells. Items fill the first cells; the rest are empty.
 const {
@@ -10,17 +10,17 @@ const {
   cursorSlot = 0,
   locked = false,
   targetSlot = null,
-} = defineProps<{ size: number; slots?: ItemView[]; cursorSlot?: number; locked?: boolean; targetSlot?: number | null }>()
+} = defineProps<{ size: number; slots?: ItemView[]; cursorSlot?: number; locked?: boolean; targetSlot?: number | null }>();
 
-const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>()
+const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>();
 
 // Always render every cell; cells beyond the given slots are empty.
-const cells = computed(() => Array.from({ length: size }, (_, index) => slots[index] ?? null))
+const cells = computed(() => Array.from({ length: size }, (_, index) => slots[index] ?? null));
 
 function cellLabel(slot: ItemView | null, index: number): string {
-  if (!slot) return `Slot ${index + 1}: empty`
-  const amount = slot.amount === undefined ? '' : `, ${slot.amount}`
-  return `Slot ${index + 1}: ${slot.name}${amount}`
+  if (!slot) return `Slot ${index + 1}: empty`;
+  const amount = slot.amount === undefined ? '' : `, ${slot.amount}`;
+  return `Slot ${index + 1}: ${slot.name}${amount}`;
 }
 </script>
 
