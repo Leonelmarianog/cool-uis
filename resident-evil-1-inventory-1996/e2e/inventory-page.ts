@@ -6,11 +6,14 @@ export class InventoryPage {
   readonly page: Page;
   readonly actionMenu: Locator;
   readonly descriptionPanel: Locator;
+  // Named after the health status, as in "Health: Caution. Click to cycle health status.".
+  readonly healthScreen: Locator;
 
   constructor(page: Page) {
     this.page = page;
     this.actionMenu = page.getByRole('menu', { name: 'Item actions' });
     this.descriptionPanel = page.getByRole('region', { name: 'Item description panel' });
+    this.healthScreen = page.getByRole('button', { name: /^Health:/ });
   }
 
   // Opens the app with parts of the player's starting state replaced (see
