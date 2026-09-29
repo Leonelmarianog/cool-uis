@@ -1,4 +1,4 @@
-// The options of the item action menu, spelled as the game shows them.
+/** The options of the item action menu, spelled as the game shows them. */
 export const ItemAction = {
   Equip: 'EQUIP',
   Use: 'USE',

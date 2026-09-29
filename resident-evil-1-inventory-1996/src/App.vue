@@ -70,10 +70,10 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
       <ItemDescriptionPanel
         class="project-shell__description"
         :item-name="inventory.itemUnderCursor?.name"
-        :message="inventory.message"
-        :choices="inventory.messageChoices"
-        :keep-message="inventory.isDescribing"
-        @message-end="inventory.clearMessage"
+        :message="inventory.description.message"
+        :choices="inventory.description.choices"
+        :keep-message="inventory.description.isKept"
+        @message-end="inventory.description.clear"
         @choose="inventory.answerMix"
       />
     </div>

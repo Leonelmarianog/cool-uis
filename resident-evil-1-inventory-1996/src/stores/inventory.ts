@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { InventoryMode } from '../types/inventory-mode';
+import { useDescriptionPanel } from '../composables/use-description-panel';
 import { useItemSelection } from '../composables/use-item-selection';
 import { ItemAction } from '../types/item-action';
 import { ItemType } from '../types/item';
@@ -19,22 +20,21 @@ export const useInventoryStore = defineStore('inventory', () => {
   const cursorSlot = ref(0);
   // While COMBN waits for a second item, the slot under the green target cursor.
   const targetSlot = ref<number | null>(null);
-  // A message typed into the description panel in place of the item name.
-  const message = ref<string | null>(null);
   // While "Will you mix the herbs?" waits for Yes or No, the herb chosen as the target.
   const mixTargetId = ref<string | null>(null);
 
-  const selection = useItemSelection(mode, message);
+  const description = useDescriptionPanel();
+  const selection = useItemSelection(mode, description);
 
   // The item whose name the description panel shows: the target while choosing one.
   const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
   const isSelecting = computed(() => mode.value !== InventoryMode.Idle);
-  // The green arrows stay on the target while Yes or No is asked.
+  /** The green arrows stay on the target while Yes or No is asked. */
   const isChoosingTarget = computed(
     () => mode.value === InventoryMode.Combining || mode.value === InventoryMode.CombinePrompt,
   );
   const isConfirmingMix = computed(() => mode.value === InventoryMode.CombinePrompt);
-  // The 3D model stays shown while the description is typed and while it spins out.
+  /** The 3D model stays shown while the description is typed and while it spins out. */
   const isChecking = computed(
     () =>
       mode.value === InventoryMode.ModelView ||
@@ -53,9 +53,6 @@ export const useInventoryStore = defineStore('inventory', () => {
     const firstAction = selectedItem.value.type === ItemType.Weapon ? ItemAction.Equip : ItemAction.Use;
     return [firstAction, ItemAction.Check, ItemAction.Combine];
   });
-
-  // The choices the description panel offers under the message.
-  const messageChoices = computed(() => (isConfirmingMix.value ? ['Yes', 'No'] : []));
 
   function moveCursor(slot: number) {
     // While Yes or No is asked, the target cursor stays on the target.
@@ -91,7 +88,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     // Escape removes CHECK's description and gives the model's controls back.
     if (isDescribing.value) {
       mode.value = InventoryMode.ModelView;
-      message.value = null;
+      description.clear();
       return;
     }
     // From CHECK, back out to the menu only, once the model has spun out.
@@ -106,10 +103,6 @@ export const useInventoryStore = defineStore('inventory', () => {
       return;
     }
     selection.release();
-  }
-
-  function clearMessage() {
-    message.value = null;
   }
 
   function chooseAction(action: string) {
@@ -128,8 +121,9 @@ export const useInventoryStore = defineStore('inventory', () => {
         selection.release();
       } else {
         // Key items only work in the game world; ammunition and the red herb only work combined.
-        message.value =
-          selectedItem.value.type === ItemType.Key ? "You can't use it here." : "You can't use this alone.";
+        description.show(
+          selectedItem.value.type === ItemType.Key ? "You can't use it here." : "You can't use this alone.",
+        );
       }
       return;
     }
@@ -154,7 +148,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   function showDescription() {
     if (mode.value !== InventoryMode.ModelView) return;
     mode.value = InventoryMode.ModelDescription;
-    message.value = PLACEHOLDER_DESCRIPTION;
+    description.describe(PLACEHOLDER_DESCRIPTION);
   }
 
   // Items that do not combine, such as the source itself or an empty slot, do
@@ -170,10 +164,10 @@ export const useInventoryStore = defineStore('inventory', () => {
     } else if (player.isHerb(sourceId) && player.isHerb(target.id)) {
       if (player.canMix(sourceId, target.id)) {
         mixTargetId.value = target.id;
-        message.value = 'Will you mix the herbs?';
+        description.ask('Will you mix the herbs?', ['Yes', 'No']);
         mode.value = InventoryMode.CombinePrompt;
       } else {
-        message.value = 'Mixing these does not seem to work.';
+        description.show('Mixing these does not seem to work.');
       }
     }
   }
@@ -191,7 +185,7 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   function cancelMix() {
     mixTargetId.value = null;
-    message.value = null;
+    description.clear();
     mode.value = InventoryMode.Combining;
   }
 
@@ -207,7 +201,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     cursorSlot,
     selection,
     targetSlot,
-    message,
+    description,
     mixTargetId,
     isChecking,
     isLeavingCheck,
@@ -218,11 +212,9 @@ export const useInventoryStore = defineStore('inventory', () => {
     isConfirmingMix,
     selectedItem,
     itemActions,
-    messageChoices,
     moveCursor,
     selectItemAt,
     backOut,
-    clearMessage,
     chooseAction,
     answerMix,
     showDescription,
