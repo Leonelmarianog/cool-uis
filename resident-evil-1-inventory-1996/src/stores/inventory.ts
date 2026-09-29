@@ -10,13 +10,15 @@ import { ItemAction } from '../types/item-action';
 import { ItemType } from '../types/item';
 import { usePlayerStore } from './player';
 
-// The inventory's UI state, such as the cursor, as opposed to the player's data.
-
+/**
+ * The inventory screen's UI state, as opposed to the player's data. It routes
+ * every event to the feature the current mode belongs to.
+ */
 export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
 
   const mode = ref<InventoryMode>(InventoryMode.Idle);
-  // The cursor is a slot position, so it stays in place when items shift.
+  /** The selection frame's slot. It is a position, so it stays in place when items shift. */
   const cursorSlot = ref(0);
 
   const description = useDescriptionPanel();
@@ -25,11 +27,11 @@ export const useInventoryStore = defineStore('inventory', () => {
   const combine = useCombine(mode, selection, description);
   const itemActions = useItemActions(selection, description);
 
-  // The item whose name the description panel shows: the target while choosing one.
+  /** The item whose name the description panel shows: the one under the green arrows while combining. */
   const itemUnderCursor = computed(() => player.inventorySlots[combine.targetSlot.value ?? cursorSlot.value] ?? null);
   const isSelecting = computed(() => mode.value !== InventoryMode.Idle);
 
-  // Weapons are equipped; every other item is used.
+  /** The action menu's options: weapons are equipped, every other item is used. */
   const menuOptions = computed<ItemAction[]>(() => {
     const item = selection.selectedItem.value;
     if (!item) return [];
@@ -37,70 +39,70 @@ export const useInventoryStore = defineStore('inventory', () => {
     return [firstAction, ItemAction.Check, ItemAction.Combine];
   });
 
+  /** The mouse moved over a slot. */
   function moveCursor(slot: number) {
-    // While Yes or No is asked, the target cursor stays on the target.
-    if (combine.isPrompting.value) return;
-    if (combine.isCombining.value) {
-      combine.moveTarget(slot);
-      return;
+    switch (mode.value) {
+      case InventoryMode.Idle:
+        cursorSlot.value = slot;
+        break;
+      case InventoryMode.Combining:
+        combine.moveTarget(slot);
+        break;
     }
-    // While an item is selected, the cursor stays on it.
-    if (isSelecting.value) return;
-    cursorSlot.value = slot;
   }
 
+  /** A slot was clicked. */
   function selectItemAt(slot: number) {
-    if (combine.isPrompting.value) return;
-    if (combine.isCombining.value) {
-      combine.combineWith(slot);
-      return;
+    switch (mode.value) {
+      case InventoryMode.Idle: {
+        const item = player.inventorySlots[slot];
+        if (!item) return;
+        cursorSlot.value = slot;
+        selection.select(item.id);
+        break;
+      }
+      case InventoryMode.Combining:
+        combine.combineWith(slot);
+        break;
     }
-    if (isSelecting.value) return;
-    const item = player.inventorySlots[slot];
-    if (!item) return;
-    cursorSlot.value = slot;
-    selection.select(item.id);
   }
 
+  /** Escape was pressed: steps back once. */
   function backOut() {
-    if (combine.isPrompting.value) {
-      combine.cancelPrompt();
-      return;
+    switch (mode.value) {
+      case InventoryMode.CombinePrompt:
+        combine.cancelPrompt();
+        break;
+      case InventoryMode.Combining:
+        combine.stop();
+        break;
+      case InventoryMode.ModelDescription:
+        check.hideDescription();
+        break;
+      case InventoryMode.ModelView:
+        check.close();
+        break;
+      case InventoryMode.ItemSelected:
+        selection.release();
+        break;
     }
-    if (check.isDescribing.value) {
-      check.hideDescription();
-      return;
-    }
-    if (check.isModelShown.value) {
-      check.close();
-      return;
-    }
-    if (combine.isCombining.value) {
-      combine.stop();
-      return;
-    }
-    selection.release();
   }
 
+  /** An option of the action menu was clicked. */
   function chooseAction(action: string) {
-    if (action === ItemAction.Equip) {
-      itemActions.equip();
-      return;
-    }
-
-    if (action === ItemAction.Use) {
-      itemActions.use();
-      return;
-    }
-
-    if (action === ItemAction.Check) {
-      check.start();
-      return;
-    }
-
-    if (action === ItemAction.Combine) {
-      // The target cursor starts on the selected item.
-      combine.start(cursorSlot.value);
+    switch (action) {
+      case ItemAction.Equip:
+        itemActions.equip();
+        break;
+      case ItemAction.Use:
+        itemActions.use();
+        break;
+      case ItemAction.Check:
+        check.start();
+        break;
+      case ItemAction.Combine:
+        combine.start(cursorSlot.value);
+        break;
     }
   }
 

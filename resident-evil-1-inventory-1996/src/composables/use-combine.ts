@@ -18,7 +18,6 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
   const isCombining = computed(
     () => mode.value === InventoryMode.Combining || mode.value === InventoryMode.CombinePrompt,
   );
-  const isPrompting = computed(() => mode.value === InventoryMode.CombinePrompt);
 
   /** Shows the green arrows on the given slot. */
   function start(slot: number) {
@@ -86,5 +85,5 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
     selection.release();
   }
 
-  return { targetSlot, isCombining, isPrompting, start, moveTarget, combineWith, answer, cancelPrompt, stop };
+  return { targetSlot, isCombining, start, moveTarget, combineWith, answer, cancelPrompt, stop };
 }
