@@ -2,11 +2,11 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import charactersData from '../data/characters.json';
 import initialPlayer from '../data/initial-player.json';
-import itemsData from '../data/items.json';
 import recipesData from '../data/recipes.json';
+import { itemService } from '../services/item-service';
 import type { Character } from '../types/character';
 import type { HealthStatus } from '../types/health';
-import type { Item, Recovery } from '../types/item';
+import type { Recovery } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerAmmunition, PlayerItem, PlayerState, PlayerWeapon } from '../types/player';
 import type { Recipe } from '../types/recipe';
@@ -14,7 +14,6 @@ import type { Recipe } from '../types/recipe';
 // JSON imports are not type-checked, so the data is cast to its type.
 const characters = charactersData as Character[];
 const initialState = initialPlayer as PlayerState;
-const items = itemsData as Item[];
 const recipes = recipesData as Recipe[];
 
 // URLs of every item image, keyed by the path Vite imported it from.
@@ -45,12 +44,6 @@ function findCharacter(id: string): Character {
   return character;
 }
 
-function findItem(id: string): Item {
-  const item = items.find(item => item.id === id);
-  if (!item) throw new Error(`Unknown item "${id}"`);
-  return item;
-}
-
 // The ingredients match in either order.
 function findRecipe(firstItemId: string, secondItemId: string): Recipe | undefined {
   return recipes.find(({ ingredients: [first, second] }) =>
@@ -70,7 +63,7 @@ function amountOf(playerItem: PlayerItem): number | undefined {
 }
 
 function toItemView(playerItem: PlayerItem): ItemView {
-  const { name, type, sprite } = findItem(playerItem.itemId);
+  const { name, type, sprite } = itemService.find(playerItem.itemId);
   return {
     id: playerItem.id,
     name,
@@ -124,7 +117,7 @@ export const usePlayerStore = defineStore('player', () => {
     const playerItem = findPlayerItem(playerItemId);
     if (!playerItem) return false;
 
-    const item = findItem(playerItem.itemId);
+    const item = itemService.find(playerItem.itemId);
     if (item.type !== 'consumable' || !item.recovery) return false;
 
     healthStatus.value = recover(healthStatus.value, item.recovery);
@@ -146,7 +139,7 @@ export const usePlayerStore = defineStore('player', () => {
   // Moves rounds into the weapon up to its capacity. A full weapon still counts
   // as reloaded, with no rounds moved. A stack that reaches 0 is removed.
   function loadWeapon(weapon: PlayerWeapon, ammunition: PlayerAmmunition): boolean {
-    const item = findItem(weapon.itemId);
+    const item = itemService.find(weapon.itemId);
     if (item.type !== 'weapon' || !item.weapon.ammunition.includes(ammunition.itemId)) return false;
 
     const rounds = Math.min(item.weapon.capacity - weapon.loadedRounds, ammunition.amount);
@@ -166,7 +159,7 @@ export const usePlayerStore = defineStore('player', () => {
     if (source?.type !== 'ammunition' || target?.type !== 'ammunition') return false;
     if (source.id === target.id || source.itemId !== target.itemId) return false;
 
-    const item = findItem(source.itemId);
+    const item = itemService.find(source.itemId);
     if (item.type !== 'ammunition') return false;
 
     const { maxStack } = item.ammunition;
@@ -197,7 +190,7 @@ export const usePlayerStore = defineStore('player', () => {
     const recipe = findRecipe(source.itemId, target.itemId);
     if (!recipe) return false;
 
-    const result = findItem(recipe.result);
+    const result = itemService.find(recipe.result);
     // Recipes only make items without an amount, such as mixed herbs.
     if (result.type !== 'consumable' && result.type !== 'key') return false;
 
@@ -211,7 +204,7 @@ export const usePlayerStore = defineStore('player', () => {
   function isHerb(playerItemId: string): boolean {
     const playerItem = findPlayerItem(playerItemId);
     if (!playerItem) return false;
-    const item = findItem(playerItem.itemId);
+    const item = itemService.find(playerItem.itemId);
     return item.type === 'consumable' && item.herb === true;
   }
 
