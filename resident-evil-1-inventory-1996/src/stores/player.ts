@@ -6,6 +6,7 @@ import { itemService } from '../services/item-service';
 import { playerService } from '../services/player-service';
 import { recipeService } from '../services/recipe-service';
 import type { HealthStatus } from '../types/health';
+import { ItemType } from '../types/item';
 import type { Recovery } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerAmmunition, PlayerItem, PlayerWeapon } from '../types/player';
@@ -53,7 +54,7 @@ export const usePlayerStore = defineStore('player', () => {
   // Equips a weapon, replacing the equipped one. Choosing the equipped weapon again unequips it.
   function toggleEquipped(playerItemId: string) {
     const playerItem = findPlayerItem(playerItemId);
-    if (playerItem?.type !== 'weapon') return;
+    if (playerItem?.type !== ItemType.Weapon) return;
     equippedItemId.value = equippedItemId.value === playerItemId ? null : playerItemId;
   }
 
@@ -64,7 +65,7 @@ export const usePlayerStore = defineStore('player', () => {
     if (!playerItem) return false;
 
     const item = itemService.find(playerItem.itemId);
-    if (item.type !== 'consumable' || !item.recovery) return false;
+    if (item.type !== ItemType.Consumable || !item.recovery) return false;
 
     healthStatus.value = recover(healthStatus.value, item.recovery);
     recoveriesUsed.value++;
@@ -77,8 +78,8 @@ export const usePlayerStore = defineStore('player', () => {
   function reload(sourceId: string, targetId: string): boolean {
     const source = findPlayerItem(sourceId);
     const target = findPlayerItem(targetId);
-    if (source?.type === 'weapon' && target?.type === 'ammunition') return loadWeapon(source, target);
-    if (source?.type === 'ammunition' && target?.type === 'weapon') return loadWeapon(target, source);
+    if (source?.type === ItemType.Weapon && target?.type === ItemType.Ammunition) return loadWeapon(source, target);
+    if (source?.type === ItemType.Ammunition && target?.type === ItemType.Weapon) return loadWeapon(target, source);
     return false;
   }
 
@@ -86,7 +87,7 @@ export const usePlayerStore = defineStore('player', () => {
   // as reloaded, with no rounds moved. A stack that reaches 0 is removed.
   function loadWeapon(weapon: PlayerWeapon, ammunition: PlayerAmmunition): boolean {
     const item = itemService.find(weapon.itemId);
-    if (item.type !== 'weapon' || !item.weapon.ammunition.includes(ammunition.itemId)) return false;
+    if (item.type !== ItemType.Weapon || !item.weapon.ammunition.includes(ammunition.itemId)) return false;
 
     const rounds = Math.min(item.weapon.capacity - weapon.loadedRounds, ammunition.amount);
     weapon.loadedRounds += rounds;
@@ -102,11 +103,11 @@ export const usePlayerStore = defineStore('player', () => {
   function stack(sourceId: string, targetId: string): boolean {
     const source = findPlayerItem(sourceId);
     const target = findPlayerItem(targetId);
-    if (source?.type !== 'ammunition' || target?.type !== 'ammunition') return false;
+    if (source?.type !== ItemType.Ammunition || target?.type !== ItemType.Ammunition) return false;
     if (source.id === target.id || source.itemId !== target.itemId) return false;
 
     const item = itemService.find(source.itemId);
-    if (item.type !== 'ammunition') return false;
+    if (item.type !== ItemType.Ammunition) return false;
 
     const { maxStack } = item.ammunition;
     // Otherwise a full target would move almost all its rounds and look like a swap.
@@ -138,7 +139,7 @@ export const usePlayerStore = defineStore('player', () => {
 
     const result = itemService.find(recipe.result);
     // Recipes only make items without an amount, such as mixed herbs.
-    if (result.type !== 'consumable' && result.type !== 'key') return false;
+    if (result.type !== ItemType.Consumable && result.type !== ItemType.Key) return false;
 
     const index = inventory.value.findIndex(playerItem => playerItem.id === source.id);
     // The result keeps the source's ID, as it takes the source's place.
@@ -151,7 +152,7 @@ export const usePlayerStore = defineStore('player', () => {
     const playerItem = findPlayerItem(playerItemId);
     if (!playerItem) return false;
     const item = itemService.find(playerItem.itemId);
-    return item.type === 'consumable' && item.herb === true;
+    return item.type === ItemType.Consumable && item.herb === true;
   }
 
   // The items after it move up to fill its slot.

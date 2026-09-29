@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { ItemType } from '../types/item';
 import type { ItemView } from '../types/item-view'
 
 // `size` is the number of cells. Items fill the first cells; the rest are empty.
@@ -39,7 +40,7 @@ function cellLabel(slot: ItemView | null, index: number): string {
           <span
             v-if="slot.amount !== undefined"
             class="inventory-grid__amount"
-            :class="{ 'inventory-grid__amount--weapon': slot.type === 'weapon' }"
+            :class="{ 'inventory-grid__amount--weapon': slot.type === ItemType.Weapon }"
             aria-hidden="true"
           >{{ slot.amount }}</span>
         </template>
