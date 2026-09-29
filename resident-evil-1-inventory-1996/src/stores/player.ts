@@ -1,17 +1,15 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import charactersData from '../data/characters.json';
 import initialPlayer from '../data/initial-player.json';
+import { characterService } from '../services/character-service';
 import { itemService } from '../services/item-service';
 import { recipeService } from '../services/recipe-service';
-import type { Character } from '../types/character';
 import type { HealthStatus } from '../types/health';
 import type { Recovery } from '../types/item';
 import type { ItemView } from '../types/item-view';
 import type { PlayerAmmunition, PlayerItem, PlayerState, PlayerWeapon } from '../types/player';
 
 // JSON imports are not type-checked, so the data is cast to its type.
-const characters = charactersData as Character[];
 const initialState = initialPlayer as PlayerState;
 
 // URLs of every item image, keyed by the path Vite imported it from.
@@ -34,12 +32,6 @@ function recover(status: HealthStatus, recovery: Recovery): HealthStatus {
   }
   const index = Math.min(healthOrder.indexOf(status) + recovery.steps, healthOrder.length - 1);
   return healthOrder[index];
-}
-
-function findCharacter(id: string): Character {
-  const character = characters.find(character => character.id === id);
-  if (!character) throw new Error(`Unknown character "${id}"`);
-  return character;
 }
 
 function findItemImage(path: string): string {
@@ -84,7 +76,7 @@ export const usePlayerStore = defineStore('player', () => {
   const equippedItemId = ref<string | null>(state.equippedItemId);
   const itemBox = ref<(PlayerItem | null)[]>(state.itemBox);
 
-  const inventorySize = computed(() => findCharacter(characterId.value).inventorySize);
+  const inventorySize = computed(() => characterService.find(characterId.value).inventorySize);
   const inventorySlots = computed(() => inventory.value.map(toItemView));
 
   const equippedWeapon = computed(() => {
