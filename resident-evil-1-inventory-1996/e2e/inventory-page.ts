@@ -25,7 +25,16 @@ export class InventoryPage {
     return this.page.getByLabel('Inventory slots').getByRole('listitem').nth(number - 1);
   }
 
+  // Disabled while COMBN waits for a second item.
+  actionButton(action: string): Locator {
+    return this.actionMenu.getByRole('menuitem', { name: action });
+  }
+
   async chooseAction(action: string) {
-    await this.actionMenu.getByRole('menuitem', { name: action }).click();
+    await this.actionButton(action).click();
+  }
+
+  async backOut() {
+    await this.page.keyboard.press('Escape');
   }
 }
