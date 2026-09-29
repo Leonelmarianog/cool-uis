@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { ItemType } from '../types/item';
 import { usePlayerStore } from './player';
 
 // The inventory's UI state, such as the cursor, as opposed to the player's data.
@@ -37,7 +38,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   // Weapons are equipped; every other item is used.
   const itemActions = computed(() => {
     if (!selectedItem.value) return [];
-    const firstAction = selectedItem.value.type === 'weapon' ? 'EQUIP' : 'USE';
+    const firstAction = selectedItem.value.type === ItemType.Weapon ? 'EQUIP' : 'USE';
     return [firstAction, 'CHECK', 'COMBN'];
   });
 
@@ -115,7 +116,7 @@ export const useInventoryStore = defineStore('inventory', () => {
         backOut();
       } else {
         // Key items only work in the game world; ammunition and the red herb only work combined.
-        message.value = selectedItem.value.type === 'key' ? "You can't use it here." : "You can't use this alone.";
+        message.value = selectedItem.value.type === ItemType.Key ? "You can't use it here." : "You can't use this alone.";
       }
       return;
     }

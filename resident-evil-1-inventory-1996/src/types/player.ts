@@ -1,4 +1,5 @@
 import type { HealthStatus } from './health';
+import type { ItemType } from './item';
 
 // A player item is one copy of an item the player owns. Its definition
 // (name, sprite, capacity, …) comes from the item with the same `itemId`.
@@ -8,23 +9,23 @@ interface BasePlayerItem {
 }
 
 export interface PlayerWeapon extends BasePlayerItem {
-  type: 'weapon';
+  type: typeof ItemType.Weapon;
   /** From 0 to the weapon's capacity. */
   loadedRounds: number;
 }
 
 export interface PlayerAmmunition extends BasePlayerItem {
-  type: 'ammunition';
+  type: typeof ItemType.Ammunition;
   /** From 1 to the ammunition's max stack. */
   amount: number;
 }
 
 export interface PlayerConsumable extends BasePlayerItem {
-  type: 'consumable';
+  type: typeof ItemType.Consumable;
 }
 
 export interface PlayerKeyItem extends BasePlayerItem {
-  type: 'key';
+  type: typeof ItemType.Key;
 }
 
 export type PlayerItem =

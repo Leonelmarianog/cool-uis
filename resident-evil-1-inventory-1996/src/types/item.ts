@@ -1,3 +1,13 @@
+// The kinds of item, named so code never compares against bare strings.
+export const ItemType = {
+  Weapon: 'weapon',
+  Ammunition: 'ammunition',
+  Consumable: 'consumable',
+  Key: 'key',
+} as const;
+
+export type ItemType = (typeof ItemType)[keyof typeof ItemType];
+
 interface BaseItem {
   id: string;
   name: string;
@@ -7,7 +17,7 @@ interface BaseItem {
 }
 
 export interface WeaponItem extends BaseItem {
-  type: 'weapon';
+  type: typeof ItemType.Weapon;
 
   weapon: {
     /** Rounds the weapon holds when fully loaded. */
@@ -18,7 +28,7 @@ export interface WeaponItem extends BaseItem {
 }
 
 export interface AmmunitionItem extends BaseItem {
-  type: 'ammunition';
+  type: typeof ItemType.Ammunition;
 
   ammunition: {
     /** Most rounds one inventory slot can hold. */
@@ -35,7 +45,7 @@ export interface Recovery {
 }
 
 export interface ConsumableItem extends BaseItem {
-  type: 'consumable';
+  type: typeof ItemType.Consumable;
   /** Herbs that have no recipe together show "Mixing these does not seem to work." */
   herb?: boolean;
   /** Missing on items that cannot be used alone, such as the red herb. */
@@ -43,7 +53,7 @@ export interface ConsumableItem extends BaseItem {
 }
 
 export interface KeyItem extends BaseItem {
-  type: 'key';
+  type: typeof ItemType.Key;
 }
 
 export type Item =
