@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { InventoryMode } from '../types/inventory-mode';
+import { useCheck } from '../composables/use-check';
 import { useDescriptionPanel } from '../composables/use-description-panel';
 import { useItemSelection } from '../composables/use-item-selection';
 import { ItemAction } from '../types/item-action';
@@ -8,9 +9,6 @@ import { ItemType } from '../types/item';
 import { usePlayerStore } from './player';
 
 // The inventory's UI state, such as the cursor, as opposed to the player's data.
-// Every item shows the Beretta's description (from check-item-in-out.gif)
-// until real descriptions exist.
-const PLACEHOLDER_DESCRIPTION = 'Beretta M92FS. Automatic\nloaded with 9mm bullets.';
 
 export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
@@ -25,6 +23,7 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   const description = useDescriptionPanel();
   const selection = useItemSelection(mode, description);
+  const check = useCheck(mode, description);
 
   // The item whose name the description panel shows: the target while choosing one.
   const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
@@ -34,15 +33,6 @@ export const useInventoryStore = defineStore('inventory', () => {
     () => mode.value === InventoryMode.Combining || mode.value === InventoryMode.CombinePrompt,
   );
   const isConfirmingMix = computed(() => mode.value === InventoryMode.CombinePrompt);
-  /** The 3D model stays shown while the description is typed and while it spins out. */
-  const isChecking = computed(
-    () =>
-      mode.value === InventoryMode.ModelView ||
-      mode.value === InventoryMode.ModelDescription ||
-      mode.value === InventoryMode.ModelClosing,
-  );
-  const isDescribing = computed(() => mode.value === InventoryMode.ModelDescription);
-  const isLeavingCheck = computed(() => mode.value === InventoryMode.ModelClosing);
   const selectedItem = computed(
     () => player.inventorySlots.find(item => item.id === selection.selectedItemId.value) ?? null,
   );
@@ -85,15 +75,12 @@ export const useInventoryStore = defineStore('inventory', () => {
       cancelMix();
       return;
     }
-    // Escape removes CHECK's description and gives the model's controls back.
-    if (isDescribing.value) {
-      mode.value = InventoryMode.ModelView;
-      description.clear();
+    if (check.isDescribing.value) {
+      check.hideDescription();
       return;
     }
-    // From CHECK, back out to the menu only, once the model has spun out.
-    if (isChecking.value) {
-      mode.value = InventoryMode.ModelClosing;
+    if (check.isModelShown.value) {
+      check.close();
       return;
     }
     // From choosing a target, back out to the menu only.
@@ -129,7 +116,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     }
 
     if (action === ItemAction.Check) {
-      mode.value = InventoryMode.ModelView;
+      check.start();
       return;
     }
 
@@ -138,17 +125,6 @@ export const useInventoryStore = defineStore('inventory', () => {
       targetSlot.value = cursorSlot.value;
       mode.value = InventoryMode.Combining;
     }
-  }
-
-  // Called once CHECK's model has spun out.
-  function finishCheck() {
-    mode.value = InventoryMode.ItemSelected;
-  }
-
-  function showDescription() {
-    if (mode.value !== InventoryMode.ModelView) return;
-    mode.value = InventoryMode.ModelDescription;
-    description.describe(PLACEHOLDER_DESCRIPTION);
   }
 
   // Items that do not combine, such as the source itself or an empty slot, do
@@ -202,10 +178,8 @@ export const useInventoryStore = defineStore('inventory', () => {
     selection,
     targetSlot,
     description,
+    check,
     mixTargetId,
-    isChecking,
-    isLeavingCheck,
-    isDescribing,
     itemUnderCursor,
     isSelecting,
     isChoosingTarget,
@@ -217,7 +191,5 @@ export const useInventoryStore = defineStore('inventory', () => {
     backOut,
     chooseAction,
     answerMix,
-    showDescription,
-    finishCheck,
   };
 });

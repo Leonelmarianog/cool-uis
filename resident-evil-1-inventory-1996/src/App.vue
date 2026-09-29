@@ -31,18 +31,18 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
           <!-- v-show keeps the menu's framed option while CHECK hides it. -->
           <ItemActionMenu
             v-if="inventory.isSelecting"
-            v-show="!inventory.isChecking"
+            v-show="!inventory.check.isModelShown"
             :options="inventory.itemActions"
             :inactive="inventory.isChoosingTarget"
             @choose="inventory.chooseAction"
           />
         </Transition>
         <ItemModelViewer
-          v-if="inventory.isChecking"
-          :frozen="inventory.isDescribing"
-          :leaving="inventory.isLeavingCheck"
-          @describe="inventory.showDescription"
-          @left="inventory.finishCheck"
+          v-if="inventory.check.isModelShown"
+          :frozen="inventory.check.isDescribing"
+          :leaving="inventory.check.isClosing"
+          @describe="inventory.check.showDescription"
+          @left="inventory.check.finish"
         />
       </ItemPreviewPanel>
       <div class="project-shell__status">
