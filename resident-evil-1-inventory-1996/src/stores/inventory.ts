@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { InventoryMode } from '../types/inventory-mode';
 import { ItemType } from '../types/item';
 import { usePlayerStore } from './player';
 
@@ -11,6 +12,7 @@ const PLACEHOLDER_DESCRIPTION = 'Beretta M92FS. Automatic\nloaded with 9mm bulle
 export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
 
+  const mode = ref<InventoryMode>(InventoryMode.Idle);
   // The cursor is a slot position, so it stays in place when items shift.
   const cursorSlot = ref(0);
   // The selected item is tracked by ID, so it stays attached to its item.
@@ -21,18 +23,24 @@ export const useInventoryStore = defineStore('inventory', () => {
   const message = ref<string | null>(null);
   // While "Will you mix the herbs?" waits for Yes or No, the herb chosen as the target.
   const mixTargetId = ref<string | null>(null);
-  // While CHECK shows the selected item's 3D model in place of the menu.
-  const isChecking = ref(false);
-  // While CHECK's model spins out, before the menu returns.
-  const isLeavingCheck = ref(false);
-  // While CHECK types the item's description; the model is frozen until Escape.
-  const isDescribing = ref(false);
 
   // The item whose name the description panel shows: the target while choosing one.
   const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
-  const isSelecting = computed(() => selectedItemId.value !== null);
-  const isChoosingTarget = computed(() => targetSlot.value !== null);
-  const isConfirmingMix = computed(() => mixTargetId.value !== null);
+  const isSelecting = computed(() => mode.value !== InventoryMode.Idle);
+  // The green arrows stay on the target while Yes or No is asked.
+  const isChoosingTarget = computed(
+    () => mode.value === InventoryMode.Combining || mode.value === InventoryMode.CombinePrompt,
+  );
+  const isConfirmingMix = computed(() => mode.value === InventoryMode.CombinePrompt);
+  // The 3D model stays shown while the description is typed and while it spins out.
+  const isChecking = computed(
+    () =>
+      mode.value === InventoryMode.ModelView ||
+      mode.value === InventoryMode.ModelDescription ||
+      mode.value === InventoryMode.ModelClosing,
+  );
+  const isDescribing = computed(() => mode.value === InventoryMode.ModelDescription);
+  const isLeavingCheck = computed(() => mode.value === InventoryMode.ModelClosing);
   const selectedItem = computed(() => player.inventorySlots.find(item => item.id === selectedItemId.value) ?? null);
 
   // Weapons are equipped; every other item is used.
@@ -68,6 +76,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     if (!item) return;
     cursorSlot.value = slot;
     selectedItemId.value = item.id;
+    mode.value = InventoryMode.ItemSelected;
   }
 
   function backOut() {
@@ -78,22 +87,24 @@ export const useInventoryStore = defineStore('inventory', () => {
     }
     // Escape removes CHECK's description and gives the model's controls back.
     if (isDescribing.value) {
-      isDescribing.value = false;
+      mode.value = InventoryMode.ModelView;
       message.value = null;
       return;
     }
     // From CHECK, back out to the menu only, once the model has spun out.
     if (isChecking.value) {
-      isLeavingCheck.value = true;
+      mode.value = InventoryMode.ModelClosing;
       return;
     }
     // From choosing a target, back out to the menu only.
     if (isChoosingTarget.value) {
       targetSlot.value = null;
+      mode.value = InventoryMode.ItemSelected;
       return;
     }
     selectedItemId.value = null;
     message.value = null;
+    mode.value = InventoryMode.Idle;
   }
 
   function clearMessage() {
@@ -123,25 +134,25 @@ export const useInventoryStore = defineStore('inventory', () => {
     }
 
     if (action === 'CHECK') {
-      isChecking.value = true;
+      mode.value = InventoryMode.ModelView;
       return;
     }
 
     if (action === 'COMBN') {
       // The target cursor starts on the selected item.
       targetSlot.value = cursorSlot.value;
+      mode.value = InventoryMode.Combining;
     }
   }
 
   // Called once CHECK's model has spun out.
   function finishCheck() {
-    isChecking.value = false;
-    isLeavingCheck.value = false;
+    mode.value = InventoryMode.ItemSelected;
   }
 
   function showDescription() {
-    if (!isChecking.value) return;
-    isDescribing.value = true;
+    if (mode.value !== InventoryMode.ModelView) return;
+    mode.value = InventoryMode.ModelDescription;
     message.value = PLACEHOLDER_DESCRIPTION;
   }
 
@@ -159,6 +170,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       if (player.canMix(sourceId, target.id)) {
         mixTargetId.value = target.id;
         message.value = 'Will you mix the herbs?';
+        mode.value = InventoryMode.CombinePrompt;
       } else {
         message.value = 'Mixing these does not seem to work.';
       }
@@ -179,16 +191,19 @@ export const useInventoryStore = defineStore('inventory', () => {
   function cancelMix() {
     mixTargetId.value = null;
     message.value = null;
+    mode.value = InventoryMode.Combining;
   }
 
   // The game closes the menu and releases the item after a combination.
   function finishCombination() {
     mixTargetId.value = null;
     targetSlot.value = null;
+    mode.value = InventoryMode.ItemSelected;
     backOut();
   }
 
   return {
+    mode,
     cursorSlot,
     selectedItemId,
     targetSlot,
