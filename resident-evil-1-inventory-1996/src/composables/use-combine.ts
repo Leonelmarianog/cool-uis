@@ -2,11 +2,18 @@ import { computed, ref } from 'vue';
 import type { Ref } from 'vue';
 import { usePlayerStore } from '../stores/player';
 import { InventoryMode } from '../types/inventory-mode';
-import type { DescriptionPanel } from './use-description-panel';
+import type { Description } from '../elements/use-description';
+import type { Prompt } from '../elements/use-prompt';
+import { PromptChoice } from '../types/prompt-choice';
 import type { ItemSelection } from './use-item-selection';
 
 /** COMBN: picking a second item with the target cursor, and the question some combinations ask first. */
-export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, description: DescriptionPanel) {
+export function useCombine(
+  mode: Ref<InventoryMode>,
+  selection: ItemSelection,
+  description: Description,
+  prompt: Prompt,
+) {
   const player = usePlayerStore();
 
   /** The item chosen as the target while the question waits for Yes or No. */
@@ -25,7 +32,7 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
   /**
    * Combines the selected item with the one in the given slot. Items that do
    * not combine, such as the selected item itself or an empty slot, do nothing;
-   * herbs that do not mix show a message.
+   * herbs that do not mix show a description.
    */
   function combineWith(slot: number) {
     const sourceId = selection.selectedItemId.value;
@@ -37,19 +44,20 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
     } else if (player.isHerb(sourceId) && player.isHerb(target.id)) {
       if (player.canMix(sourceId, target.id)) {
         promptTargetId.value = target.id;
-        description.ask('Will you mix the herbs?', ['Yes', 'No']);
+        description.close();
+        prompt.open('Will you mix the herbs?', [PromptChoice.Yes, PromptChoice.No]);
         mode.value = InventoryMode.AnsweringPrompt;
       } else {
-        description.show('Mixing these does not seem to work.');
+        description.open('Mixing these does not seem to work.');
       }
     }
   }
 
   /** Yes mixes the herbs; No goes back to picking a second item. */
-  function answer(choice: string) {
+  function answer(choice: PromptChoice) {
     const sourceId = selection.selectedItemId.value;
     if (!sourceId || !promptTargetId.value) return;
-    if (choice === 'Yes') {
+    if (choice === PromptChoice.Yes) {
       player.mix(sourceId, promptTargetId.value);
       finish();
     } else {
@@ -60,7 +68,7 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
   /** Removes the question and goes back to picking a second item. */
   function cancelPrompt() {
     promptTargetId.value = null;
-    description.clear();
+    prompt.close();
     mode.value = InventoryMode.ChoosingTarget;
   }
 

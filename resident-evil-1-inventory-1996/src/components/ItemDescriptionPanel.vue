@@ -5,27 +5,27 @@ import choiceArrow from '../assets/ui/choice-arrow.svg';
 
 const {
   itemName = '',
-  message = null,
+  text = null,
   choices = [],
   choiceIndex = 0,
-  keepMessage = false,
+  keepText = false,
 } = defineProps<{
   itemName?: string;
-  /** Replaces the item name while it is typed out; a "\n" starts its second line. */
-  message?: string | null;
-  /** Shown after the message is typed out; the message then stays until one is chosen. */
+  /** Replaces the item name while it is open: a description, or a prompt's question. A "\n" starts its second line. */
+  text?: string | null;
+  /** The prompt's choices; they show once the question is typed out. */
   choices?: string[];
   /** The choice under the choice cursor (the arrow). */
   choiceIndex?: number;
-  /** Keeps the message after it is typed out, such as CHECK's description. */
-  keepMessage?: boolean;
+  /** Keeps the text after it is typed out, such as CHECK's item description. */
+  keepText?: boolean;
 }>();
 
 const emit = defineEmits<{ 'description-typed': []; point: [index: number]; choose: [] }>();
 
-// As in use-item-1.gif: one character every 4 frames at 60 fps, then the full
-// message stays for about 420 ms before the item name returns.
+/** As in use-item-1.gif: one character every 4 frames at 60 fps. */
 const CHARACTER_MS = (4 * 1000) / 60;
+/** How long a text that goes away by itself stays in full before the item name returns. */
 const HOLD_MS = 420;
 // The first choice starts at column 214; each next one follows two spaces
 // after the one before, in 8-pixel characters.
@@ -36,32 +36,31 @@ const typedLength = ref(0);
 const areChoicesShown = ref(false);
 let timer: ReturnType<typeof setTimeout> | undefined;
 
-function typeNextCharacter(text: string) {
+function typeNextCharacter(fullText: string) {
   typedLength.value++;
-  if (typedLength.value < text.length) {
-    timer = setTimeout(() => typeNextCharacter(text), CHARACTER_MS);
+  if (typedLength.value < fullText.length) {
+    timer = setTimeout(() => typeNextCharacter(fullText), CHARACTER_MS);
   } else if (choices.length > 0) {
-    // The choices appear as soon as the message is typed out.
     areChoicesShown.value = true;
-  } else if (!keepMessage) {
+  } else if (!keepText) {
     timer = setTimeout(() => emit('description-typed'), HOLD_MS);
   }
 }
 
 watch(
-  () => message,
-  text => {
+  () => text,
+  newText => {
     clearTimeout(timer);
     typedLength.value = 0;
     areChoicesShown.value = false;
-    if (text) timer = setTimeout(() => typeNextCharacter(text), CHARACTER_MS);
+    if (newText) timer = setTimeout(() => typeNextCharacter(newText), CHARACTER_MS);
   },
 );
 
 onUnmounted(() => clearTimeout(timer));
 
-const text = computed(() => (message === null ? itemName : message.slice(0, typedLength.value)));
-const lines = computed(() => text.value.split('\n'));
+const shownText = computed(() => (text === null ? itemName : text.slice(0, typedLength.value)));
+const lines = computed(() => shownText.value.split('\n'));
 
 const choiceColumns = computed(() => {
   let column = FIRST_CHOICE_COLUMN;

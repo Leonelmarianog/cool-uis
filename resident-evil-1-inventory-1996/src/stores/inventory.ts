@@ -2,11 +2,12 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useCheck } from '../composables/use-check';
 import { useCombine } from '../composables/use-combine';
-import { useDescriptionPanel } from '../composables/use-description-panel';
 import { useItemActions } from '../composables/use-item-actions';
 import { useItemSelection } from '../composables/use-item-selection';
 import { useCursor } from '../elements/use-cursor';
+import { useDescription } from '../elements/use-description';
 import { useMainCursor } from '../elements/use-main-cursor';
+import { usePrompt } from '../elements/use-prompt';
 import { CursorArea } from '../types/cursor-area';
 import { InventoryMode } from '../types/inventory-mode';
 import { ItemAction } from '../types/item-action';
@@ -33,19 +34,20 @@ export const useInventoryStore = defineStore('inventory', () => {
   const targetCursor = useCursor();
   /** Points at an option of the action menu. */
   const optionCursor = useCursor();
-  /** Points at a choice of the prompt. */
-  const choiceCursor = useCursor();
 
-  const description = useDescriptionPanel();
-  const selection = useItemSelection(mode, description);
+  const description = useDescription();
+  const prompt = usePrompt();
+  const selection = useItemSelection(mode, description, prompt);
   const check = useCheck(mode, description);
-  const combine = useCombine(mode, selection, description);
+  const combine = useCombine(mode, selection, description, prompt);
   const itemActions = useItemActions(selection, description);
 
   /** The target cursor's slot while it shows, or `null`. */
   const targetIndex = computed(() => (combine.isCombining.value ? targetCursor.index.value : null));
   /** The item whose name the description panel shows: the one under the target cursor while it shows. */
   const itemUnderCursor = computed(() => player.inventorySlots[targetIndex.value ?? mainCursor.index.value] ?? null);
+  /** The text the description panel types in place of the item name: the prompt's question or the description. */
+  const panelText = computed(() => prompt.question.value ?? description.text.value);
   const isSelecting = computed(() => mode.value !== InventoryMode.Browsing);
   /** The grid takes input while the player browses or picks a target. */
   const isGridActive = computed(
@@ -79,7 +81,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       back: () => combine.stop(),
     },
     [InventoryMode.AnsweringPrompt]: {
-      point: index => choiceCursor.point(index),
+      point: index => prompt.cursor.point(index),
       choose: () => answerPointedChoice(),
       back: () => combine.cancelPrompt(),
     },
@@ -118,7 +120,7 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   /** The description panel finished showing a description that goes away by itself; the item name returns. */
   function onDescriptionTyped() {
-    description.clear();
+    description.close();
   }
 
   /** The model spun out of the item preview panel; the action menu returns. */
@@ -146,15 +148,14 @@ export const useInventoryStore = defineStore('inventory', () => {
     combine.start();
   }
 
-  /** Combines the selected item with the one under the target cursor; a prompt starts on its first choice. */
+  /** Combines the selected item with the one under the target cursor. */
   function combineWithTarget() {
-    choiceCursor.reset();
     combine.combineWith(targetCursor.index.value);
   }
 
   /** Answers the prompt with the choice under the choice cursor. */
   function answerPointedChoice() {
-    const choice = description.choices.value[choiceCursor.index.value];
+    const choice = prompt.pointedChoice.value;
     if (choice) combine.answer(choice);
   }
 
@@ -163,10 +164,11 @@ export const useInventoryStore = defineStore('inventory', () => {
     mainCursor,
     targetIndex,
     optionCursor,
-    choiceCursor,
     description,
+    prompt,
     check,
     itemUnderCursor,
+    panelText,
     isSelecting,
     isGridActive,
     isActionMenuActive,

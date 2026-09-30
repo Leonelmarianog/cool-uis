@@ -1,7 +1,7 @@
 import { computed } from 'vue';
 import type { Ref } from 'vue';
 import { InventoryMode } from '../types/inventory-mode';
-import type { DescriptionPanel } from './use-description-panel';
+import type { Description } from '../elements/use-description';
 
 /**
  * Every item shows the Beretta's description (from check-item-in-out.gif)
@@ -10,7 +10,7 @@ import type { DescriptionPanel } from './use-description-panel';
 const PLACEHOLDER_DESCRIPTION = 'Beretta M92FS. Automatic\nloaded with 9mm bullets.';
 
 /** CHECK: the selected item's 3D model, its description, and its spin-out. */
-export function useCheck(mode: Ref<InventoryMode>, description: DescriptionPanel) {
+export function useCheck(mode: Ref<InventoryMode>, description: Description) {
   /** The model stays shown while the description is typed and while it spins out. */
   const isModelShown = computed(
     () =>
@@ -30,13 +30,13 @@ export function useCheck(mode: Ref<InventoryMode>, description: DescriptionPanel
   function showDescription() {
     if (mode.value !== InventoryMode.ViewingModel) return;
     mode.value = InventoryMode.ReadingDescription;
-    description.describe(PLACEHOLDER_DESCRIPTION);
+    description.open(PLACEHOLDER_DESCRIPTION, true);
   }
 
   /** Removes the description and gives the model's controls back. */
   function hideDescription() {
     mode.value = InventoryMode.ViewingModel;
-    description.clear();
+    description.close();
   }
 
   /** Spins the model out; the menu returns once it is gone. */
