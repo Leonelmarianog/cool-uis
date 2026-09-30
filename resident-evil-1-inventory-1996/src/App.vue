@@ -26,7 +26,7 @@ useKeyboard();
           <!-- v-show keeps the menu's framed option while CHECK hides it. -->
           <ItemActionMenu
             v-if="inventory.actionMenu.isOpen"
-            v-show="!inventory.check.isModelShown"
+            v-show="!inventory.isModelShown"
             :options="inventory.actionMenu.options"
             :option-index="inventory.actionMenu.cursor.index"
             :inactive="!inventory.isActionMenuActive"
@@ -35,9 +35,9 @@ useKeyboard();
           />
         </Transition>
         <ItemModelViewer
-          v-if="inventory.check.isModelShown"
-          :frozen="inventory.check.isDescribing"
-          :leaving="inventory.check.isClosing"
+          v-if="inventory.isModelShown"
+          :frozen="inventory.isModelFrozen"
+          :leaving="inventory.isModelClosing"
           @choose="inventory.choose"
           @exited="inventory.onItemPreviewExited"
         />
