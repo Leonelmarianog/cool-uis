@@ -1,8 +1,22 @@
+import { itemService } from '../services/item-service';
+import { recipeService } from '../services/recipe-service';
 import { usePlayerStore } from '../stores/player';
+import { ItemType } from '../types/item';
 import { OutcomeKind } from '../types/outcome';
 import type { Outcome } from '../types/outcome';
 import type { PlayerItem } from '../types/player';
 import { PromptChoice } from '../types/prompt-choice';
+
+/** Whether the item is a herb, which can be mixed. */
+function isHerb(playerItem: PlayerItem): boolean {
+  const item = itemService.find(playerItem.itemId);
+  return item.type === ItemType.Consumable && item.herb === true;
+}
+
+/** Whether the two items have a recipe. */
+function hasRecipe(source: PlayerItem, target: PlayerItem): boolean {
+  return recipeService.findByIngredients(source.itemId, target.itemId) !== undefined;
+}
 
 /**
  * COMBN: reloads a weapon, stacks ammunition, or asks before herbs are mixed.
@@ -13,8 +27,8 @@ export function combine(source: PlayerItem, target: PlayerItem | null): Outcome 
   const player = usePlayerStore();
   if (!target || target.id === source.id) return { kind: OutcomeKind.Nothing };
   if (player.reload(source.id, target.id) || player.stack(source.id, target.id)) return { kind: OutcomeKind.Done };
-  if (!player.isHerb(source.id) || !player.isHerb(target.id)) return { kind: OutcomeKind.Nothing };
-  if (!player.canMix(source.id, target.id)) {
+  if (!isHerb(source) || !isHerb(target)) return { kind: OutcomeKind.Nothing };
+  if (!hasRecipe(source, target)) {
     return { kind: OutcomeKind.Description, text: 'Mixing these does not seem to work.' };
   }
   return {

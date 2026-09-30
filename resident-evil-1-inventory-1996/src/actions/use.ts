@@ -10,7 +10,7 @@ import type { PlayerItem } from '../types/player';
  * show why.
  */
 export function use(item: PlayerItem): Outcome {
-  if (usePlayerStore().useItem(item.id)) return { kind: OutcomeKind.Done };
+  if (usePlayerStore().consume(item.id)) return { kind: OutcomeKind.Done };
   const text = item.type === ItemType.Key ? "You can't use it here." : "You can't use this alone.";
   return { kind: OutcomeKind.Description, text };
 }
