@@ -37,3 +37,21 @@ describe('gridIndex', () => {
     expect(cursor.gridIndex.value).toBeNull();
   });
 });
+
+describe('topMenuIndex', () => {
+  test("is the main cursor's button while it is in the top menu", () => {
+    const cursor = useMainCursor();
+
+    cursor.point(CursorArea.TopMenu, 3);
+
+    expect(cursor.topMenuIndex.value).toBe(3);
+  });
+
+  test('is no button while the main cursor is in the grid', () => {
+    const cursor = useMainCursor();
+
+    cursor.point(CursorArea.Grid, 1);
+
+    expect(cursor.topMenuIndex.value).toBeNull();
+  });
+});
