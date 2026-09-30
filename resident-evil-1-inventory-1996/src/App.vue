@@ -49,14 +49,14 @@ useKeyboard();
           :recoveries-used="player.recoveriesUsed"
           @cycle="player.cycleHealthStatus"
         />
-        <EquippedWeaponPanel class="project-shell__weapon" :weapon="player.equippedWeapon" />
+        <EquippedWeaponPanel class="project-shell__weapon" :weapon="inventory.equippedWeapon" />
       </div>
       <div class="project-shell__items">
         <MenuPanel class="project-shell__menu" />
         <InventoryGrid
           class="project-shell__grid"
           :size="player.inventorySize"
-          :items="player.inventorySlots"
+          :items="inventory.items"
           :cursor-index="inventory.mainCursor.gridIndex"
           :has-selected-item="inventory.hasSelectedItem"
           :target-index="inventory.targetIndex"

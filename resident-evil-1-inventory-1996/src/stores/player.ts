@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { itemViewMapper } from '../mappers/item-view-mapper';
 import { characterService } from '../services/character-service';
 import { itemService } from '../services/item-service';
 import { playerService } from '../services/player-service';
@@ -8,7 +7,6 @@ import { recipeService } from '../services/recipe-service';
 import type { HealthStatus } from '../types/health';
 import { ItemType } from '../types/item';
 import type { Recovery } from '../types/item';
-import type { ItemView } from '../types/item-view';
 import type { PlayerAmmunition, PlayerItem, PlayerWeapon } from '../types/player';
 
 // Health statuses from worst to best. Healing moves a status up this list.
@@ -24,10 +22,6 @@ function recover(status: HealthStatus, recovery: Recovery): HealthStatus {
   return healthOrder[index];
 }
 
-function toItemView(playerItem: PlayerItem): ItemView {
-  return itemViewMapper.toItemView(playerItem, itemService.find(playerItem.itemId));
-}
-
 export const usePlayerStore = defineStore('player', () => {
   const state = playerService.startingState();
 
@@ -40,12 +34,6 @@ export const usePlayerStore = defineStore('player', () => {
   const itemBox = ref<(PlayerItem | null)[]>(state.itemBox);
 
   const inventorySize = computed(() => characterService.find(characterId.value).inventorySize);
-  const inventorySlots = computed(() => inventory.value.map(toItemView));
-
-  const equippedWeapon = computed(() => {
-    const weapon = inventory.value.find(playerItem => playerItem.id === equippedItemId.value);
-    return weapon ? toItemView(weapon) : null;
-  });
 
   function findPlayerItem(playerItemId: string): PlayerItem | undefined {
     return inventory.value.find(playerItem => playerItem.id === playerItemId);
@@ -175,8 +163,6 @@ export const usePlayerStore = defineStore('player', () => {
     equippedItemId,
     itemBox,
     inventorySize,
-    inventorySlots,
-    equippedWeapon,
     toggleEquipped,
     useItem,
     reload,

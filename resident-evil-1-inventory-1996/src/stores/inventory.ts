@@ -9,9 +9,12 @@ import { useCursor } from '../elements/use-cursor';
 import { useDescription } from '../elements/use-description';
 import { useMainCursor } from '../elements/use-main-cursor';
 import { usePrompt } from '../elements/use-prompt';
+import { itemViewMapper } from '../mappers/item-view-mapper';
+import { itemService } from '../services/item-service';
 import { CursorArea } from '../types/cursor-area';
 import { InventoryMode } from '../types/inventory-mode';
 import { ItemAction } from '../types/item-action';
+import type { ItemView } from '../types/item-view';
 import { OutcomeKind } from '../types/outcome';
 import type { Outcome } from '../types/outcome';
 import type { PlayerItem } from '../types/player';
@@ -23,6 +26,11 @@ import { usePlayerStore } from './player';
  * until real descriptions exist.
  */
 const PLACEHOLDER_DESCRIPTION = 'Beretta M92FS. Automatic\nloaded with 9mm bullets.';
+
+/** Joins a player item with its catalog data for display. */
+function toItemView(playerItem: PlayerItem): ItemView {
+  return itemViewMapper.toItemView(playerItem, itemService.find(playerItem.itemId));
+}
 
 /** The modes in which a description or a prompt is open in the description panel. */
 const TEXT_MODES: InventoryMode[] = [
@@ -71,6 +79,14 @@ export const useInventoryStore = defineStore('inventory', () => {
   const description = useDescription();
   const prompt = usePrompt();
 
+  /** The grid's items, in slot order. */
+  const items = computed(() => player.inventory.map(toItemView));
+  /** The equipped weapon, or `null` when the player is unarmed. */
+  const equippedWeapon = computed(() => {
+    const weapon = player.inventory.find(playerItem => playerItem.id === player.equippedItemId);
+    return weapon ? toItemView(weapon) : null;
+  });
+
   /** Whether a description or a prompt is open in the description panel. */
   const isTextOpen = computed(() => TEXT_MODES.includes(mode.value));
   /** The mode under the open description or prompt, or the current mode while none is open. */
@@ -81,7 +97,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     modeBelowText.value === InventoryMode.ChoosingTarget ? targetCursor.index.value : null,
   );
   /** The item whose name the description panel shows: the one under the target cursor while it shows. */
-  const itemUnderCursor = computed(() => player.inventorySlots[targetIndex.value ?? mainCursor.index.value] ?? null);
+  const itemUnderCursor = computed(() => items.value[targetIndex.value ?? mainCursor.index.value] ?? null);
   /** The text the description panel types in place of the item name: the prompt's question or the description. */
   const panelText = computed(() => prompt.question.value ?? description.text.value);
   const hasSelectedItem = computed(() => selectedItem.value !== null);
@@ -294,6 +310,8 @@ export const useInventoryStore = defineStore('inventory', () => {
     actionMenu,
     description,
     prompt,
+    items,
+    equippedWeapon,
     itemUnderCursor,
     panelText,
     isTextHurried,
