@@ -59,10 +59,10 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
         <InventoryGrid
           class="project-shell__grid"
           :size="player.inventorySize"
-          :slots="player.inventorySlots"
-          :cursor-slot="inventory.cursorSlot"
-          :locked="inventory.isSelecting"
-          :target-slot="inventory.combine.targetSlot"
+          :items="player.inventorySlots"
+          :cursor-index="inventory.mainCursor.gridIndex"
+          :has-selected-item="inventory.isSelecting"
+          :target-index="inventory.targetIndex"
           @hover="inventory.moveCursor"
           @select="inventory.selectItemAt"
         />

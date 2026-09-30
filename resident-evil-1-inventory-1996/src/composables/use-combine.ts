@@ -5,29 +5,21 @@ import { InventoryMode } from '../types/inventory-mode';
 import type { DescriptionPanel } from './use-description-panel';
 import type { ItemSelection } from './use-item-selection';
 
-/** COMBN: picking a second item with the green arrows, and the question some combinations ask first. */
+/** COMBN: picking a second item with the target cursor, and the question some combinations ask first. */
 export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, description: DescriptionPanel) {
   const player = usePlayerStore();
 
-  /** The slot under the green arrows. */
-  const targetSlot = ref<number | null>(null);
   /** The item chosen as the target while the question waits for Yes or No. */
   const promptTargetId = ref<string | null>(null);
 
-  /** The green arrows stay on the target while the question is asked. */
+  /** The target cursor stays on the target while the question is asked. */
   const isCombining = computed(
     () => mode.value === InventoryMode.ChoosingTarget || mode.value === InventoryMode.AnsweringPrompt,
   );
 
-  /** Shows the green arrows on the given slot. */
-  function start(slot: number) {
-    targetSlot.value = slot;
+  /** Starts picking a second item. */
+  function start() {
     mode.value = InventoryMode.ChoosingTarget;
-  }
-
-  /** Moves the green arrows to the given slot. */
-  function moveTarget(slot: number) {
-    targetSlot.value = slot;
   }
 
   /**
@@ -72,18 +64,16 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
     mode.value = InventoryMode.ChoosingTarget;
   }
 
-  /** Removes the green arrows and goes back to the action menu. */
+  /** Goes back to the action menu. */
   function stop() {
-    targetSlot.value = null;
     mode.value = InventoryMode.ChoosingAction;
   }
 
-  /** Removes the green arrows and closes the action menu after a combination. */
+  /** Closes the action menu after a combination. */
   function finish() {
-    targetSlot.value = null;
     promptTargetId.value = null;
     selection.release();
   }
 
-  return { targetSlot, isCombining, start, moveTarget, combineWith, answer, cancelPrompt, stop };
+  return { isCombining, start, combineWith, answer, cancelPrompt, stop };
 }

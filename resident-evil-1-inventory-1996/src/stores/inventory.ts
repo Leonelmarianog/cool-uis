@@ -1,11 +1,14 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { InventoryMode } from '../types/inventory-mode';
 import { useCheck } from '../composables/use-check';
 import { useCombine } from '../composables/use-combine';
 import { useDescriptionPanel } from '../composables/use-description-panel';
 import { useItemActions } from '../composables/use-item-actions';
 import { useItemSelection } from '../composables/use-item-selection';
+import { useCursor } from '../elements/use-cursor';
+import { useMainCursor } from '../elements/use-main-cursor';
+import { CursorArea } from '../types/cursor-area';
+import { InventoryMode } from '../types/inventory-mode';
 import { ItemAction } from '../types/item-action';
 import { ItemType } from '../types/item';
 import { usePlayerStore } from './player';
@@ -18,8 +21,9 @@ export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
 
   const mode = ref<InventoryMode>(InventoryMode.Browsing);
-  /** The selection frame's slot. It is a position, so it stays in place when items shift. */
-  const cursorSlot = ref(0);
+  const mainCursor = useMainCursor();
+  /** Points at the second item for COMBN. */
+  const targetCursor = useCursor();
 
   const description = useDescriptionPanel();
   const selection = useItemSelection(mode, description);
@@ -27,8 +31,10 @@ export const useInventoryStore = defineStore('inventory', () => {
   const combine = useCombine(mode, selection, description);
   const itemActions = useItemActions(selection, description);
 
-  /** The item whose name the description panel shows: the one under the green arrows while combining. */
-  const itemUnderCursor = computed(() => player.inventorySlots[combine.targetSlot.value ?? cursorSlot.value] ?? null);
+  /** The target cursor's slot while it shows, or `null`. */
+  const targetIndex = computed(() => (combine.isCombining.value ? targetCursor.index.value : null));
+  /** The item whose name the description panel shows: the one under the target cursor while it shows. */
+  const itemUnderCursor = computed(() => player.inventorySlots[targetIndex.value ?? mainCursor.index.value] ?? null);
   const isSelecting = computed(() => mode.value !== InventoryMode.Browsing);
 
   /** The action menu's options: weapons are equipped, every other item is used. */
@@ -43,10 +49,10 @@ export const useInventoryStore = defineStore('inventory', () => {
   function moveCursor(slot: number) {
     switch (mode.value) {
       case InventoryMode.Browsing:
-        cursorSlot.value = slot;
+        mainCursor.point(CursorArea.Grid, slot);
         break;
       case InventoryMode.ChoosingTarget:
-        combine.moveTarget(slot);
+        targetCursor.point(slot);
         break;
     }
   }
@@ -57,7 +63,7 @@ export const useInventoryStore = defineStore('inventory', () => {
       case InventoryMode.Browsing: {
         const item = player.inventorySlots[slot];
         if (!item) return;
-        cursorSlot.value = slot;
+        mainCursor.point(CursorArea.Grid, slot);
         selection.select(item.id);
         break;
       }
@@ -101,14 +107,16 @@ export const useInventoryStore = defineStore('inventory', () => {
         check.start();
         break;
       case ItemAction.Combine:
-        combine.start(cursorSlot.value);
+        targetCursor.point(mainCursor.index.value);
+        combine.start();
         break;
     }
   }
 
   return {
     mode,
-    cursorSlot,
+    mainCursor,
+    targetIndex,
     selection,
     description,
     check,
