@@ -2,7 +2,7 @@
 export const CursorArea = {
   /** The item slots. */
   Grid: 'grid',
-  /** The buttons above the grid; not built yet. */
+  /** The buttons above the grid. */
   TopMenu: 'top-menu',
 } as const;
 

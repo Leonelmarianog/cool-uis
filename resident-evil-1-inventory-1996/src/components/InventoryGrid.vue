@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { CursorArea } from '../types/cursor-area';
 import { ItemType } from '../types/item';
 import type { ItemView } from '../types/item-view';
 
@@ -25,17 +26,17 @@ const {
   inactive?: boolean;
 }>();
 
-const emit = defineEmits<{ point: [index: number]; choose: [] }>();
+const emit = defineEmits<{ point: [index: number, area: CursorArea]; choose: [] }>();
 
 /** Hovering a slot points at it. */
 function onHover(index: number) {
-  if (!inactive) emit('point', index);
+  if (!inactive) emit('point', index, CursorArea.Grid);
 }
 
 /** Clicking a slot points at it, then chooses it. */
 function onClick(index: number) {
   if (inactive) return;
-  emit('point', index);
+  emit('point', index, CursorArea.Grid);
   emit('choose');
 }
 
