@@ -3,18 +3,25 @@ import { computed, onUnmounted, ref, watch } from 'vue';
 import panel from '../assets/ui/item-description-panel.png';
 import choiceArrow from '../assets/ui/choice-arrow.svg';
 
-// A message replaces the item name while it is typed out and held. A message
-// with choices, such as Yes and No, stays until one is clicked; a kept message,
-// such as CHECK's description, stays until it is cleared. A "\n" in a message
-// starts its second line.
 const {
   itemName = '',
   message = null,
   choices = [],
+  choiceIndex = 0,
   keepMessage = false,
-} = defineProps<{ itemName?: string; message?: string | null; choices?: string[]; keepMessage?: boolean }>();
+} = defineProps<{
+  itemName?: string;
+  /** Replaces the item name while it is typed out; a "\n" starts its second line. */
+  message?: string | null;
+  /** Shown after the message is typed out; the message then stays until one is chosen. */
+  choices?: string[];
+  /** The choice under the choice cursor (the arrow). */
+  choiceIndex?: number;
+  /** Keeps the message after it is typed out, such as CHECK's description. */
+  keepMessage?: boolean;
+}>();
 
-const emit = defineEmits<{ 'message-end': []; choose: [choice: string] }>();
+const emit = defineEmits<{ 'description-typed': []; point: [index: number]; choose: [] }>();
 
 // As in use-item-1.gif: one character every 4 frames at 60 fps, then the full
 // message stays for about 420 ms before the item name returns.
@@ -27,7 +34,6 @@ const CHARACTER_WIDTH = 8;
 
 const typedLength = ref(0);
 const areChoicesShown = ref(false);
-const hoveredChoice = ref(0);
 let timer: ReturnType<typeof setTimeout> | undefined;
 
 function typeNextCharacter(text: string) {
@@ -38,7 +44,7 @@ function typeNextCharacter(text: string) {
     // The choices appear as soon as the message is typed out.
     areChoicesShown.value = true;
   } else if (!keepMessage) {
-    timer = setTimeout(() => emit('message-end'), HOLD_MS);
+    timer = setTimeout(() => emit('description-typed'), HOLD_MS);
   }
 }
 
@@ -48,7 +54,6 @@ watch(
     clearTimeout(timer);
     typedLength.value = 0;
     areChoicesShown.value = false;
-    hoveredChoice.value = 0;
     if (text) timer = setTimeout(() => typeNextCharacter(text), CHARACTER_MS);
   },
 );
@@ -66,6 +71,12 @@ const choiceColumns = computed(() => {
     return choiceColumn;
   });
 });
+
+/** Clicking a choice points at it, then chooses it. */
+function onChoiceClick(index: number) {
+  emit('point', index);
+  emit('choose');
+}
 </script>
 
 <template>
@@ -83,7 +94,7 @@ const choiceColumns = computed(() => {
       <img
         class="item-description-panel__choice-arrow"
         :src="choiceArrow"
-        :style="{ '--choice-column': choiceColumns[hoveredChoice] }"
+        :style="{ '--choice-column': choiceColumns[choiceIndex] }"
         alt=""
       />
       <button
@@ -92,8 +103,8 @@ const choiceColumns = computed(() => {
         class="item-description-panel__text item-description-panel__choice"
         :style="{ '--choice-column': choiceColumns[index] }"
         type="button"
-        @mouseenter="hoveredChoice = index"
-        @click="emit('choose', choice)"
+        @mouseenter="emit('point', index)"
+        @click="onChoiceClick(index)"
       >
         {{ choice }}
       </button>

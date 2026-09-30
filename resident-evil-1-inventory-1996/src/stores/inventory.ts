@@ -13,9 +13,16 @@ import { ItemAction } from '../types/item-action';
 import { ItemType } from '../types/item';
 import { usePlayerStore } from './player';
 
+/** What each intent does in one mode. A missing handler means the intent does nothing in that mode. */
+type ModeHandlers = {
+  point?: (index: number) => void;
+  choose?: () => void;
+  back?: () => void;
+};
+
 /**
  * The inventory screen's UI state, as opposed to the player's data. It routes
- * every event to the feature the current mode belongs to.
+ * every intent to the element with input in the current mode.
  */
 export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
@@ -24,6 +31,10 @@ export const useInventoryStore = defineStore('inventory', () => {
   const mainCursor = useMainCursor();
   /** Points at the second item for COMBN. */
   const targetCursor = useCursor();
+  /** Points at an option of the action menu. */
+  const optionCursor = useCursor();
+  /** Points at a choice of the prompt. */
+  const choiceCursor = useCursor();
 
   const description = useDescriptionPanel();
   const selection = useItemSelection(mode, description);
@@ -36,6 +47,12 @@ export const useInventoryStore = defineStore('inventory', () => {
   /** The item whose name the description panel shows: the one under the target cursor while it shows. */
   const itemUnderCursor = computed(() => player.inventorySlots[targetIndex.value ?? mainCursor.index.value] ?? null);
   const isSelecting = computed(() => mode.value !== InventoryMode.Browsing);
+  /** The grid takes input while the player browses or picks a target. */
+  const isGridActive = computed(
+    () => mode.value === InventoryMode.Browsing || mode.value === InventoryMode.ChoosingTarget,
+  );
+  /** The action menu takes input only while the player picks an option. */
+  const isActionMenuActive = computed(() => mode.value === InventoryMode.ChoosingAction);
 
   /** The action menu's options: weapons are equipped, every other item is used. */
   const menuOptions = computed<ItemAction[]>(() => {
@@ -45,88 +62,119 @@ export const useInventoryStore = defineStore('inventory', () => {
     return [firstAction, ItemAction.Check, ItemAction.Combine];
   });
 
-  /** The mouse moved over a slot. */
-  function moveCursor(slot: number) {
-    switch (mode.value) {
-      case InventoryMode.Browsing:
-        mainCursor.point(CursorArea.Grid, slot);
-        break;
-      case InventoryMode.ChoosingTarget:
-        targetCursor.point(slot);
-        break;
-    }
+  /** What `point`, `choose` and `back` do in each mode. */
+  const handlers: Record<InventoryMode, ModeHandlers> = {
+    [InventoryMode.Browsing]: {
+      point: index => mainCursor.point(CursorArea.Grid, index),
+      choose: () => selectItemUnderCursor(),
+    },
+    [InventoryMode.ChoosingAction]: {
+      point: index => optionCursor.point(index),
+      choose: () => choosePointedOption(),
+      back: () => selection.release(),
+    },
+    [InventoryMode.ChoosingTarget]: {
+      point: index => targetCursor.point(index),
+      choose: () => combineWithTarget(),
+      back: () => combine.stop(),
+    },
+    [InventoryMode.AnsweringPrompt]: {
+      point: index => choiceCursor.point(index),
+      choose: () => answerPointedChoice(),
+      back: () => combine.cancelPrompt(),
+    },
+    [InventoryMode.ViewingModel]: {
+      choose: () => check.showDescription(),
+      back: () => check.close(),
+    },
+    [InventoryMode.ReadingDescription]: {
+      back: () => check.hideDescription(),
+    },
+    [InventoryMode.ClosingModel]: {},
+  };
+
+  /** What each option of the action menu does to the selected item. */
+  const optionHandlers: Record<ItemAction, () => void> = {
+    [ItemAction.Equip]: () => itemActions.equip(),
+    [ItemAction.Use]: () => itemActions.use(),
+    [ItemAction.Check]: () => check.start(),
+    [ItemAction.Combine]: () => startCombine(),
+  };
+
+  /** Moves the cursor of the element with input to the given index. */
+  function point(index: number) {
+    handlers[mode.value].point?.(index);
   }
 
-  /** A slot was clicked. */
-  function selectItemAt(slot: number) {
-    switch (mode.value) {
-      case InventoryMode.Browsing: {
-        const item = player.inventorySlots[slot];
-        if (!item) return;
-        mainCursor.point(CursorArea.Grid, slot);
-        selection.select(item.id);
-        break;
-      }
-      case InventoryMode.ChoosingTarget:
-        combine.combineWith(slot);
-        break;
-    }
+  /** Confirms the position of the cursor of the element with input. */
+  function choose() {
+    handlers[mode.value].choose?.();
   }
 
-  /** Escape was pressed: steps back once. */
-  function backOut() {
-    switch (mode.value) {
-      case InventoryMode.AnsweringPrompt:
-        combine.cancelPrompt();
-        break;
-      case InventoryMode.ChoosingTarget:
-        combine.stop();
-        break;
-      case InventoryMode.ReadingDescription:
-        check.hideDescription();
-        break;
-      case InventoryMode.ViewingModel:
-        check.close();
-        break;
-      case InventoryMode.ChoosingAction:
-        selection.release();
-        break;
-    }
+  /** Steps back once. */
+  function back() {
+    handlers[mode.value].back?.();
   }
 
-  /** An option of the action menu was clicked. */
-  function chooseAction(action: string) {
-    switch (action) {
-      case ItemAction.Equip:
-        itemActions.equip();
-        break;
-      case ItemAction.Use:
-        itemActions.use();
-        break;
-      case ItemAction.Check:
-        check.start();
-        break;
-      case ItemAction.Combine:
-        targetCursor.point(mainCursor.index.value);
-        combine.start();
-        break;
-    }
+  /** The description panel finished showing a description that goes away by itself; the item name returns. */
+  function onDescriptionTyped() {
+    description.clear();
+  }
+
+  /** The model spun out of the item preview panel; the action menu returns. */
+  function onItemPreviewExited() {
+    check.finish();
+  }
+
+  /** Opens the action menu for the item under the main cursor; an empty slot does nothing. */
+  function selectItemUnderCursor() {
+    const item = player.inventorySlots[mainCursor.index.value];
+    if (!item) return;
+    optionCursor.reset();
+    selection.select(item.id);
+  }
+
+  /** Runs the option under the option cursor. */
+  function choosePointedOption() {
+    const option = menuOptions.value[optionCursor.index.value];
+    if (option) optionHandlers[option]();
+  }
+
+  /** Starts picking a second item, with the target cursor on the selected item. */
+  function startCombine() {
+    targetCursor.point(mainCursor.index.value);
+    combine.start();
+  }
+
+  /** Combines the selected item with the one under the target cursor; a prompt starts on its first choice. */
+  function combineWithTarget() {
+    choiceCursor.reset();
+    combine.combineWith(targetCursor.index.value);
+  }
+
+  /** Answers the prompt with the choice under the choice cursor. */
+  function answerPointedChoice() {
+    const choice = description.choices.value[choiceCursor.index.value];
+    if (choice) combine.answer(choice);
   }
 
   return {
     mode,
     mainCursor,
     targetIndex,
-    selection,
+    optionCursor,
+    choiceCursor,
     description,
     check,
-    combine,
     itemUnderCursor,
     isSelecting,
+    isGridActive,
+    isActionMenuActive,
     menuOptions,
-    moveCursor,
-    selectItemAt,
-    backOut,
-    chooseAction,
+    point,
+    choose,
+    back,
+    onDescriptionTyped,
+    onItemPreviewExited,
   };
 });

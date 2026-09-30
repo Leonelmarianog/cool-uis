@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
 import ItemPreviewPanel from './components/ItemPreviewPanel.vue';
 import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue';
 import HealthStatusPanel from './components/HealthStatusPanel.vue';
@@ -9,18 +8,14 @@ import MenuPanel from './components/MenuPanel.vue';
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue';
 import ItemActionMenu from './components/ItemActionMenu.vue';
 import ItemModelViewer from './components/ItemModelViewer.vue';
+import { useKeyboard } from './input/keyboard';
 import { useInventoryStore } from './stores/inventory';
 import { usePlayerStore } from './stores/player';
 
 const player = usePlayerStore();
 const inventory = useInventoryStore();
 
-function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') inventory.backOut();
-}
-
-onMounted(() => window.addEventListener('keydown', onKeydown));
-onUnmounted(() => window.removeEventListener('keydown', onKeydown));
+useKeyboard();
 </script>
 
 <template>
@@ -33,16 +28,18 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
             v-if="inventory.isSelecting"
             v-show="!inventory.check.isModelShown"
             :options="inventory.menuOptions"
-            :inactive="inventory.combine.isCombining"
-            @choose="inventory.chooseAction"
+            :option-index="inventory.optionCursor.index"
+            :inactive="!inventory.isActionMenuActive"
+            @point="inventory.point"
+            @choose="inventory.choose"
           />
         </Transition>
         <ItemModelViewer
           v-if="inventory.check.isModelShown"
           :frozen="inventory.check.isDescribing"
           :leaving="inventory.check.isClosing"
-          @describe="inventory.check.showDescription"
-          @left="inventory.check.finish"
+          @choose="inventory.choose"
+          @exited="inventory.onItemPreviewExited"
         />
       </ItemPreviewPanel>
       <div class="project-shell__status">
@@ -63,8 +60,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
           :cursor-index="inventory.mainCursor.gridIndex"
           :has-selected-item="inventory.isSelecting"
           :target-index="inventory.targetIndex"
-          @hover="inventory.moveCursor"
-          @select="inventory.selectItemAt"
+          :inactive="!inventory.isGridActive"
+          @point="inventory.point"
+          @choose="inventory.choose"
         />
       </div>
       <ItemDescriptionPanel
@@ -72,9 +70,11 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
         :item-name="inventory.itemUnderCursor?.name"
         :message="inventory.description.message"
         :choices="inventory.description.choices"
+        :choice-index="inventory.choiceCursor.index"
         :keep-message="inventory.description.isKept"
-        @message-end="inventory.description.clear"
-        @choose="inventory.combine.answer"
+        @description-typed="inventory.onDescriptionTyped"
+        @point="inventory.point"
+        @choose="inventory.choose"
       />
     </div>
   </main>

@@ -52,6 +52,11 @@ export class InventoryPage {
     return this.actionMenu.getByRole('menuitem', { name: action });
   }
 
+  // The red frame on an option of the action menu.
+  optionFrame(action: string): Locator {
+    return this.actionButton(action).locator('img');
+  }
+
   async chooseAction(action: string) {
     await this.actionButton(action).click();
   }

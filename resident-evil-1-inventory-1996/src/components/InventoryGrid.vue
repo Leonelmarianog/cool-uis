@@ -9,6 +9,7 @@ const {
   cursorIndex = null,
   hasSelectedItem = false,
   targetIndex = null,
+  inactive = false,
 } = defineProps<{
   /** The number of slots. */
   size: number;
@@ -20,9 +21,23 @@ const {
   hasSelectedItem?: boolean;
   /** The target cursor's slot, or `null` while it is hidden. */
   targetIndex?: number | null;
+  /** The grid ignores the mouse while another element has input. */
+  inactive?: boolean;
 }>();
 
-const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>();
+const emit = defineEmits<{ point: [index: number]; choose: [] }>();
+
+/** Hovering a slot points at it. */
+function onHover(index: number) {
+  if (!inactive) emit('point', index);
+}
+
+/** Clicking a slot points at it, then chooses it. */
+function onClick(index: number) {
+  if (inactive) return;
+  emit('point', index);
+  emit('choose');
+}
 
 /** Every slot, with its item or `null` when it is empty. */
 const cells = computed(() => Array.from({ length: size }, (_, index) => items[index] ?? null));
@@ -43,8 +58,8 @@ function cellLabel(item: ItemView | null, index: number): string {
         :key="index"
         class="inventory-grid__cell"
         :aria-label="cellLabel(item, index)"
-        @mousemove="emit('hover', index)"
-        @click="emit('select', index)"
+        @mousemove="onHover(index)"
+        @click="onClick(index)"
       >
         <template v-if="item">
           <img class="inventory-grid__sprite" :src="item.sprite" alt="" />

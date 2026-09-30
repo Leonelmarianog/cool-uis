@@ -1,15 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import frame from '../assets/ui/item-action-frame.png';
 
-// `inactive` freezes the menu while COMBN waits for a second item.
-const { options = [], inactive = false } = defineProps<{ options?: string[]; inactive?: boolean }>();
+const {
+  options = [],
+  optionIndex = 0,
+  inactive = false,
+} = defineProps<{
+  options?: string[];
+  /** The option under the option cursor (the red frame). */
+  optionIndex?: number;
+  /** Disables the menu while another element has input, such as the target cursor. */
+  inactive?: boolean;
+}>();
 
-const emit = defineEmits<{ choose: [option: string] }>();
+const emit = defineEmits<{ point: [index: number]; choose: [] }>();
 
-// Index of the option under the red frame. It starts on the first option
-// and stays on the last hovered one when the pointer leaves the menu.
-const highlighted = ref(0);
+/** Clicking an option points at it, then chooses it. */
+function onClick(index: number) {
+  emit('point', index);
+  emit('choose');
+}
 </script>
 
 <template>
@@ -21,11 +31,11 @@ const highlighted = ref(0);
       type="button"
       role="menuitem"
       :disabled="inactive"
-      @mouseenter="inactive || (highlighted = index)"
-      @click="emit('choose', option)"
+      @mouseenter="inactive || emit('point', index)"
+      @click="onClick(index)"
     >
       <span class="item-action-menu__label">{{ option }}</span>
-      <img v-if="index === highlighted" class="item-action-menu__frame" :src="frame" alt="" />
+      <img v-if="index === optionIndex" class="item-action-menu__frame" :src="frame" alt="" />
     </button>
   </div>
 </template>
