@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
+import { availableActions } from '../actions/available-actions';
 import { useCheck } from '../composables/use-check';
 import { useCombine } from '../composables/use-combine';
 import { useItemActions } from '../composables/use-item-actions';
-import { useItemSelection } from '../composables/use-item-selection';
+import { useActionMenu } from '../elements/use-action-menu';
 import { useCursor } from '../elements/use-cursor';
 import { useDescription } from '../elements/use-description';
 import { useMainCursor } from '../elements/use-main-cursor';
@@ -11,7 +12,7 @@ import { usePrompt } from '../elements/use-prompt';
 import { CursorArea } from '../types/cursor-area';
 import { InventoryMode } from '../types/inventory-mode';
 import { ItemAction } from '../types/item-action';
-import { ItemType } from '../types/item';
+import type { PlayerItem } from '../types/player';
 import { usePlayerStore } from './player';
 
 /** What each intent does in one mode. A missing handler means the intent does nothing in that mode. */
@@ -29,18 +30,19 @@ export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
 
   const mode = ref<InventoryMode>(InventoryMode.Browsing);
+  /** The item whose action menu is open. */
+  const selectedItem = ref<PlayerItem | null>(null);
+
   const mainCursor = useMainCursor();
   /** Points at the second item for COMBN. */
   const targetCursor = useCursor();
-  /** Points at an option of the action menu. */
-  const optionCursor = useCursor();
-
+  const actionMenu = useActionMenu();
   const description = useDescription();
   const prompt = usePrompt();
-  const selection = useItemSelection(mode, description, prompt);
+
   const check = useCheck(mode, description);
-  const combine = useCombine(mode, selection, description, prompt);
-  const itemActions = useItemActions(selection, description);
+  const combine = useCombine(mode, selectedItem, releaseItem, description, prompt);
+  const itemActions = useItemActions(selectedItem, releaseItem, description);
 
   /** The target cursor's slot while it shows, or `null`. */
   const targetIndex = computed(() => (combine.isCombining.value ? targetCursor.index.value : null));
@@ -48,21 +50,13 @@ export const useInventoryStore = defineStore('inventory', () => {
   const itemUnderCursor = computed(() => player.inventorySlots[targetIndex.value ?? mainCursor.index.value] ?? null);
   /** The text the description panel types in place of the item name: the prompt's question or the description. */
   const panelText = computed(() => prompt.question.value ?? description.text.value);
-  const isSelecting = computed(() => mode.value !== InventoryMode.Browsing);
+  const hasSelectedItem = computed(() => selectedItem.value !== null);
   /** The grid takes input while the player browses or picks a target. */
   const isGridActive = computed(
     () => mode.value === InventoryMode.Browsing || mode.value === InventoryMode.ChoosingTarget,
   );
   /** The action menu takes input only while the player picks an option. */
   const isActionMenuActive = computed(() => mode.value === InventoryMode.ChoosingAction);
-
-  /** The action menu's options: weapons are equipped, every other item is used. */
-  const menuOptions = computed<ItemAction[]>(() => {
-    const item = selection.selectedItem.value;
-    if (!item) return [];
-    const firstAction = item.type === ItemType.Weapon ? ItemAction.Equip : ItemAction.Use;
-    return [firstAction, ItemAction.Check, ItemAction.Combine];
-  });
 
   /** What `point`, `choose` and `back` do in each mode. */
   const handlers: Record<InventoryMode, ModeHandlers> = {
@@ -71,13 +65,13 @@ export const useInventoryStore = defineStore('inventory', () => {
       choose: () => selectItemUnderCursor(),
     },
     [InventoryMode.ChoosingAction]: {
-      point: index => optionCursor.point(index),
+      point: index => actionMenu.cursor.point(index),
       choose: () => choosePointedOption(),
-      back: () => selection.release(),
+      back: () => releaseItem(),
     },
     [InventoryMode.ChoosingTarget]: {
       point: index => targetCursor.point(index),
-      choose: () => combineWithTarget(),
+      choose: () => combine.combineWith(targetCursor.index.value),
       back: () => combine.stop(),
     },
     [InventoryMode.AnsweringPrompt]: {
@@ -130,15 +124,25 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   /** Opens the action menu for the item under the main cursor; an empty slot does nothing. */
   function selectItemUnderCursor() {
-    const item = player.inventorySlots[mainCursor.index.value];
+    const item = player.inventory[mainCursor.index.value];
     if (!item) return;
-    optionCursor.reset();
-    selection.select(item.id);
+    selectedItem.value = item;
+    actionMenu.open(availableActions(item));
+    mode.value = InventoryMode.ChoosingAction;
+  }
+
+  /** Closes the action menu, any description and prompt, and goes back to browsing. */
+  function releaseItem() {
+    selectedItem.value = null;
+    actionMenu.close();
+    description.close();
+    prompt.close();
+    mode.value = InventoryMode.Browsing;
   }
 
   /** Runs the option under the option cursor. */
   function choosePointedOption() {
-    const option = menuOptions.value[optionCursor.index.value];
+    const option = actionMenu.pointedOption.value;
     if (option) optionHandlers[option]();
   }
 
@@ -146,11 +150,6 @@ export const useInventoryStore = defineStore('inventory', () => {
   function startCombine() {
     targetCursor.point(mainCursor.index.value);
     combine.start();
-  }
-
-  /** Combines the selected item with the one under the target cursor. */
-  function combineWithTarget() {
-    combine.combineWith(targetCursor.index.value);
   }
 
   /** Answers the prompt with the choice under the choice cursor. */
@@ -161,18 +160,18 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   return {
     mode,
+    selectedItem,
     mainCursor,
     targetIndex,
-    optionCursor,
+    actionMenu,
     description,
     prompt,
     check,
     itemUnderCursor,
     panelText,
-    isSelecting,
+    hasSelectedItem,
     isGridActive,
     isActionMenuActive,
-    menuOptions,
     point,
     choose,
     back,

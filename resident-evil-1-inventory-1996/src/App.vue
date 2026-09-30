@@ -25,10 +25,10 @@ useKeyboard();
         <Transition enter-active-class="item-action-menu--opening" leave-active-class="item-action-menu--closing">
           <!-- v-show keeps the menu's framed option while CHECK hides it. -->
           <ItemActionMenu
-            v-if="inventory.isSelecting"
+            v-if="inventory.actionMenu.isOpen"
             v-show="!inventory.check.isModelShown"
-            :options="inventory.menuOptions"
-            :option-index="inventory.optionCursor.index"
+            :options="inventory.actionMenu.options"
+            :option-index="inventory.actionMenu.cursor.index"
             :inactive="!inventory.isActionMenuActive"
             @point="inventory.point"
             @choose="inventory.choose"
@@ -58,7 +58,7 @@ useKeyboard();
           :size="player.inventorySize"
           :items="player.inventorySlots"
           :cursor-index="inventory.mainCursor.gridIndex"
-          :has-selected-item="inventory.isSelecting"
+          :has-selected-item="inventory.hasSelectedItem"
           :target-index="inventory.targetIndex"
           :inactive="!inventory.isGridActive"
           @point="inventory.point"

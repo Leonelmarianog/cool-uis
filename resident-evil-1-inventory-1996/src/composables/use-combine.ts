@@ -5,12 +5,13 @@ import { InventoryMode } from '../types/inventory-mode';
 import type { Description } from '../elements/use-description';
 import type { Prompt } from '../elements/use-prompt';
 import { PromptChoice } from '../types/prompt-choice';
-import type { ItemSelection } from './use-item-selection';
+import type { PlayerItem } from '../types/player';
 
 /** COMBN: picking a second item with the target cursor, and the question some combinations ask first. */
 export function useCombine(
   mode: Ref<InventoryMode>,
-  selection: ItemSelection,
+  selectedItem: Ref<PlayerItem | null>,
+  release: () => void,
   description: Description,
   prompt: Prompt,
 ) {
@@ -35,8 +36,8 @@ export function useCombine(
    * herbs that do not mix show a description.
    */
   function combineWith(slot: number) {
-    const sourceId = selection.selectedItemId.value;
-    const target = player.inventorySlots[slot];
+    const sourceId = selectedItem.value?.id;
+    const target = player.inventory[slot];
     if (!sourceId || !target || target.id === sourceId) return;
 
     if (player.reload(sourceId, target.id) || player.stack(sourceId, target.id)) {
@@ -55,7 +56,7 @@ export function useCombine(
 
   /** Yes mixes the herbs; No goes back to picking a second item. */
   function answer(choice: PromptChoice) {
-    const sourceId = selection.selectedItemId.value;
+    const sourceId = selectedItem.value?.id;
     if (!sourceId || !promptTargetId.value) return;
     if (choice === PromptChoice.Yes) {
       player.mix(sourceId, promptTargetId.value);
@@ -80,7 +81,7 @@ export function useCombine(
   /** Closes the action menu after a combination. */
   function finish() {
     promptTargetId.value = null;
-    selection.release();
+    release();
   }
 
   return { isCombining, start, combineWith, answer, cancelPrompt, stop };
