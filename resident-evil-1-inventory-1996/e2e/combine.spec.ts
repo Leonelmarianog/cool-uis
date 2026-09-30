@@ -334,13 +334,9 @@ test.describe('mixing herbs', () => {
     await inventoryPage.chooseAction('COMBN');
     await inventoryPage.slot(2).click();
 
-    // The message shows in full for only about 420 ms, so check it more often than toContainText() does.
-    await expect
-      .poll(() => inventoryPage.descriptionPanel.textContent(), {
-        message: 'the panel says the herbs do not mix',
-        intervals: [50],
-      })
-      .toContain('Mixing these does not seem to work.');
+    await expect(inventoryPage.descriptionPanel, 'the panel says the herbs do not mix').toContainText(
+      'Mixing these does not seem to work.',
+    );
   });
 
   test('mixing a green herb with a red herb, then the mixed herbs with a blue herb, makes the green, red and blue mix', async ({

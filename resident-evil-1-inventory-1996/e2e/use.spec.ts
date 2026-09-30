@@ -80,13 +80,9 @@ test.describe('using items that only work combined', () => {
     await inventoryPage.slot(1).click();
     await inventoryPage.chooseAction('USE');
 
-    // The message shows in full for only about 420 ms, so check it more often than toContainText() does.
-    await expect
-      .poll(() => inventoryPage.descriptionPanel.textContent(), {
-        message: 'the panel says the clip needs another item',
-        intervals: [50],
-      })
-      .toContain("You can't use this alone.");
+    await expect(inventoryPage.descriptionPanel, 'the panel says the clip needs another item').toContainText(
+      "You can't use this alone.",
+    );
     await expect(inventoryPage.slot(1), 'the clip is kept').toHaveAccessibleName('Slot 1: CLIP, 15');
   });
 
@@ -101,13 +97,9 @@ test.describe('using items that only work combined', () => {
     await inventoryPage.slot(1).click();
     await inventoryPage.chooseAction('USE');
 
-    // The message shows in full for only about 420 ms, so check it more often than toContainText() does.
-    await expect
-      .poll(() => inventoryPage.descriptionPanel.textContent(), {
-        message: 'the panel says the red herb needs another item',
-        intervals: [50],
-      })
-      .toContain("You can't use this alone.");
+    await expect(inventoryPage.descriptionPanel, 'the panel says the red herb needs another item').toContainText(
+      "You can't use this alone.",
+    );
     await expect(inventoryPage.slot(1), 'the red herb is kept').toHaveAccessibleName('Slot 1: RED HERB');
   });
 });

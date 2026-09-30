@@ -24,6 +24,20 @@ import { usePlayerStore } from './player';
  */
 const PLACEHOLDER_DESCRIPTION = 'Beretta M92FS. Automatic\nloaded with 9mm bullets.';
 
+/** The modes in which a description or a prompt is open in the description panel. */
+const TEXT_MODES: InventoryMode[] = [
+  InventoryMode.TypingText,
+  InventoryMode.ReadingDescription,
+  InventoryMode.AnsweringPrompt,
+];
+
+/** The modes in which CHECK's model shows in place of the action menu. */
+const MODEL_MODES: InventoryMode[] = [
+  InventoryMode.OpeningModel,
+  InventoryMode.ViewingModel,
+  InventoryMode.ClosingModel,
+];
+
 /** What each intent does in one mode. A missing handler means the intent does nothing in that mode. */
 type ModeHandlers = {
   point?: (index: number) => void;
@@ -43,8 +57,12 @@ export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
 
   const mode = ref<InventoryMode>(InventoryMode.Browsing);
+  /** The mode to go back to when the open description or prompt closes. */
+  const returnMode = ref<InventoryMode>(InventoryMode.Browsing);
   /** The item whose action menu is open. */
   const selectedItem = ref<PlayerItem | null>(null);
+  /** K was pressed while the open text types, so the rest of it types faster. */
+  const isTextHurried = ref(false);
 
   const mainCursor = useMainCursor();
   /** Points at the second item for COMBN. */
@@ -53,12 +71,15 @@ export const useInventoryStore = defineStore('inventory', () => {
   const description = useDescription();
   const prompt = usePrompt();
 
-  /** The target cursor stays on the target while the prompt is asked. */
-  const isTargetShown = computed(
-    () => mode.value === InventoryMode.ChoosingTarget || mode.value === InventoryMode.AnsweringPrompt,
+  /** Whether a description or a prompt is open in the description panel. */
+  const isTextOpen = computed(() => TEXT_MODES.includes(mode.value));
+  /** The mode under the open description or prompt, or the current mode while none is open. */
+  const modeBelowText = computed(() => (isTextOpen.value ? returnMode.value : mode.value));
+
+  /** The target cursor's slot while the player picks a target, and while a description or prompt from COMBN is open; otherwise `null`. */
+  const targetIndex = computed(() =>
+    modeBelowText.value === InventoryMode.ChoosingTarget ? targetCursor.index.value : null,
   );
-  /** The target cursor's slot while it shows, or `null`. */
-  const targetIndex = computed(() => (isTargetShown.value ? targetCursor.index.value : null));
   /** The item whose name the description panel shows: the one under the target cursor while it shows. */
   const itemUnderCursor = computed(() => player.inventorySlots[targetIndex.value ?? mainCursor.index.value] ?? null);
   /** The text the description panel types in place of the item name: the prompt's question or the description. */
@@ -68,17 +89,12 @@ export const useInventoryStore = defineStore('inventory', () => {
   const isGridActive = computed(
     () => mode.value === InventoryMode.Browsing || mode.value === InventoryMode.ChoosingTarget,
   );
-  /** The action menu takes input only while the player picks an option. */
+  /** The action menu takes input only while the player picks an option; it stays open under a description from USE. */
   const isActionMenuActive = computed(() => mode.value === InventoryMode.ChoosingAction);
-  /** The model shows in place of the action menu while it is viewed, described and spun out. */
-  const isModelShown = computed(
-    () =>
-      mode.value === InventoryMode.ViewingModel ||
-      mode.value === InventoryMode.ReadingDescription ||
-      mode.value === InventoryMode.ClosingModel,
-  );
-  /** The model stays still while its item description is read. */
-  const isModelFrozen = computed(() => mode.value === InventoryMode.ReadingDescription);
+  /** The model shows in place of the action menu from the moment it tumbles in until it has spun out. */
+  const isModelShown = computed(() => MODEL_MODES.includes(modeBelowText.value));
+  /** The model stays still while its item description is open. */
+  const isModelFrozen = computed(() => isTextOpen.value && modeBelowText.value === InventoryMode.ViewingModel);
   const isModelClosing = computed(() => mode.value === InventoryMode.ClosingModel);
 
   /** What `point`, `choose` and `back` do in each mode. */
@@ -97,17 +113,22 @@ export const useInventoryStore = defineStore('inventory', () => {
       choose: () => combineWithTarget(),
       back: () => setMode(InventoryMode.ChoosingAction),
     },
+    [InventoryMode.TypingText]: {
+      choose: () => hurryText(),
+    },
+    [InventoryMode.ReadingDescription]: {
+      choose: () => closeDescription(),
+      back: () => closeDescription(),
+    },
     [InventoryMode.AnsweringPrompt]: {
       point: index => prompt.cursor.point(index),
       choose: () => answerPointedChoice(),
       back: () => closePrompt(),
     },
+    [InventoryMode.OpeningModel]: {},
     [InventoryMode.ViewingModel]: {
-      choose: () => showItemDescription(),
+      choose: () => openDescription(PLACEHOLDER_DESCRIPTION),
       back: () => setMode(InventoryMode.ClosingModel),
-    },
-    [InventoryMode.ReadingDescription]: {
-      back: () => hideItemDescription(),
     },
     [InventoryMode.ClosingModel]: {},
   };
@@ -116,14 +137,14 @@ export const useInventoryStore = defineStore('inventory', () => {
   const optionHandlers: Record<ItemAction, (item: PlayerItem) => void> = {
     [ItemAction.Equip]: item => applyOutcome(equip(item)),
     [ItemAction.Use]: item => applyOutcome(use(item)),
-    [ItemAction.Check]: () => setMode(InventoryMode.ViewingModel),
+    [ItemAction.Check]: () => setMode(InventoryMode.OpeningModel),
     [ItemAction.Combine]: () => startCombine(),
   };
 
   /** What comes after each kind of outcome. */
   const outcomeHandlers: OutcomeHandlers = {
     [OutcomeKind.Done]: () => releaseItem(),
-    [OutcomeKind.Description]: outcome => description.open(outcome.text),
+    [OutcomeKind.Description]: outcome => openDescription(outcome.text),
     [OutcomeKind.Prompt]: outcome => openPrompt(outcome.question, outcome.choices),
     [OutcomeKind.Nothing]: () => {},
   };
@@ -143,9 +164,19 @@ export const useInventoryStore = defineStore('inventory', () => {
     handlers[mode.value].back?.();
   }
 
-  /** The description panel finished showing a description that goes away by itself; the item name returns. */
+  /** The description panel finished typing a description; K or Escape can close it now. */
   function onDescriptionTyped() {
-    description.close();
+    mode.value = InventoryMode.ReadingDescription;
+  }
+
+  /** The description panel finished typing a prompt's question; its choices can be answered now. */
+  function onPromptTyped() {
+    mode.value = InventoryMode.AnsweringPrompt;
+  }
+
+  /** The model tumbled into the item preview panel; it can be turned now. */
+  function onItemPreviewEntered() {
+    mode.value = InventoryMode.ViewingModel;
   }
 
   /** The model spun out of the item preview panel; the action menu returns. */
@@ -212,29 +243,37 @@ export const useInventoryStore = defineStore('inventory', () => {
     }
   }
 
-  /** Types the item description and freezes the model. */
-  function showItemDescription() {
-    description.open(PLACEHOLDER_DESCRIPTION, true);
-    mode.value = InventoryMode.ReadingDescription;
+  /** Types the rest of the open text faster. */
+  function hurryText() {
+    isTextHurried.value = true;
   }
 
-  /** Removes the item description and gives the model's controls back. */
-  function hideItemDescription() {
+  /** Types a description; the current mode becomes the return mode. */
+  function openDescription(text: string) {
+    returnMode.value = mode.value;
+    isTextHurried.value = false;
+    description.open(text);
+    mode.value = InventoryMode.TypingText;
+  }
+
+  /** Removes the description and goes back to the return mode. */
+  function closeDescription() {
     description.close();
-    mode.value = InventoryMode.ViewingModel;
+    mode.value = returnMode.value;
   }
 
-  /** Asks the question in place of any description. */
+  /** Types a prompt's question; the current mode becomes the return mode. */
   function openPrompt(question: string, choices: PromptChoice[]) {
-    description.close();
+    returnMode.value = mode.value;
+    isTextHurried.value = false;
     prompt.open(question, choices);
-    mode.value = InventoryMode.AnsweringPrompt;
+    mode.value = InventoryMode.TypingText;
   }
 
-  /** Removes the prompt and goes back to picking a second item. */
+  /** Removes the prompt and goes back to the return mode. */
   function closePrompt() {
     prompt.close();
-    mode.value = InventoryMode.ChoosingTarget;
+    mode.value = returnMode.value;
   }
 
   /**
@@ -248,6 +287,7 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   return {
     mode,
+    returnMode,
     selectedItem,
     mainCursor,
     targetIndex,
@@ -256,6 +296,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     prompt,
     itemUnderCursor,
     panelText,
+    isTextHurried,
     hasSelectedItem,
     isGridActive,
     isActionMenuActive,
@@ -266,6 +307,8 @@ export const useInventoryStore = defineStore('inventory', () => {
     choose,
     back,
     onDescriptionTyped,
+    onPromptTyped,
+    onItemPreviewEntered,
     onItemPreviewExited,
   };
 });

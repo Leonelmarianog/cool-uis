@@ -71,6 +71,11 @@ export class InventoryPage {
     await this.page.keyboard.press('k');
   }
 
+  // K, the game's action button: it hurries typing and closes a complete description.
+  async confirm() {
+    await this.page.keyboard.press('k');
+  }
+
   async backOut() {
     await this.page.keyboard.press('Escape');
   }

@@ -38,7 +38,7 @@ useKeyboard();
           v-if="inventory.isModelShown"
           :frozen="inventory.isModelFrozen"
           :leaving="inventory.isModelClosing"
-          @choose="inventory.choose"
+          @entered="inventory.onItemPreviewEntered"
           @exited="inventory.onItemPreviewExited"
         />
       </ItemPreviewPanel>
@@ -71,8 +71,9 @@ useKeyboard();
         :text="inventory.panelText"
         :choices="inventory.prompt.choices"
         :choice-index="inventory.prompt.cursor.index"
-        :keep-text="inventory.description.isKept"
+        :hurried="inventory.isTextHurried"
         @description-typed="inventory.onDescriptionTyped"
+        @prompt-typed="inventory.onPromptTyped"
         @point="inventory.point"
         @choose="inventory.choose"
       />

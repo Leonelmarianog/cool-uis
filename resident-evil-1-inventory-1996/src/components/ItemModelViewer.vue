@@ -67,10 +67,11 @@ const SCREEN_Z = new Vector3(0, 0, 1);
 
 // While frozen, such as when the description is shown, the model stays in its
 // current position, the controls do nothing and the arrows are hidden.
-// `leaving` spins the model out; `exited` is emitted once it is gone.
+// `entered` is emitted once the model has tumbled in; `leaving` spins it out,
+// and `exited` is emitted once it is gone.
 const { frozen = false, leaving = false } = defineProps<{ frozen?: boolean; leaving?: boolean }>();
 
-const emit = defineEmits<{ choose: []; exited: [] }>();
+const emit = defineEmits<{ entered: []; exited: [] }>();
 
 type Phase = 'entering' | 'viewing' | 'leaving';
 const phase = ref<Phase>('entering');
@@ -104,12 +105,7 @@ function release(control: Control) {
 
 function onKeydown(event: KeyboardEvent) {
   if (!isControllable.value) return;
-  const key = event.key.toLowerCase();
-  if (key === 'k') {
-    emit('choose');
-    return;
-  }
-  const control = KEY_CONTROLS[key];
+  const control = KEY_CONTROLS[event.key.toLowerCase()];
   if (!control) return;
   event.preventDefault();
   hold(control);
@@ -150,7 +146,10 @@ function enter(model: Object3D, scene: Scene, phaseSeconds: number) {
     SPIN_TURNS.z * FULL_TURN * turnsLeft,
   );
   scene.background = progress < 0.5 ? BLACK : NAVY;
-  if (progress === 1) startPhase('viewing');
+  if (progress === 1) {
+    startPhase('viewing');
+    emit('entered');
+  }
 }
 
 function leave(model: Object3D, scene: Scene, phaseSeconds: number, seconds: number) {

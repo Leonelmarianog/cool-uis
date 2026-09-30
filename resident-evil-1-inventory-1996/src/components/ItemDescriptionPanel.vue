@@ -8,7 +8,7 @@ const {
   text = null,
   choices = [],
   choiceIndex = 0,
-  keepText = false,
+  hurried = false,
 } = defineProps<{
   itemName?: string;
   /** Replaces the item name while it is open: a description, or a prompt's question. A "\n" starts its second line. */
@@ -17,33 +17,40 @@ const {
   choices?: string[];
   /** The choice under the choice cursor (the arrow). */
   choiceIndex?: number;
-  /** Keeps the text after it is typed out, such as CHECK's item description. */
-  keepText?: boolean;
+  /** Types the rest of the text faster. */
+  hurried?: boolean;
 }>();
 
-const emit = defineEmits<{ 'description-typed': []; point: [index: number]; choose: [] }>();
+const emit = defineEmits<{ 'description-typed': []; 'prompt-typed': []; point: [index: number]; choose: [] }>();
 
 /** As in use-item-1.gif: one character every 4 frames at 60 fps. */
 const CHARACTER_MS = (4 * 1000) / 60;
-/** How long a text that goes away by itself stays in full before the item name returns. */
-const HOLD_MS = 420;
-// The first choice starts at column 214; each next one follows two spaces
-// after the one before, in 8-pixel characters.
+/** One character every frame, while the text is hurried. */
+const HURRIED_CHARACTER_MS = 1000 / 60;
+/** The column where the first choice starts; each next one follows two spaces after the one before. */
 const FIRST_CHOICE_COLUMN = 214;
+/** The width of one character, in game pixels. */
 const CHARACTER_WIDTH = 8;
 
 const typedLength = ref(0);
 const areChoicesShown = ref(false);
 let timer: ReturnType<typeof setTimeout> | undefined;
 
+/** Waits one character's time, shorter while hurried, then types the next character. */
+function scheduleNextCharacter(fullText: string) {
+  timer = setTimeout(() => typeNextCharacter(fullText), hurried ? HURRIED_CHARACTER_MS : CHARACTER_MS);
+}
+
+/** Types one more character. Once the text is complete, shows the choices, if any, and says what was typed. */
 function typeNextCharacter(fullText: string) {
   typedLength.value++;
   if (typedLength.value < fullText.length) {
-    timer = setTimeout(() => typeNextCharacter(fullText), CHARACTER_MS);
+    scheduleNextCharacter(fullText);
   } else if (choices.length > 0) {
     areChoicesShown.value = true;
-  } else if (!keepText) {
-    timer = setTimeout(() => emit('description-typed'), HOLD_MS);
+    emit('prompt-typed');
+  } else {
+    emit('description-typed');
   }
 }
 
@@ -53,15 +60,17 @@ watch(
     clearTimeout(timer);
     typedLength.value = 0;
     areChoicesShown.value = false;
-    if (newText) timer = setTimeout(() => typeNextCharacter(newText), CHARACTER_MS);
+    if (newText) scheduleNextCharacter(newText);
   },
 );
 
 onUnmounted(() => clearTimeout(timer));
 
+/** The item name, or the part of the open text typed so far. */
 const shownText = computed(() => (text === null ? itemName : text.slice(0, typedLength.value)));
 const lines = computed(() => shownText.value.split('\n'));
 
+/** The column of each choice. */
 const choiceColumns = computed(() => {
   let column = FIRST_CHOICE_COLUMN;
   return choices.map(choice => {
