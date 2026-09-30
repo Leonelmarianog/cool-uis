@@ -17,14 +17,14 @@ export function useItemSelection(mode: Ref<InventoryMode>, description: Descript
   /** Opens the action menu for the item. */
   function select(itemId: string) {
     selectedItemId.value = itemId;
-    mode.value = InventoryMode.ItemSelected;
+    mode.value = InventoryMode.ChoosingAction;
   }
 
   /** Closes the action menu and releases the item. */
   function release() {
     selectedItemId.value = null;
     description.clear();
-    mode.value = InventoryMode.Idle;
+    mode.value = InventoryMode.Browsing;
   }
 
   return { selectedItemId, selectedItem, select, release };

@@ -14,39 +14,39 @@ export function useCheck(mode: Ref<InventoryMode>, description: DescriptionPanel
   /** The model stays shown while the description is typed and while it spins out. */
   const isModelShown = computed(
     () =>
-      mode.value === InventoryMode.ModelView ||
-      mode.value === InventoryMode.ModelDescription ||
-      mode.value === InventoryMode.ModelClosing,
+      mode.value === InventoryMode.ViewingModel ||
+      mode.value === InventoryMode.ReadingDescription ||
+      mode.value === InventoryMode.ClosingModel,
   );
-  const isDescribing = computed(() => mode.value === InventoryMode.ModelDescription);
-  const isClosing = computed(() => mode.value === InventoryMode.ModelClosing);
+  const isDescribing = computed(() => mode.value === InventoryMode.ReadingDescription);
+  const isClosing = computed(() => mode.value === InventoryMode.ClosingModel);
 
   /** Shows the model in place of the action menu. */
   function start() {
-    mode.value = InventoryMode.ModelView;
+    mode.value = InventoryMode.ViewingModel;
   }
 
   /** Types the item's description and freezes the model. */
   function showDescription() {
-    if (mode.value !== InventoryMode.ModelView) return;
-    mode.value = InventoryMode.ModelDescription;
+    if (mode.value !== InventoryMode.ViewingModel) return;
+    mode.value = InventoryMode.ReadingDescription;
     description.describe(PLACEHOLDER_DESCRIPTION);
   }
 
   /** Removes the description and gives the model's controls back. */
   function hideDescription() {
-    mode.value = InventoryMode.ModelView;
+    mode.value = InventoryMode.ViewingModel;
     description.clear();
   }
 
   /** Spins the model out; the menu returns once it is gone. */
   function close() {
-    mode.value = InventoryMode.ModelClosing;
+    mode.value = InventoryMode.ClosingModel;
   }
 
   /** Brings the action menu back once the model has spun out. */
   function finish() {
-    mode.value = InventoryMode.ItemSelected;
+    mode.value = InventoryMode.ChoosingAction;
   }
 
   return { isModelShown, isDescribing, isClosing, start, showDescription, hideDescription, close, finish };

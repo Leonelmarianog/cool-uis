@@ -17,7 +17,7 @@ import { usePlayerStore } from './player';
 export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
 
-  const mode = ref<InventoryMode>(InventoryMode.Idle);
+  const mode = ref<InventoryMode>(InventoryMode.Browsing);
   /** The selection frame's slot. It is a position, so it stays in place when items shift. */
   const cursorSlot = ref(0);
 
@@ -29,7 +29,7 @@ export const useInventoryStore = defineStore('inventory', () => {
 
   /** The item whose name the description panel shows: the one under the green arrows while combining. */
   const itemUnderCursor = computed(() => player.inventorySlots[combine.targetSlot.value ?? cursorSlot.value] ?? null);
-  const isSelecting = computed(() => mode.value !== InventoryMode.Idle);
+  const isSelecting = computed(() => mode.value !== InventoryMode.Browsing);
 
   /** The action menu's options: weapons are equipped, every other item is used. */
   const menuOptions = computed<ItemAction[]>(() => {
@@ -42,10 +42,10 @@ export const useInventoryStore = defineStore('inventory', () => {
   /** The mouse moved over a slot. */
   function moveCursor(slot: number) {
     switch (mode.value) {
-      case InventoryMode.Idle:
+      case InventoryMode.Browsing:
         cursorSlot.value = slot;
         break;
-      case InventoryMode.Combining:
+      case InventoryMode.ChoosingTarget:
         combine.moveTarget(slot);
         break;
     }
@@ -54,14 +54,14 @@ export const useInventoryStore = defineStore('inventory', () => {
   /** A slot was clicked. */
   function selectItemAt(slot: number) {
     switch (mode.value) {
-      case InventoryMode.Idle: {
+      case InventoryMode.Browsing: {
         const item = player.inventorySlots[slot];
         if (!item) return;
         cursorSlot.value = slot;
         selection.select(item.id);
         break;
       }
-      case InventoryMode.Combining:
+      case InventoryMode.ChoosingTarget:
         combine.combineWith(slot);
         break;
     }
@@ -70,19 +70,19 @@ export const useInventoryStore = defineStore('inventory', () => {
   /** Escape was pressed: steps back once. */
   function backOut() {
     switch (mode.value) {
-      case InventoryMode.CombinePrompt:
+      case InventoryMode.AnsweringPrompt:
         combine.cancelPrompt();
         break;
-      case InventoryMode.Combining:
+      case InventoryMode.ChoosingTarget:
         combine.stop();
         break;
-      case InventoryMode.ModelDescription:
+      case InventoryMode.ReadingDescription:
         check.hideDescription();
         break;
-      case InventoryMode.ModelView:
+      case InventoryMode.ViewingModel:
         check.close();
         break;
-      case InventoryMode.ItemSelected:
+      case InventoryMode.ChoosingAction:
         selection.release();
         break;
     }

@@ -16,13 +16,13 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
 
   /** The green arrows stay on the target while the question is asked. */
   const isCombining = computed(
-    () => mode.value === InventoryMode.Combining || mode.value === InventoryMode.CombinePrompt,
+    () => mode.value === InventoryMode.ChoosingTarget || mode.value === InventoryMode.AnsweringPrompt,
   );
 
   /** Shows the green arrows on the given slot. */
   function start(slot: number) {
     targetSlot.value = slot;
-    mode.value = InventoryMode.Combining;
+    mode.value = InventoryMode.ChoosingTarget;
   }
 
   /** Moves the green arrows to the given slot. */
@@ -46,7 +46,7 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
       if (player.canMix(sourceId, target.id)) {
         promptTargetId.value = target.id;
         description.ask('Will you mix the herbs?', ['Yes', 'No']);
-        mode.value = InventoryMode.CombinePrompt;
+        mode.value = InventoryMode.AnsweringPrompt;
       } else {
         description.show('Mixing these does not seem to work.');
       }
@@ -69,13 +69,13 @@ export function useCombine(mode: Ref<InventoryMode>, selection: ItemSelection, d
   function cancelPrompt() {
     promptTargetId.value = null;
     description.clear();
-    mode.value = InventoryMode.Combining;
+    mode.value = InventoryMode.ChoosingTarget;
   }
 
   /** Removes the green arrows and goes back to the action menu. */
   function stop() {
     targetSlot.value = null;
-    mode.value = InventoryMode.ItemSelected;
+    mode.value = InventoryMode.ChoosingAction;
   }
 
   /** Removes the green arrows and closes the action menu after a combination. */
