@@ -15,6 +15,6 @@ test.describe('Action menu', () => {
     await inventoryPage.slot(2).hover();
 
     await expect(inventoryPage.optionFrame('EQUIP'), 'the red frame stays on EQUIP').toBeVisible();
-    await expect(inventoryPage.optionFrame('COMBN'), 'the red frame does not move to COMBN').toHaveCount(0);
+    await expect(inventoryPage.optionFrame('CHECK'), 'the red frame does not move to CHECK').toHaveCount(0);
   });
 });
