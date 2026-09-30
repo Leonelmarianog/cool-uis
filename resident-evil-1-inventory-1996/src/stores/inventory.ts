@@ -19,6 +19,7 @@ import { OutcomeKind } from '../types/outcome';
 import type { Outcome } from '../types/outcome';
 import type { PlayerItem } from '../types/player';
 import { PromptChoice } from '../types/prompt-choice';
+import { TOP_MENU_OPTIONS, TopMenuOption } from '../types/top-menu-option';
 import { usePlayerStore } from './player';
 
 /**
@@ -48,7 +49,7 @@ const MODEL_MODES: InventoryMode[] = [
 
 /** What each intent does in one mode. A missing handler means the intent does nothing in that mode. */
 type ModeHandlers = {
-  point?: (index: number) => void;
+  point?: (index: number, area: CursorArea) => void;
   choose?: () => void;
   back?: () => void;
 };
@@ -97,7 +98,10 @@ export const useInventoryStore = defineStore('inventory', () => {
     modeBelowText.value === InventoryMode.ChoosingTarget ? targetCursor.index.value : null,
   );
   /** The item whose name the description panel shows: the one under the target cursor while it shows. */
-  const itemUnderCursor = computed(() => items.value[targetIndex.value ?? mainCursor.index.value] ?? null);
+  const itemUnderCursor = computed(() => {
+    const index = targetIndex.value ?? mainCursor.gridIndex.value;
+    return index === null ? null : (items.value[index] ?? null);
+  });
   /** The text the description panel types in place of the item name: the prompt's question or the description. */
   const panelText = computed(() => prompt.question.value ?? description.text.value);
   const hasSelectedItem = computed(() => selectedItem.value !== null);
@@ -107,6 +111,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   );
   /** The action menu takes input only while the player picks an option; it stays open under a description from USE. */
   const isActionMenuActive = computed(() => mode.value === InventoryMode.ChoosingAction);
+  /** The top menu takes input only while the player browses. */
+  const isTopMenuActive = computed(() => mode.value === InventoryMode.Browsing);
   /** The model shows in place of the action menu from the moment it tumbles in until it has spun out. */
   const isModelShown = computed(() => MODEL_MODES.includes(modeBelowText.value));
   /** The model stays still while its item description is open. */
@@ -116,8 +122,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   /** What `point`, `choose` and `back` do in each mode. */
   const handlers: Record<InventoryMode, ModeHandlers> = {
     [InventoryMode.Browsing]: {
-      point: index => mainCursor.point(CursorArea.Grid, index),
-      choose: () => selectItemUnderCursor(),
+      point: (index, area) => mainCursor.point(area, index),
+      choose: () => areaHandlers[mainCursor.area.value](),
     },
     [InventoryMode.ChoosingAction]: {
       point: index => actionMenu.cursor.point(index),
@@ -157,6 +163,20 @@ export const useInventoryStore = defineStore('inventory', () => {
     [ItemAction.Combine]: () => startCombine(),
   };
 
+  /** What `choose` does while browsing, by the main cursor's area. */
+  const areaHandlers: Record<CursorArea, () => void> = {
+    [CursorArea.Grid]: () => selectItemUnderCursor(),
+    [CursorArea.TopMenu]: () => chooseTopMenuOption(),
+  };
+
+  /** What each top menu button does. The screens they open are not built yet, so each one logs. */
+  const topMenuHandlers: Record<TopMenuOption, () => void> = {
+    [TopMenuOption.Map]: () => console.info('MAP: the map screen is not built yet.'),
+    [TopMenuOption.File]: () => console.info('FILE: the files screen is not built yet.'),
+    [TopMenuOption.ItemBox]: () => console.info('ITEM BOX: the item box is not built yet.'),
+    [TopMenuOption.Exit]: () => console.info('EXIT: there is no game to go back to yet.'),
+  };
+
   /** What comes after each kind of outcome. */
   const outcomeHandlers: OutcomeHandlers = {
     [OutcomeKind.Done]: () => releaseItem(),
@@ -165,9 +185,13 @@ export const useInventoryStore = defineStore('inventory', () => {
     [OutcomeKind.Nothing]: () => {},
   };
 
-  /** Moves the cursor of the element with input to the given index. */
-  function point(index: number) {
-    handlers[mode.value].point?.(index);
+  /**
+   * Moves the cursor of the element with input to the given index. `area` says
+   * which part of the main cursor the index is in; only the grid and the top
+   * menu send it, and only browsing reads it.
+   */
+  function point(index: number, area: CursorArea = CursorArea.Grid) {
+    handlers[mode.value].point?.(index, area);
   }
 
   /** Confirms the position of the cursor of the element with input. */
@@ -212,6 +236,12 @@ export const useInventoryStore = defineStore('inventory', () => {
     selectedItem.value = item;
     actionMenu.open(availableActions(item));
     mode.value = InventoryMode.ChoosingAction;
+  }
+
+  /** Runs the top menu button under the main cursor. */
+  function chooseTopMenuOption() {
+    const option = TOP_MENU_OPTIONS[mainCursor.index.value];
+    if (option) topMenuHandlers[option]();
   }
 
   /** Closes the action menu, any description and prompt, and goes back to browsing. */
@@ -318,6 +348,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     hasSelectedItem,
     isGridActive,
     isActionMenuActive,
+    isTopMenuActive,
     isModelShown,
     isModelFrozen,
     isModelClosing,

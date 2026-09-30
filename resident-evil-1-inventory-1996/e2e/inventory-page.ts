@@ -47,6 +47,16 @@ export class InventoryPage {
     return this.slot(number).locator('img');
   }
 
+  // The red frame on a slot of the grid.
+  slotFrame(number: number): Locator {
+    return this.slot(number).locator('.inventory-grid__selection');
+  }
+
+  // A button of the top menu: MAP, FILE, EXIT, or the dash button ("Item box").
+  menuButton(name: string): Locator {
+    return this.page.getByRole('navigation', { name: 'Inventory menu' }).getByRole('button', { name });
+  }
+
   // Disabled while COMBN waits for a second item.
   actionButton(action: string): Locator {
     return this.actionMenu.getByRole('menuitem', { name: action });

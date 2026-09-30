@@ -2,6 +2,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { useInventoryStore } from '../inventory';
 import { usePlayerStore } from '../player';
+import { CursorArea } from '../../types/cursor-area';
 import { InventoryMode } from '../../types/inventory-mode';
 import { ItemType } from '../../types/item';
 
@@ -12,6 +13,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.restoreAllMocks();
 });
 
 describe('point', () => {
@@ -45,6 +47,26 @@ describe('point', () => {
     inventory.point(2);
 
     expect(inventory.mainCursor.index).toBe(0);
+  });
+
+  test('moves the main cursor to the top menu while browsing', () => {
+    const inventory = useInventoryStore();
+
+    inventory.point(1, CursorArea.TopMenu);
+
+    expect(inventory.mainCursor.area).toBe(CursorArea.TopMenu);
+  });
+
+  test('keeps the main cursor on the grid while choosing an action', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
+    const inventory = useInventoryStore();
+    inventory.point(0, CursorArea.Grid);
+    inventory.choose();
+
+    inventory.point(1, CursorArea.TopMenu);
+
+    expect(inventory.mainCursor.area).toBe(CursorArea.Grid);
   });
 });
 
@@ -231,6 +253,56 @@ describe('choose', () => {
     inventory.choose();
 
     expect(inventory.mainCursor.index).toBe(1);
+  });
+
+  test('logs that the map screen is not built yet on MAP', () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const inventory = useInventoryStore();
+    inventory.point(0, CursorArea.TopMenu);
+
+    inventory.choose();
+
+    expect(info).toHaveBeenCalledWith('MAP: the map screen is not built yet.');
+  });
+
+  test('logs that the files screen is not built yet on FILE', () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const inventory = useInventoryStore();
+    inventory.point(1, CursorArea.TopMenu);
+
+    inventory.choose();
+
+    expect(info).toHaveBeenCalledWith('FILE: the files screen is not built yet.');
+  });
+
+  test('logs that the item box is not built yet on the dash button', () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const inventory = useInventoryStore();
+    inventory.point(2, CursorArea.TopMenu);
+
+    inventory.choose();
+
+    expect(info).toHaveBeenCalledWith('ITEM BOX: the item box is not built yet.');
+  });
+
+  test('logs that there is no game to go back to on EXIT', () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
+    const inventory = useInventoryStore();
+    inventory.point(3, CursorArea.TopMenu);
+
+    inventory.choose();
+
+    expect(info).toHaveBeenCalledWith('EXIT: there is no game to go back to yet.');
+  });
+
+  test('keeps browsing on a top menu button', () => {
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+    const inventory = useInventoryStore();
+    inventory.point(0, CursorArea.TopMenu);
+
+    inventory.choose();
+
+    expect(inventory.mode).toBe(InventoryMode.Browsing);
   });
 });
 
@@ -523,5 +595,17 @@ describe('targetIndex', () => {
     const inventory = useInventoryStore();
 
     expect(inventory.targetIndex).toBeNull();
+  });
+});
+
+describe('itemUnderCursor', () => {
+  test('is no item while the main cursor is on the top menu', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
+    const inventory = useInventoryStore();
+
+    inventory.point(0, CursorArea.TopMenu);
+
+    expect(inventory.itemUnderCursor).toBeNull();
   });
 });
