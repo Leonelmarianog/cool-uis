@@ -4,19 +4,25 @@ import { characterService } from '../services/character-service';
 import { itemService } from '../services/item-service';
 import { playerService } from '../services/player-service';
 import { recipeService } from '../services/recipe-service';
-import type { HealthStatus } from '../types/health';
+import { HealthStatus } from '../types/health';
 import { ItemType } from '../types/item';
 import type { Recovery } from '../types/item';
 import type { PlayerAmmunition, PlayerItem, PlayerWeapon } from '../types/player';
 
-// Health statuses from worst to best. Healing moves a status up this list.
-const healthOrder: HealthStatus[] = ['poison', 'danger', 'caution', 'fine-yellow', 'fine'];
+/** Health statuses from worst to best. Healing moves a status up this list. */
+const healthOrder: HealthStatus[] = [
+  HealthStatus.Poison,
+  HealthStatus.Danger,
+  HealthStatus.Caution,
+  HealthStatus.FineYellow,
+  HealthStatus.Fine,
+];
 
-// Without a poison cure, a poisoned status does not change.
+/** The status after a recovery item. Without a poison cure, a poisoned status does not change. */
 function recover(status: HealthStatus, recovery: Recovery): HealthStatus {
-  if (status === 'poison') {
+  if (status === HealthStatus.Poison) {
     if (!recovery.curesPoison) return status;
-    status = 'danger';
+    status = HealthStatus.Danger;
   }
   const index = Math.min(healthOrder.indexOf(status) + recovery.steps, healthOrder.length - 1);
   return healthOrder[index];
@@ -27,7 +33,7 @@ export const usePlayerStore = defineStore('player', () => {
 
   const characterId = ref(state.characterId);
   const healthStatus = ref(state.healthStatus);
-  // How many recovery items were used; the ECG plays its heal animation on each one.
+  /** How many recovery items were used; the ECG plays its heal animation on each one. */
   const recoveriesUsed = ref(0);
   const inventory = ref<PlayerItem[]>(state.inventory);
   const equippedItemId = ref<string | null>(state.equippedItemId);
@@ -35,19 +41,22 @@ export const usePlayerStore = defineStore('player', () => {
 
   const inventorySize = computed(() => characterService.find(characterId.value).inventorySize);
 
+  /** Finds the player item with the given ID in the inventory. */
   function findPlayerItem(playerItemId: string): PlayerItem | undefined {
     return inventory.value.find(playerItem => playerItem.id === playerItemId);
   }
 
-  // Equips a weapon, replacing the equipped one. Choosing the equipped weapon again unequips it.
+  /** Equips a weapon, replacing the equipped one. Choosing the equipped weapon again unequips it. */
   function toggleEquipped(playerItemId: string) {
     const playerItem = findPlayerItem(playerItemId);
     if (playerItem?.type !== ItemType.Weapon) return;
     equippedItemId.value = equippedItemId.value === playerItemId ? null : playerItemId;
   }
 
-  // Uses up a recovery item, even when it has no effect. Returns false for items
-  // that cannot be used this way; those stay in the inventory.
+  /**
+   * Uses up a recovery item, even when it has no effect. Returns false for items
+   * that cannot be used this way; those stay in the inventory.
+   */
   function useItem(playerItemId: string): boolean {
     const playerItem = findPlayerItem(playerItemId);
     if (!playerItem) return false;
@@ -61,8 +70,10 @@ export const usePlayerStore = defineStore('player', () => {
     return true;
   }
 
-  // Reloads a weapon from its ammunition, with the two items in either order.
-  // Returns false when they are not a weapon and ammunition it loads.
+  /**
+   * Reloads a weapon from its ammunition, with the two items in either order.
+   * Returns false when they are not a weapon and ammunition it loads.
+   */
   function reload(sourceId: string, targetId: string): boolean {
     const source = findPlayerItem(sourceId);
     const target = findPlayerItem(targetId);
@@ -71,8 +82,10 @@ export const usePlayerStore = defineStore('player', () => {
     return false;
   }
 
-  // Moves rounds into the weapon up to its capacity. A full weapon still counts
-  // as reloaded, with no rounds moved. A stack that reaches 0 is removed.
+  /**
+   * Moves rounds into the weapon up to its capacity. A full weapon still counts
+   * as reloaded, with no rounds moved. A stack that reaches 0 is removed.
+   */
   function loadWeapon(weapon: PlayerWeapon, ammunition: PlayerAmmunition): boolean {
     const item = itemService.find(weapon.itemId);
     if (item.type !== ItemType.Weapon || !item.weapon.ammunition.includes(ammunition.itemId)) return false;
@@ -84,10 +97,12 @@ export const usePlayerStore = defineStore('player', () => {
     return true;
   }
 
-  // Moves rounds from the target stack into the source stack of the same
-  // ammunition, up to its max stack; any leftover stays in the target. When
-  // either stack is full, it still counts as stacked, with no rounds moved.
-  // Returns false for any other pair.
+  /**
+   * Moves rounds from the target stack into the source stack of the same
+   * ammunition, up to its max stack; any leftover stays in the target. When
+   * either stack is full, it still counts as stacked, with no rounds moved, so
+   * a full target does not look like a swap. Returns false for any other pair.
+   */
   function stack(sourceId: string, targetId: string): boolean {
     const source = findPlayerItem(sourceId);
     const target = findPlayerItem(targetId);
@@ -98,7 +113,6 @@ export const usePlayerStore = defineStore('player', () => {
     if (item.type !== ItemType.Ammunition) return false;
 
     const { maxStack } = item.ammunition;
-    // Otherwise a full target would move almost all its rounds and look like a swap.
     if (source.amount === maxStack || target.amount === maxStack) return true;
 
     const rounds = Math.min(maxStack - source.amount, target.amount);
@@ -108,6 +122,7 @@ export const usePlayerStore = defineStore('player', () => {
     return true;
   }
 
+  /** Whether the two items have a recipe. */
   function canMix(sourceId: string, targetId: string): boolean {
     const source = findPlayerItem(sourceId);
     const target = findPlayerItem(targetId);
@@ -115,8 +130,11 @@ export const usePlayerStore = defineStore('player', () => {
     return recipeService.findByIngredients(source.itemId, target.itemId) !== undefined;
   }
 
-  // Puts the recipe's result in the source's slot and removes the target.
-  // Returns false when the two items have no recipe.
+  /**
+   * Puts the recipe's result in the source's slot, with the source's ID, and
+   * removes the target. Recipes only make items without an amount, such as
+   * mixed herbs. Returns false when the two items have no recipe.
+   */
   function mix(sourceId: string, targetId: string): boolean {
     const source = findPlayerItem(sourceId);
     const target = findPlayerItem(targetId);
@@ -126,16 +144,15 @@ export const usePlayerStore = defineStore('player', () => {
     if (!recipe) return false;
 
     const result = itemService.find(recipe.result);
-    // Recipes only make items without an amount, such as mixed herbs.
     if (result.type !== ItemType.Consumable && result.type !== ItemType.Key) return false;
 
     const index = inventory.value.findIndex(playerItem => playerItem.id === source.id);
-    // The result keeps the source's ID, as it takes the source's place.
     inventory.value[index] = { id: source.id, itemId: result.id, type: result.type };
     removeItem(target.id);
     return true;
   }
 
+  /** Whether the item is a herb, which can be mixed. */
   function isHerb(playerItemId: string): boolean {
     const playerItem = findPlayerItem(playerItemId);
     if (!playerItem) return false;
@@ -143,13 +160,13 @@ export const usePlayerStore = defineStore('player', () => {
     return item.type === ItemType.Consumable && item.herb === true;
   }
 
-  // The items after it move up to fill its slot.
+  /** Removes the item; the items after it move up to fill its slot. */
   function removeItem(playerItemId: string) {
     const index = inventory.value.findIndex(playerItem => playerItem.id === playerItemId);
     inventory.value.splice(index, 1);
   }
 
-  // Demo control for the ECG: each call shows the next worse status, then wraps to Fine.
+  /** Demo control for the ECG: each call shows the next worse status, then wraps to Fine. */
   function cycleHealthStatus() {
     const index = healthOrder.indexOf(healthStatus.value);
     healthStatus.value = healthOrder[(index - 1 + healthOrder.length) % healthOrder.length];
