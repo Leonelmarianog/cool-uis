@@ -28,6 +28,11 @@ function recover(status: HealthStatus, recovery: Recovery): HealthStatus {
   return healthOrder[index];
 }
 
+/**
+ * The player's data and the game rules that change it: health, the inventory,
+ * the equipped weapon and the item box. Its functions take player item IDs,
+ * not items, because the store owns the items and a caller's copy may be stale.
+ */
 export const usePlayerStore = defineStore('player', () => {
   const state = playerService.startingState();
 
@@ -35,10 +40,14 @@ export const usePlayerStore = defineStore('player', () => {
   const healthStatus = ref(state.healthStatus);
   /** How many recovery items were used; the ECG plays its heal animation on each one. */
   const recoveriesUsed = ref(0);
+  /** Packed: items fill the first slots and empty slots follow the last item. */
   const inventory = ref<PlayerItem[]>(state.inventory);
+  /** The ID of the equipped weapon in the inventory, or `null` when unarmed. */
   const equippedItemId = ref<string | null>(state.equippedItemId);
+  /** Fixed rows; `null` is an empty row. Unlike the inventory, the box keeps gaps. */
   const itemBox = ref<(PlayerItem | null)[]>(state.itemBox);
 
+  /** The number of inventory slots, set by the character. */
   const inventorySize = computed(() => characterService.find(characterId.value).inventorySize);
 
   /** Finds the player item with the given ID in the inventory. */
@@ -57,7 +66,7 @@ export const usePlayerStore = defineStore('player', () => {
    * Uses up a recovery item, even when it has no effect. Returns false for items
    * that cannot be used this way; those stay in the inventory.
    */
-  function useItem(playerItemId: string): boolean {
+  function consume(playerItemId: string): boolean {
     const playerItem = findPlayerItem(playerItemId);
     if (!playerItem) return false;
 
@@ -122,14 +131,6 @@ export const usePlayerStore = defineStore('player', () => {
     return true;
   }
 
-  /** Whether the two items have a recipe. */
-  function canMix(sourceId: string, targetId: string): boolean {
-    const source = findPlayerItem(sourceId);
-    const target = findPlayerItem(targetId);
-    if (!source || !target) return false;
-    return recipeService.findByIngredients(source.itemId, target.itemId) !== undefined;
-  }
-
   /**
    * Puts the recipe's result in the source's slot, with the source's ID, and
    * removes the target. Recipes only make items without an amount, such as
@@ -150,14 +151,6 @@ export const usePlayerStore = defineStore('player', () => {
     inventory.value[index] = { id: source.id, itemId: result.id, type: result.type };
     removeItem(target.id);
     return true;
-  }
-
-  /** Whether the item is a herb, which can be mixed. */
-  function isHerb(playerItemId: string): boolean {
-    const playerItem = findPlayerItem(playerItemId);
-    if (!playerItem) return false;
-    const item = itemService.find(playerItem.itemId);
-    return item.type === ItemType.Consumable && item.herb === true;
   }
 
   /** Removes the item; the items after it move up to fill its slot. */
@@ -181,12 +174,10 @@ export const usePlayerStore = defineStore('player', () => {
     itemBox,
     inventorySize,
     toggleEquipped,
-    useItem,
+    consume,
     reload,
     stack,
-    canMix,
     mix,
-    isHerb,
     cycleHealthStatus,
   };
 });
