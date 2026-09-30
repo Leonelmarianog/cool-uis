@@ -1,216 +1,332 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-import { ItemType } from '../types/item';
+import { availableActions } from '../actions/available-actions';
+import { combine, mix } from '../actions/combine';
+import { equip } from '../actions/equip';
+import { use } from '../actions/use';
+import { useActionMenu } from '../elements/use-action-menu';
+import { useCursor } from '../elements/use-cursor';
+import { useDescription } from '../elements/use-description';
+import { useMainCursor } from '../elements/use-main-cursor';
+import { usePrompt } from '../elements/use-prompt';
+import { itemViewMapper } from '../mappers/item-view-mapper';
+import { itemService } from '../services/item-service';
+import { CursorArea } from '../types/cursor-area';
+import { InventoryMode } from '../types/inventory-mode';
+import { ItemAction } from '../types/item-action';
+import type { ItemView } from '../types/item-view';
+import { OutcomeKind } from '../types/outcome';
+import type { Outcome } from '../types/outcome';
+import type { PlayerItem } from '../types/player';
+import { PromptChoice } from '../types/prompt-choice';
 import { usePlayerStore } from './player';
 
-// The inventory's UI state, such as the cursor, as opposed to the player's data.
-// Every item shows the Beretta's description (from check-item-in-out.gif)
-// until real descriptions exist.
+/**
+ * Every item shows the Beretta's description (from check-item-in-out.gif)
+ * until real descriptions exist.
+ */
 const PLACEHOLDER_DESCRIPTION = 'Beretta M92FS. Automatic\nloaded with 9mm bullets.';
 
+/** Joins a player item with its catalog data for display. */
+function toItemView(playerItem: PlayerItem): ItemView {
+  return itemViewMapper.toItemView(playerItem, itemService.find(playerItem.itemId));
+}
+
+/** The modes in which a description or a prompt is open in the description panel. */
+const TEXT_MODES: InventoryMode[] = [
+  InventoryMode.TypingText,
+  InventoryMode.ReadingDescription,
+  InventoryMode.AnsweringPrompt,
+];
+
+/** The modes in which CHECK's model shows in place of the action menu. */
+const MODEL_MODES: InventoryMode[] = [
+  InventoryMode.OpeningModel,
+  InventoryMode.ViewingModel,
+  InventoryMode.ClosingModel,
+];
+
+/** What each intent does in one mode. A missing handler means the intent does nothing in that mode. */
+type ModeHandlers = {
+  point?: (index: number) => void;
+  choose?: () => void;
+  back?: () => void;
+};
+
+/** What comes after each kind of outcome; each handler gets the outcome of its own kind. */
+type OutcomeHandlers = { [Kind in OutcomeKind]: (outcome: Extract<Outcome, { kind: Kind }>) => void };
+
+/**
+ * The inventory screen's UI state, as opposed to the player's data. It is the
+ * only code that changes the mode, and it routes every intent to the element
+ * with input in the current mode.
+ */
 export const useInventoryStore = defineStore('inventory', () => {
   const player = usePlayerStore();
 
-  // The cursor is a slot position, so it stays in place when items shift.
-  const cursorSlot = ref(0);
-  // The selected item is tracked by ID, so it stays attached to its item.
-  const selectedItemId = ref<string | null>(null);
-  // While COMBN waits for a second item, the slot under the green target cursor.
-  const targetSlot = ref<number | null>(null);
-  // A message typed into the description panel in place of the item name.
-  const message = ref<string | null>(null);
-  // While "Will you mix the herbs?" waits for Yes or No, the herb chosen as the target.
-  const mixTargetId = ref<string | null>(null);
-  // While CHECK shows the selected item's 3D model in place of the menu.
-  const isChecking = ref(false);
-  // While CHECK's model spins out, before the menu returns.
-  const isLeavingCheck = ref(false);
-  // While CHECK types the item's description; the model is frozen until Escape.
-  const isDescribing = ref(false);
+  const mode = ref<InventoryMode>(InventoryMode.Browsing);
+  /** The mode to go back to when the open description or prompt closes. */
+  const returnMode = ref<InventoryMode>(InventoryMode.Browsing);
+  /** The item whose action menu is open. */
+  const selectedItem = ref<PlayerItem | null>(null);
+  /** K was pressed while the open text types, so the rest of it types faster. */
+  const isTextHurried = ref(false);
 
-  // The item whose name the description panel shows: the target while choosing one.
-  const itemUnderCursor = computed(() => player.inventorySlots[targetSlot.value ?? cursorSlot.value] ?? null);
-  const isSelecting = computed(() => selectedItemId.value !== null);
-  const isChoosingTarget = computed(() => targetSlot.value !== null);
-  const isConfirmingMix = computed(() => mixTargetId.value !== null);
-  const selectedItem = computed(() => player.inventorySlots.find(item => item.id === selectedItemId.value) ?? null);
+  const mainCursor = useMainCursor();
+  /** Points at the second item for COMBN. */
+  const targetCursor = useCursor();
+  const actionMenu = useActionMenu();
+  const description = useDescription();
+  const prompt = usePrompt();
 
-  // Weapons are equipped; every other item is used.
-  const itemActions = computed(() => {
-    if (!selectedItem.value) return [];
-    const firstAction = selectedItem.value.type === ItemType.Weapon ? 'EQUIP' : 'USE';
-    return [firstAction, 'CHECK', 'COMBN'];
+  /** The grid's items, in slot order. */
+  const items = computed(() => player.inventory.map(toItemView));
+  /** The equipped weapon, or `null` when the player is unarmed. */
+  const equippedWeapon = computed(() => {
+    const weapon = player.inventory.find(playerItem => playerItem.id === player.equippedItemId);
+    return weapon ? toItemView(weapon) : null;
   });
 
-  // The choices the description panel offers under the message.
-  const messageChoices = computed(() => (isConfirmingMix.value ? ['Yes', 'No'] : []));
+  /** Whether a description or a prompt is open in the description panel. */
+  const isTextOpen = computed(() => TEXT_MODES.includes(mode.value));
+  /** The mode under the open description or prompt, or the current mode while none is open. */
+  const modeBelowText = computed(() => (isTextOpen.value ? returnMode.value : mode.value));
 
-  function moveCursor(slot: number) {
-    // While Yes or No is asked, the target cursor stays on the target.
-    if (isConfirmingMix.value) return;
-    if (isChoosingTarget.value) {
-      targetSlot.value = slot;
-      return;
-    }
-    // While an item is selected, the cursor stays on it.
-    if (isSelecting.value) return;
-    cursorSlot.value = slot;
+  /** The target cursor's slot while the player picks a target, and while a description or prompt from COMBN is open; otherwise `null`. */
+  const targetIndex = computed(() =>
+    modeBelowText.value === InventoryMode.ChoosingTarget ? targetCursor.index.value : null,
+  );
+  /** The item whose name the description panel shows: the one under the target cursor while it shows. */
+  const itemUnderCursor = computed(() => items.value[targetIndex.value ?? mainCursor.index.value] ?? null);
+  /** The text the description panel types in place of the item name: the prompt's question or the description. */
+  const panelText = computed(() => prompt.question.value ?? description.text.value);
+  const hasSelectedItem = computed(() => selectedItem.value !== null);
+  /** The grid takes input while the player browses or picks a target. */
+  const isGridActive = computed(
+    () => mode.value === InventoryMode.Browsing || mode.value === InventoryMode.ChoosingTarget,
+  );
+  /** The action menu takes input only while the player picks an option; it stays open under a description from USE. */
+  const isActionMenuActive = computed(() => mode.value === InventoryMode.ChoosingAction);
+  /** The model shows in place of the action menu from the moment it tumbles in until it has spun out. */
+  const isModelShown = computed(() => MODEL_MODES.includes(modeBelowText.value));
+  /** The model stays still while its item description is open. */
+  const isModelFrozen = computed(() => isTextOpen.value && modeBelowText.value === InventoryMode.ViewingModel);
+  const isModelClosing = computed(() => mode.value === InventoryMode.ClosingModel);
+
+  /** What `point`, `choose` and `back` do in each mode. */
+  const handlers: Record<InventoryMode, ModeHandlers> = {
+    [InventoryMode.Browsing]: {
+      point: index => mainCursor.point(CursorArea.Grid, index),
+      choose: () => selectItemUnderCursor(),
+    },
+    [InventoryMode.ChoosingAction]: {
+      point: index => actionMenu.cursor.point(index),
+      choose: () => choosePointedOption(),
+      back: () => releaseItem(),
+    },
+    [InventoryMode.ChoosingTarget]: {
+      point: index => targetCursor.point(index),
+      choose: () => combineWithTarget(),
+      back: () => setMode(InventoryMode.ChoosingAction),
+    },
+    [InventoryMode.TypingText]: {
+      choose: () => hurryText(),
+    },
+    [InventoryMode.ReadingDescription]: {
+      choose: () => closeDescription(),
+      back: () => closeDescription(),
+    },
+    [InventoryMode.AnsweringPrompt]: {
+      point: index => prompt.cursor.point(index),
+      choose: () => answerPointedChoice(),
+      back: () => closePrompt(),
+    },
+    [InventoryMode.OpeningModel]: {},
+    [InventoryMode.ViewingModel]: {
+      choose: () => openDescription(PLACEHOLDER_DESCRIPTION),
+      back: () => setMode(InventoryMode.ClosingModel),
+    },
+    [InventoryMode.ClosingModel]: {},
+  };
+
+  /** What each option of the action menu does to the selected item. CHECK and COMBN start a sequence of modes. */
+  const optionHandlers: Record<ItemAction, (item: PlayerItem) => void> = {
+    [ItemAction.Equip]: item => applyOutcome(equip(item)),
+    [ItemAction.Use]: item => applyOutcome(use(item)),
+    [ItemAction.Check]: () => setMode(InventoryMode.OpeningModel),
+    [ItemAction.Combine]: () => startCombine(),
+  };
+
+  /** What comes after each kind of outcome. */
+  const outcomeHandlers: OutcomeHandlers = {
+    [OutcomeKind.Done]: () => releaseItem(),
+    [OutcomeKind.Description]: outcome => openDescription(outcome.text),
+    [OutcomeKind.Prompt]: outcome => openPrompt(outcome.question, outcome.choices),
+    [OutcomeKind.Nothing]: () => {},
+  };
+
+  /** Moves the cursor of the element with input to the given index. */
+  function point(index: number) {
+    handlers[mode.value].point?.(index);
   }
 
-  function selectItemAt(slot: number) {
-    if (isConfirmingMix.value) return;
-    if (isChoosingTarget.value) {
-      combineWith(slot);
-      return;
-    }
-    if (isSelecting.value) return;
-    const item = player.inventorySlots[slot];
+  /** Confirms the position of the cursor of the element with input. */
+  function choose() {
+    handlers[mode.value].choose?.();
+  }
+
+  /** Steps back once. */
+  function back() {
+    handlers[mode.value].back?.();
+  }
+
+  /** The description panel finished typing a description; K or Escape can close it now. */
+  function onDescriptionTyped() {
+    mode.value = InventoryMode.ReadingDescription;
+  }
+
+  /** The description panel finished typing a prompt's question; its choices can be answered now. */
+  function onPromptTyped() {
+    mode.value = InventoryMode.AnsweringPrompt;
+  }
+
+  /** The model tumbled into the item preview panel; it can be turned now. */
+  function onItemPreviewEntered() {
+    mode.value = InventoryMode.ViewingModel;
+  }
+
+  /** The model spun out of the item preview panel; the action menu returns. */
+  function onItemPreviewExited() {
+    mode.value = InventoryMode.ChoosingAction;
+  }
+
+  /** Changes the mode; for handlers that do nothing else. */
+  function setMode(nextMode: InventoryMode) {
+    mode.value = nextMode;
+  }
+
+  /** Opens the action menu for the item under the main cursor; an empty slot does nothing. */
+  function selectItemUnderCursor() {
+    const item = player.inventory[mainCursor.index.value];
     if (!item) return;
-    cursorSlot.value = slot;
-    selectedItemId.value = item.id;
+    selectedItem.value = item;
+    actionMenu.open(availableActions(item));
+    mode.value = InventoryMode.ChoosingAction;
   }
 
-  function backOut() {
-    // Escape answers No to "Will you mix the herbs?".
-    if (isConfirmingMix.value) {
-      cancelMix();
-      return;
-    }
-    // Escape removes CHECK's description and gives the model's controls back.
-    if (isDescribing.value) {
-      isDescribing.value = false;
-      message.value = null;
-      return;
-    }
-    // From CHECK, back out to the menu only, once the model has spun out.
-    if (isChecking.value) {
-      isLeavingCheck.value = true;
-      return;
-    }
-    // From choosing a target, back out to the menu only.
-    if (isChoosingTarget.value) {
-      targetSlot.value = null;
-      return;
-    }
-    selectedItemId.value = null;
-    message.value = null;
+  /** Closes the action menu, any description and prompt, and goes back to browsing. */
+  function releaseItem() {
+    selectedItem.value = null;
+    actionMenu.close();
+    description.close();
+    prompt.close();
+    mode.value = InventoryMode.Browsing;
   }
 
-  function clearMessage() {
-    message.value = null;
+  /** Runs the option under the option cursor on the selected item. */
+  function choosePointedOption() {
+    const item = selectedItem.value;
+    const option = actionMenu.pointedOption.value;
+    if (item && option) optionHandlers[option](item);
   }
 
-  function chooseAction(action: string) {
-    if (!selectedItem.value) return;
-
-    if (action === 'EQUIP') {
-      player.toggleEquipped(selectedItem.value.id);
-      // The game closes the menu and releases the item right after equipping.
-      backOut();
-      return;
-    }
-
-    if (action === 'USE') {
-      if (player.useItem(selectedItem.value.id)) {
-        // The game closes the menu once the item is used up.
-        backOut();
-      } else {
-        // Key items only work in the game world; ammunition and the red herb only work combined.
-        message.value =
-          selectedItem.value.type === ItemType.Key ? "You can't use it here." : "You can't use this alone.";
-      }
-      return;
-    }
-
-    if (action === 'CHECK') {
-      isChecking.value = true;
-      return;
-    }
-
-    if (action === 'COMBN') {
-      // The target cursor starts on the selected item.
-      targetSlot.value = cursorSlot.value;
-    }
+  /** Starts picking a second item, with the target cursor on the selected item. */
+  function startCombine() {
+    targetCursor.point(mainCursor.index.value);
+    mode.value = InventoryMode.ChoosingTarget;
   }
 
-  // Called once CHECK's model has spun out.
-  function finishCheck() {
-    isChecking.value = false;
-    isLeavingCheck.value = false;
+  /** Combines the selected item with the one under the target cursor. */
+  function combineWithTarget() {
+    const source = selectedItem.value;
+    if (source) applyOutcome(combine(source, player.inventory[targetCursor.index.value] ?? null));
   }
 
-  function showDescription() {
-    if (!isChecking.value) return;
-    isDescribing.value = true;
-    message.value = PLACEHOLDER_DESCRIPTION;
+  /** Answers the prompt with the choice under the choice cursor. */
+  function answerPointedChoice() {
+    const choice = prompt.pointedChoice.value;
+    if (choice) answer(choice);
   }
 
-  // Items that do not combine, such as the source itself or an empty slot, do
-  // nothing and the target cursor stays; herbs that do not mix show a message.
-  function combineWith(slot: number) {
-    const target = player.inventorySlots[slot];
-    if (!selectedItem.value || !target) return;
-    const sourceId = selectedItem.value.id;
-    if (target.id === sourceId) return;
-
-    if (player.reload(sourceId, target.id) || player.stack(sourceId, target.id)) {
-      finishCombination();
-    } else if (player.isHerb(sourceId) && player.isHerb(target.id)) {
-      if (player.canMix(sourceId, target.id)) {
-        mixTargetId.value = target.id;
-        message.value = 'Will you mix the herbs?';
-      } else {
-        message.value = 'Mixing these does not seem to work.';
-      }
-    }
-  }
-
-  // Yes mixes the herbs; No goes back to choosing a target.
-  function answerMix(choice: string) {
-    if (!selectedItem.value || !mixTargetId.value) return;
-    if (choice === 'Yes') {
-      player.mix(selectedItem.value.id, mixTargetId.value);
-      finishCombination();
+  /** Yes mixes the herbs; No goes back to picking a second item. */
+  function answer(choice: PromptChoice) {
+    const source = selectedItem.value;
+    const target = player.inventory[targetCursor.index.value];
+    if (choice === PromptChoice.Yes && source && target) {
+      applyOutcome(mix(source, target));
     } else {
-      cancelMix();
+      closePrompt();
     }
   }
 
-  function cancelMix() {
-    mixTargetId.value = null;
-    message.value = null;
+  /** Types the rest of the open text faster. */
+  function hurryText() {
+    isTextHurried.value = true;
   }
 
-  // The game closes the menu and releases the item after a combination.
-  function finishCombination() {
-    mixTargetId.value = null;
-    targetSlot.value = null;
-    backOut();
+  /** Types a description; the current mode becomes the return mode. */
+  function openDescription(text: string) {
+    returnMode.value = mode.value;
+    isTextHurried.value = false;
+    description.open(text);
+    mode.value = InventoryMode.TypingText;
+  }
+
+  /** Removes the description and goes back to the return mode. */
+  function closeDescription() {
+    description.close();
+    mode.value = returnMode.value;
+  }
+
+  /** Types a prompt's question; the current mode becomes the return mode. */
+  function openPrompt(question: string, choices: PromptChoice[]) {
+    returnMode.value = mode.value;
+    isTextHurried.value = false;
+    prompt.open(question, choices);
+    mode.value = InventoryMode.TypingText;
+  }
+
+  /** Removes the prompt and goes back to the return mode. */
+  function closePrompt() {
+    prompt.close();
+    mode.value = returnMode.value;
+  }
+
+  /**
+   * Decides what comes after an action. TypeScript cannot tie the handler's
+   * kind to the outcome's kind, so the handler is widened to take any outcome.
+   */
+  function applyOutcome(outcome: Outcome) {
+    const handler = outcomeHandlers[outcome.kind] as (outcome: Outcome) => void;
+    handler(outcome);
   }
 
   return {
-    cursorSlot,
-    selectedItemId,
-    targetSlot,
-    message,
-    mixTargetId,
-    isChecking,
-    isLeavingCheck,
-    isDescribing,
-    itemUnderCursor,
-    isSelecting,
-    isChoosingTarget,
-    isConfirmingMix,
+    mode,
+    returnMode,
     selectedItem,
-    itemActions,
-    messageChoices,
-    moveCursor,
-    selectItemAt,
-    backOut,
-    clearMessage,
-    chooseAction,
-    answerMix,
-    showDescription,
-    finishCheck,
+    mainCursor,
+    targetIndex,
+    actionMenu,
+    description,
+    prompt,
+    items,
+    equippedWeapon,
+    itemUnderCursor,
+    panelText,
+    isTextHurried,
+    hasSelectedItem,
+    isGridActive,
+    isActionMenuActive,
+    isModelShown,
+    isModelFrozen,
+    isModelClosing,
+    point,
+    choose,
+    back,
+    onDescriptionTyped,
+    onPromptTyped,
+    onItemPreviewEntered,
+    onItemPreviewExited,
   };
 });

@@ -3,61 +3,74 @@ import { computed, onUnmounted, ref, watch } from 'vue';
 import panel from '../assets/ui/item-description-panel.png';
 import choiceArrow from '../assets/ui/choice-arrow.svg';
 
-// A message replaces the item name while it is typed out and held. A message
-// with choices, such as Yes and No, stays until one is clicked; a kept message,
-// such as CHECK's description, stays until it is cleared. A "\n" in a message
-// starts its second line.
 const {
   itemName = '',
-  message = null,
+  text = null,
   choices = [],
-  keepMessage = false,
-} = defineProps<{ itemName?: string; message?: string | null; choices?: string[]; keepMessage?: boolean }>();
+  choiceIndex = 0,
+  hurried = false,
+} = defineProps<{
+  itemName?: string;
+  /** Replaces the item name while it is open: a description, or a prompt's question. A "\n" starts its second line. */
+  text?: string | null;
+  /** The prompt's choices; they show once the question is typed out. */
+  choices?: string[];
+  /** The choice under the choice cursor (the arrow). */
+  choiceIndex?: number;
+  /** Types the rest of the text faster. */
+  hurried?: boolean;
+}>();
 
-const emit = defineEmits<{ 'message-end': []; choose: [choice: string] }>();
+const emit = defineEmits<{ 'description-typed': []; 'prompt-typed': []; point: [index: number]; choose: [] }>();
 
-// As in use-item-1.gif: one character every 4 frames at 60 fps, then the full
-// message stays for about 420 ms before the item name returns.
+/** As in use-item-1.gif: one character every 4 frames at 60 fps. */
 const CHARACTER_MS = (4 * 1000) / 60;
-const HOLD_MS = 420;
-// The first choice starts at column 214; each next one follows two spaces
-// after the one before, in 8-pixel characters.
+/** One character every frame, while the text is hurried. */
+const HURRIED_CHARACTER_MS = 1000 / 60;
+/** The column where the first choice starts; each next one follows two spaces after the one before. */
 const FIRST_CHOICE_COLUMN = 214;
+/** The width of one character, in game pixels. */
 const CHARACTER_WIDTH = 8;
 
 const typedLength = ref(0);
 const areChoicesShown = ref(false);
-const hoveredChoice = ref(0);
 let timer: ReturnType<typeof setTimeout> | undefined;
 
-function typeNextCharacter(text: string) {
+/** Waits one character's time, shorter while hurried, then types the next character. */
+function scheduleNextCharacter(fullText: string) {
+  timer = setTimeout(() => typeNextCharacter(fullText), hurried ? HURRIED_CHARACTER_MS : CHARACTER_MS);
+}
+
+/** Types one more character. Once the text is complete, shows the choices, if any, and says what was typed. */
+function typeNextCharacter(fullText: string) {
   typedLength.value++;
-  if (typedLength.value < text.length) {
-    timer = setTimeout(() => typeNextCharacter(text), CHARACTER_MS);
+  if (typedLength.value < fullText.length) {
+    scheduleNextCharacter(fullText);
   } else if (choices.length > 0) {
-    // The choices appear as soon as the message is typed out.
     areChoicesShown.value = true;
-  } else if (!keepMessage) {
-    timer = setTimeout(() => emit('message-end'), HOLD_MS);
+    emit('prompt-typed');
+  } else {
+    emit('description-typed');
   }
 }
 
 watch(
-  () => message,
-  text => {
+  () => text,
+  newText => {
     clearTimeout(timer);
     typedLength.value = 0;
     areChoicesShown.value = false;
-    hoveredChoice.value = 0;
-    if (text) timer = setTimeout(() => typeNextCharacter(text), CHARACTER_MS);
+    if (newText) scheduleNextCharacter(newText);
   },
 );
 
 onUnmounted(() => clearTimeout(timer));
 
-const text = computed(() => (message === null ? itemName : message.slice(0, typedLength.value)));
-const lines = computed(() => text.value.split('\n'));
+/** The item name, or the part of the open text typed so far. */
+const shownText = computed(() => (text === null ? itemName : text.slice(0, typedLength.value)));
+const lines = computed(() => shownText.value.split('\n'));
 
+/** The column of each choice. */
 const choiceColumns = computed(() => {
   let column = FIRST_CHOICE_COLUMN;
   return choices.map(choice => {
@@ -66,6 +79,12 @@ const choiceColumns = computed(() => {
     return choiceColumn;
   });
 });
+
+/** Clicking a choice points at it, then chooses it. */
+function onChoiceClick(index: number) {
+  emit('point', index);
+  emit('choose');
+}
 </script>
 
 <template>
@@ -83,7 +102,7 @@ const choiceColumns = computed(() => {
       <img
         class="item-description-panel__choice-arrow"
         :src="choiceArrow"
-        :style="{ '--choice-column': choiceColumns[hoveredChoice] }"
+        :style="{ '--choice-column': choiceColumns[choiceIndex] }"
         alt=""
       />
       <button
@@ -92,8 +111,8 @@ const choiceColumns = computed(() => {
         class="item-description-panel__text item-description-panel__choice"
         :style="{ '--choice-column': choiceColumns[index] }"
         type="button"
-        @mouseenter="hoveredChoice = index"
-        @click="emit('choose', choice)"
+        @mouseenter="emit('point', index)"
+        @click="onChoiceClick(index)"
       >
         {{ choice }}
       </button>

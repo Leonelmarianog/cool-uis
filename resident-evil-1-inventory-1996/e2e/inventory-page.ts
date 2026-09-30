@@ -52,6 +52,11 @@ export class InventoryPage {
     return this.actionMenu.getByRole('menuitem', { name: action });
   }
 
+  // The red frame on an option of the action menu.
+  optionFrame(action: string): Locator {
+    return this.actionButton(action).locator('img');
+  }
+
   async chooseAction(action: string) {
     await this.actionButton(action).click();
   }
@@ -63,6 +68,11 @@ export class InventoryPage {
 
   // K shows the checked item's description.
   async showDescription() {
+    await this.page.keyboard.press('k');
+  }
+
+  // K, the game's action button: it hurries typing and closes a complete description.
+  async confirm() {
     await this.page.keyboard.press('k');
   }
 

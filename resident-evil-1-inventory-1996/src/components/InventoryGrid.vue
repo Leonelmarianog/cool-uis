@@ -3,30 +3,50 @@ import { computed } from 'vue';
 import { ItemType } from '../types/item';
 import type { ItemView } from '../types/item-view';
 
-// `size` is the number of cells. Items fill the first cells; the rest are empty.
 const {
   size,
-  slots = [],
-  cursorSlot = 0,
-  locked = false,
-  targetSlot = null,
+  items = [],
+  cursorIndex = null,
+  hasSelectedItem = false,
+  targetIndex = null,
+  inactive = false,
 } = defineProps<{
+  /** The number of slots. */
   size: number;
-  slots?: ItemView[];
-  cursorSlot?: number;
-  locked?: boolean;
-  targetSlot?: number | null;
+  /** The items in slot order; the slots after the last item are empty. */
+  items?: ItemView[];
+  /** The main cursor's slot, or `null` while the main cursor is in another area. */
+  cursorIndex?: number | null;
+  /** The main cursor stops blinking and stays dark while an item is selected. */
+  hasSelectedItem?: boolean;
+  /** The target cursor's slot, or `null` while it is hidden. */
+  targetIndex?: number | null;
+  /** The grid ignores the mouse while another element has input. */
+  inactive?: boolean;
 }>();
 
-const emit = defineEmits<{ hover: [slot: number]; select: [slot: number] }>();
+const emit = defineEmits<{ point: [index: number]; choose: [] }>();
 
-// Always render every cell; cells beyond the given slots are empty.
-const cells = computed(() => Array.from({ length: size }, (_, index) => slots[index] ?? null));
+/** Hovering a slot points at it. */
+function onHover(index: number) {
+  if (!inactive) emit('point', index);
+}
 
-function cellLabel(slot: ItemView | null, index: number): string {
-  if (!slot) return `Slot ${index + 1}: empty`;
-  const amount = slot.amount === undefined ? '' : `, ${slot.amount}`;
-  return `Slot ${index + 1}: ${slot.name}${amount}`;
+/** Clicking a slot points at it, then chooses it. */
+function onClick(index: number) {
+  if (inactive) return;
+  emit('point', index);
+  emit('choose');
+}
+
+/** Every slot, with its item or `null` when it is empty. */
+const cells = computed(() => Array.from({ length: size }, (_, index) => items[index] ?? null));
+
+/** The slot's accessible name, such as "Slot 1: BERETTA, 15" or "Slot 2: empty". */
+function cellLabel(item: ItemView | null, index: number): string {
+  if (!item) return `Slot ${index + 1}: empty`;
+  const amount = item.amount === undefined ? '' : `, ${item.amount}`;
+  return `Slot ${index + 1}: ${item.name}${amount}`;
 }
 </script>
 
@@ -34,30 +54,30 @@ function cellLabel(slot: ItemView | null, index: number): string {
   <section class="inventory-grid" aria-label="Inventory panel">
     <ol class="inventory-grid__cells" aria-label="Inventory slots">
       <li
-        v-for="(slot, index) in cells"
+        v-for="(item, index) in cells"
         :key="index"
         class="inventory-grid__cell"
-        :aria-label="cellLabel(slot, index)"
-        @mousemove="emit('hover', index)"
-        @click="emit('select', index)"
+        :aria-label="cellLabel(item, index)"
+        @mousemove="onHover(index)"
+        @click="onClick(index)"
       >
-        <template v-if="slot">
-          <img class="inventory-grid__sprite" :src="slot.sprite" alt="" />
+        <template v-if="item">
+          <img class="inventory-grid__sprite" :src="item.sprite" alt="" />
           <span
-            v-if="slot.amount !== undefined"
+            v-if="item.amount !== undefined"
             class="inventory-grid__amount"
-            :class="{ 'inventory-grid__amount--weapon': slot.type === ItemType.Weapon }"
+            :class="{ 'inventory-grid__amount--weapon': item.type === ItemType.Weapon }"
             aria-hidden="true"
-            >{{ slot.amount }}</span
+            >{{ item.amount }}</span
           >
         </template>
         <span
-          v-if="index === cursorSlot"
+          v-if="index === cursorIndex"
           class="inventory-grid__selection"
-          :class="{ 'inventory-grid__selection--locked': locked }"
+          :class="{ 'inventory-grid__selection--locked': hasSelectedItem }"
           aria-hidden="true"
         ></span>
-        <template v-if="index === targetSlot">
+        <template v-if="index === targetIndex">
           <span class="inventory-grid__target inventory-grid__target--top" aria-hidden="true"></span>
           <span class="inventory-grid__target inventory-grid__target--bottom" aria-hidden="true"></span>
           <span class="inventory-grid__target inventory-grid__target--left" aria-hidden="true"></span>

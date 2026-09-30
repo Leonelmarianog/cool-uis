@@ -83,6 +83,40 @@ test.describe('checking items', () => {
     await expect(inventoryPage.rotateArrows, 'the model can be turned again').toHaveCount(4);
   });
 
+  test("pressing K once the Beretta's description is typed removes it and shows the rotate arrows again", async ({
+    inventoryPage,
+  }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('CHECK');
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before K').toHaveCount(4);
+    await inventoryPage.showDescription();
+    await expect(inventoryPage.descriptionPanel, 'the description is typed out before K').toContainText(
+      'loaded with 9mm bullets.',
+    );
+    await inventoryPage.confirm();
+
+    await expect(inventoryPage.rotateArrows, 'the model can be turned again').toHaveCount(4);
+  });
+
+  test('pressing K while the Beretta tumbles in shows no description', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseAction('CHECK');
+    await inventoryPage.showDescription();
+
+    await expect(inventoryPage.rotateArrows, 'the model tumbles in and can be turned').toHaveCount(4);
+    await expect(inventoryPage.descriptionPanel, 'no description is typed').not.toContainText('M92FS');
+  });
+
   test('pressing Escape while checking the Beretta brings back the action menu', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],

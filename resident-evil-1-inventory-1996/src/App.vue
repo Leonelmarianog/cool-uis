@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue';
 import ItemPreviewPanel from './components/ItemPreviewPanel.vue';
 import CharacterPortraitPanel from './components/CharacterPortraitPanel.vue';
 import HealthStatusPanel from './components/HealthStatusPanel.vue';
@@ -9,18 +8,14 @@ import MenuPanel from './components/MenuPanel.vue';
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue';
 import ItemActionMenu from './components/ItemActionMenu.vue';
 import ItemModelViewer from './components/ItemModelViewer.vue';
+import { useKeyboard } from './input/keyboard';
 import { useInventoryStore } from './stores/inventory';
 import { usePlayerStore } from './stores/player';
 
 const player = usePlayerStore();
 const inventory = useInventoryStore();
 
-function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') inventory.backOut();
-}
-
-onMounted(() => window.addEventListener('keydown', onKeydown));
-onUnmounted(() => window.removeEventListener('keydown', onKeydown));
+useKeyboard();
 </script>
 
 <template>
@@ -30,19 +25,21 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
         <Transition enter-active-class="item-action-menu--opening" leave-active-class="item-action-menu--closing">
           <!-- v-show keeps the menu's framed option while CHECK hides it. -->
           <ItemActionMenu
-            v-if="inventory.isSelecting"
-            v-show="!inventory.isChecking"
-            :options="inventory.itemActions"
-            :inactive="inventory.isChoosingTarget"
-            @choose="inventory.chooseAction"
+            v-if="inventory.actionMenu.isOpen"
+            v-show="!inventory.isModelShown"
+            :options="inventory.actionMenu.options"
+            :option-index="inventory.actionMenu.cursor.index"
+            :inactive="!inventory.isActionMenuActive"
+            @point="inventory.point"
+            @choose="inventory.choose"
           />
         </Transition>
         <ItemModelViewer
-          v-if="inventory.isChecking"
-          :frozen="inventory.isDescribing"
-          :leaving="inventory.isLeavingCheck"
-          @describe="inventory.showDescription"
-          @left="inventory.finishCheck"
+          v-if="inventory.isModelShown"
+          :frozen="inventory.isModelFrozen"
+          :leaving="inventory.isModelClosing"
+          @entered="inventory.onItemPreviewEntered"
+          @exited="inventory.onItemPreviewExited"
         />
       </ItemPreviewPanel>
       <div class="project-shell__status">
@@ -52,29 +49,33 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
           :recoveries-used="player.recoveriesUsed"
           @cycle="player.cycleHealthStatus"
         />
-        <EquippedWeaponPanel class="project-shell__weapon" :weapon="player.equippedWeapon" />
+        <EquippedWeaponPanel class="project-shell__weapon" :weapon="inventory.equippedWeapon" />
       </div>
       <div class="project-shell__items">
         <MenuPanel class="project-shell__menu" />
         <InventoryGrid
           class="project-shell__grid"
           :size="player.inventorySize"
-          :slots="player.inventorySlots"
-          :cursor-slot="inventory.cursorSlot"
-          :locked="inventory.isSelecting"
-          :target-slot="inventory.targetSlot"
-          @hover="inventory.moveCursor"
-          @select="inventory.selectItemAt"
+          :items="inventory.items"
+          :cursor-index="inventory.mainCursor.gridIndex"
+          :has-selected-item="inventory.hasSelectedItem"
+          :target-index="inventory.targetIndex"
+          :inactive="!inventory.isGridActive"
+          @point="inventory.point"
+          @choose="inventory.choose"
         />
       </div>
       <ItemDescriptionPanel
         class="project-shell__description"
         :item-name="inventory.itemUnderCursor?.name"
-        :message="inventory.message"
-        :choices="inventory.messageChoices"
-        :keep-message="inventory.isDescribing"
-        @message-end="inventory.clearMessage"
-        @choose="inventory.answerMix"
+        :text="inventory.panelText"
+        :choices="inventory.prompt.choices"
+        :choice-index="inventory.prompt.cursor.index"
+        :hurried="inventory.isTextHurried"
+        @description-typed="inventory.onDescriptionTyped"
+        @prompt-typed="inventory.onPromptTyped"
+        @point="inventory.point"
+        @choose="inventory.choose"
       />
     </div>
   </main>
