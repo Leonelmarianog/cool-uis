@@ -20,7 +20,7 @@ Arrow-key navigation is planned.
 | Feature / action | Status | Behavior |
 | --- | --- | --- |
 | View inventory | Implemented | The character's slots (8 for Jill) in two columns, with item images and empty slots. |
-| Move the cursor | Implemented | Hovering a slot moves the blinking selection frame to it. |
+| Move the cursor | Implemented | There is one cursor. Hovering a slot moves the blinking selection frame to it; hovering a top menu button moves the cursor there instead, the grid loses its frame and the bottom panel shows no name. The top menu takes the cursor only while no item is selected. |
 | View item name | Implemented | The bottom panel shows the name of the item under the cursor; empty slots show no name. |
 | View item amounts | Implemented | Weapons show loaded rounds on the left; ammunition shows its stack amount on the right. Other items have no amount. |
 | Open item actions | Implemented | Clicking an occupied slot selects the item: the cursor locks on it, the frame stops blinking, and the action menu grows open in the preview panel. Empty slots do nothing. |
@@ -36,10 +36,10 @@ Arrow-key navigation is planned.
 
 | Feature / action | Status | Behavior |
 | --- | --- | --- |
-| Open map — MAP | Partial | The button has its hover styling and emits `map`; no map screen is connected. |
-| Open files — FILE | Partial | The button has its hover styling and emits `file`; no file browser is connected. |
-| Leave inventory — EXIT | Partial | The button has its hover styling and emits `exit`; nothing leaves the inventory. |
-| Open the item box — dash button | Planned | The button does nothing yet; it will open the item box. |
+| Open map — MAP | Partial | The cursor highlights the button; choosing it (click or K) logs that the map screen is not built yet. |
+| Open files — FILE | Partial | The cursor highlights the button; choosing it logs that the files screen is not built yet. |
+| Leave inventory — EXIT | Partial | The cursor highlights the button; choosing it logs that there is no game to go back to yet. |
+| Open the item box — dash button | Partial | The cursor highlights the button; choosing it logs that the item box is not built yet. |
 
 ## Display and review features
 

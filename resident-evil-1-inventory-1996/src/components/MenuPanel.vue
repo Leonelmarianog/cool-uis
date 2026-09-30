@@ -1,25 +1,46 @@
 <script setup lang="ts">
 import panel from '../assets/ui/menu-panel.png';
+import { CursorArea } from '../types/cursor-area';
+import { TOP_MENU_OPTIONS, TopMenuOption } from '../types/top-menu-option';
 
-defineEmits<{ map: []; file: []; exit: [] }>();
+const { cursorIndex = null, inactive = false } = defineProps<{
+  /** The main cursor's button, or `null` while the main cursor is in another area. */
+  cursorIndex?: number | null;
+  /** The menu ignores the mouse while another element has input. */
+  inactive?: boolean;
+}>();
+
+const emit = defineEmits<{ point: [index: number, area: CursorArea]; choose: [] }>();
+
+/** Hovering a button points at it. */
+function onHover(index: number) {
+  if (!inactive) emit('point', index, CursorArea.TopMenu);
+}
+
+/** Clicking a button points at it, then chooses it. */
+function onClick(index: number) {
+  if (inactive) return;
+  emit('point', index, CursorArea.TopMenu);
+  emit('choose');
+}
 </script>
 
 <template>
   <nav class="menu-panel" aria-label="Inventory menu">
     <img class="menu-panel__artwork" :src="panel" alt="" />
     <div class="menu-panel__grid">
-      <button class="menu-panel__button" type="button" @click="$emit('map')">
-        <span class="menu-panel__label">MAP</span>
-      </button>
-      <button class="menu-panel__button" type="button" @click="$emit('file')">
-        <span class="menu-panel__label">FILE</span>
-      </button>
-      <!-- Does nothing yet; it will open the item box. -->
-      <button class="menu-panel__button" type="button" aria-label="Empty">
-        <span class="menu-panel__dash"></span>
-      </button>
-      <button class="menu-panel__button" type="button" @click="$emit('exit')">
-        <span class="menu-panel__label">EXIT</span>
+      <button
+        v-for="(option, index) in TOP_MENU_OPTIONS"
+        :key="option"
+        class="menu-panel__button"
+        :class="{ 'menu-panel__button--pointed': index === cursorIndex }"
+        type="button"
+        :aria-label="option === TopMenuOption.ItemBox ? 'Item box' : undefined"
+        @mousemove="onHover(index)"
+        @click="onClick(index)"
+      >
+        <span v-if="option === TopMenuOption.ItemBox" class="menu-panel__dash"></span>
+        <span v-else class="menu-panel__label">{{ option }}</span>
       </button>
     </div>
   </nav>
@@ -83,11 +104,10 @@ defineEmits<{ map: []; file: []; exit: [] }>();
   background: currentColor;
 }
 
-@media (hover: hover) {
-  .menu-panel__button:hover {
-    color: #c5242c;
-    background-position: 0 100%;
-  }
+/* The button under the main cursor. */
+.menu-panel__button--pointed {
+  color: #c5242c;
+  background-position: 0 100%;
 }
 
 .menu-panel__button:focus-visible {

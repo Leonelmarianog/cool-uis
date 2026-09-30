@@ -23,16 +23,16 @@ pixel-art images and scaled by whole screen pixels, so it stays sharp.
 
 ## Controls
 
-| Input           | What it does                                                            |
-| --------------- | ----------------------------------------------------------------------- |
-| Mouse hover     | Moves the cursor of the part that has input (grid, action menu, Yes/No) |
-| Click           | Chooses what is under the mouse                                         |
-| K               | Chooses; hurries typing text; closes a complete description             |
-| Escape          | Steps back once                                                         |
-| W / A / S / D   | CHECK: turns the model (or hold the red arrows)                         |
-| Q / E           | CHECK: rolls the model                                                  |
-| Z / C           | CHECK: zooms in and out                                                 |
-| Health display  | Click it to cycle the health statuses (a demo control)                  |
+| Input          | What it does                                                                      |
+| -------------- | --------------------------------------------------------------------------------- |
+| Mouse hover    | Moves the cursor of the part that has input (grid, top menu, action menu, Yes/No) |
+| Click          | Chooses what is under the mouse                                                   |
+| K              | Chooses; hurries typing text; closes a complete description                       |
+| Escape         | Steps back once                                                                   |
+| W / A / S / D  | CHECK: turns the model (or hold the red arrows)                                   |
+| Q / E          | CHECK: rolls the model                                                            |
+| Z / C          | CHECK: zooms in and out                                                           |
+| Health display | Click it to cycle the health statuses (a demo control)                            |
 
 ## Development
 

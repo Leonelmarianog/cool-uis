@@ -24,8 +24,9 @@ names, so the same code can be the base of other clones.
 - **Grid**: the item slots.
   Code: `InventoryGrid`.
 - **Top menu**: the buttons above the grid.
-  RE1: MAP, FILE, the box and EXIT.
-  Code: `MenuPanel`. Not interactive yet.
+  RE1: MAP, FILE, the box (a dash) and EXIT.
+  Code: `MenuPanel`; the buttons are `TopMenuOption`. Choosing one only logs
+  to the console until its screen exists.
 - **Slot**: a position in the grid.
   Code: an index, from 0.
 - **Item**: the contents of a slot. Slots stay in place; when an item goes
@@ -41,10 +42,13 @@ names, so the same code can be the base of other clones.
   built on one.
 - **Main cursor**: the one cursor of the inventory screen. Its position is an
   **area** and an **index** in that area. It shows only in its current area.
-  RE1: the red frame on a slot. It blinks, and stays dark while an item is
-  selected.
+  RE1: the red frame on a slot, or the red lettering on a top menu button. On
+  a slot it blinks, and stays dark while an item is selected. While it is on
+  the top menu, the grid has no frame and the description panel shows no item
+  name.
   Code: `useMainCursor()`; areas are `CursorArea.Grid` and
-  `CursorArea.TopMenu` (the top menu area is not built yet).
+  `CursorArea.TopMenu`. The grid and the top menu send their area with
+  `point(index, area)`.
 - **Target cursor**: points at the second item for COMBN. It stays inside the
   grid.
   RE1: the four green arrows.

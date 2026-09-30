@@ -52,7 +52,13 @@ useKeyboard();
         <EquippedWeaponPanel class="project-shell__weapon" :weapon="inventory.equippedWeapon" />
       </div>
       <div class="project-shell__items">
-        <MenuPanel class="project-shell__menu" />
+        <MenuPanel
+          class="project-shell__menu"
+          :cursor-index="inventory.mainCursor.topMenuIndex"
+          :inactive="!inventory.isTopMenuActive"
+          @point="inventory.point"
+          @choose="inventory.choose"
+        />
         <InventoryGrid
           class="project-shell__grid"
           :size="player.inventorySize"
