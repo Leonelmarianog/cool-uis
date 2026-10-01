@@ -84,7 +84,7 @@ The source is the item COMBN was chosen on; the target is the second item.
 
 Rules stated by the user:
 
-- Escape while choosing a target goes back to the menu, COMBN still framed.
+- A while choosing a target goes back to the menu, COMBN still framed.
 - Choosing the source itself or an unrelated item does nothing: no message, and
   the target cursor stays.
 - Reloading works both ways: a weapon and its ammunition, in either order, move
@@ -97,8 +97,7 @@ Rules stated by the user:
 - Herb mixes: G+G, G+R, G+B, then (G+R)+B and (G+B)+R, both making G+R+B. Red
   and blue cannot be mixed with each other; every mix needs a green. Herbs
   that do not mix show "Mixing these does not seem to work."
-- "Will you mix the herbs?": Yes mixes; No or Escape returns to choosing a
-  target.
+- "Will you mix the herbs?": Yes mixes; No or A returns to choosing a target.
   The choices appear as soon as the question is typed out; the user dropped
   the recording's 0.85 s wait.
 - After a successful combine, the menu closes and the item is released.
@@ -121,20 +120,19 @@ CHECK shows the item as a 3D model in the preview area, built with Three.js.
   shrinks back to a point, the area goes dark, and the menu opens again with
   CHECK framed and the item still selected.
 
-Controls (stated by the user). CHECK is the one place that uses the keyboard;
-the rest of the inventory uses only left click and Escape.
+Controls (stated by the user). The inventory uses only the keyboard; the keys
+follow a PS1 pad laid on the keyboard.
 
-- W / A / S / D, or clicking the red arrows, rotate the model up, left, down
-  and right.
-- Q rotates it clockwise and E counter-clockwise.
-- Z zooms in and C zooms out.
-- Holding a key, or holding the mouse button on an arrow, keeps the model
-  moving until it is released.
-- K types the description into the description panel. While the description
+- The arrow keys rotate the model up, down, left and right; the red arrow of
+  that direction lights up.
+- Z rotates it clockwise and C counter-clockwise.
+- X zooms in and V zooms out.
+- Holding a key keeps the model moving until it is released.
+- S types the description into the description panel. While the description
   is shown, the model is frozen in its current position and the controls do
-  nothing. The description stays until Escape.
-- Escape with the description shown removes it and gives the model's controls
-  back. Escape without it leaves CHECK and returns to the menu.
+  nothing. The description stays until S or A.
+- A with the description shown removes it and gives the model's controls
+  back. A without it leaves CHECK and returns to the menu.
 
 Placeholders (stated by the user): until real models and texts exist, every
 item uses the same very low-poly model and the Beretta's description from
