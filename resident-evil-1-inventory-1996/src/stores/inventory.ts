@@ -196,7 +196,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     handlers[mode.value].back?.();
   }
 
-  /** The description panel finished typing a description; K or Escape can close it now. */
+  /** The description panel finished typing a description; S or A can close it now. */
   function onDescriptionTyped() {
     mode.value = InventoryMode.ReadingDescription;
   }

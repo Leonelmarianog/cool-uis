@@ -6,9 +6,9 @@ export const InventoryMode = {
   ChoosingAction: 'choosing-action',
   /** Picking the second item for COMBN with the target cursor. */
   ChoosingTarget: 'choosing-target',
-  /** Waiting while a description or a prompt's question types; K hurries it. */
+  /** Waiting while a description or a prompt's question types; S hurries it. */
   TypingText: 'typing-text',
-  /** Reading a complete description; K or Escape closes it. */
+  /** Reading a complete description; S or A closes it. */
   ReadingDescription: 'reading-description',
   /** Answering a question, such as "Will you mix the herbs?". */
   AnsweringPrompt: 'answering-prompt',
