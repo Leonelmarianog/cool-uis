@@ -9,7 +9,7 @@ test.describe('checking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
 
     await expect(inventoryPage.itemModel, 'the 3D model shows').toBeVisible();
@@ -24,21 +24,21 @@ test.describe('checking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
 
     await expect(inventoryPage.rotateArrows, 'the four arrows show').toHaveCount(4);
   });
 
-  test('pressing K while checking the Beretta shows its description', async ({ inventoryPage }) => {
+  test('pressing S while checking the Beretta shows its description', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
-    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before K').toHaveCount(4);
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before S').toHaveCount(4);
     await inventoryPage.showDescription();
 
     await expect(inventoryPage.descriptionPanel, 'the description is typed out').toContainText(
@@ -46,21 +46,21 @@ test.describe('checking items', () => {
     );
   });
 
-  test('pressing K while checking the Beretta hides the rotate arrows', async ({ inventoryPage }) => {
+  test('pressing S while checking the Beretta hides the rotate arrows', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
-    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before K').toHaveCount(4);
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before S').toHaveCount(4);
     await inventoryPage.showDescription();
 
     await expect(inventoryPage.rotateArrows, 'the model can no longer be turned').toHaveCount(0);
   });
 
-  test("pressing Escape while the Beretta's description is shown removes the description and shows the rotate arrows again", async ({
+  test("pressing A while the Beretta's description is shown removes the description and shows the rotate arrows again", async ({
     inventoryPage,
   }) => {
     await inventoryPage.open({
@@ -68,11 +68,11 @@ test.describe('checking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
-    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before K').toHaveCount(4);
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before S').toHaveCount(4);
     await inventoryPage.showDescription();
-    await expect(inventoryPage.descriptionPanel, 'the description shows before Escape').toContainText(
+    await expect(inventoryPage.descriptionPanel, 'the description shows before A').toContainText(
       'loaded with 9mm bullets.',
     );
     await inventoryPage.backOut();
@@ -83,7 +83,7 @@ test.describe('checking items', () => {
     await expect(inventoryPage.rotateArrows, 'the model can be turned again').toHaveCount(4);
   });
 
-  test("pressing K once the Beretta's description is typed removes it and shows the rotate arrows again", async ({
+  test("pressing S once the Beretta's description is typed removes it and shows the rotate arrows again", async ({
     inventoryPage,
   }) => {
     await inventoryPage.open({
@@ -91,11 +91,11 @@ test.describe('checking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
-    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before K').toHaveCount(4);
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before S').toHaveCount(4);
     await inventoryPage.showDescription();
-    await expect(inventoryPage.descriptionPanel, 'the description is typed out before K').toContainText(
+    await expect(inventoryPage.descriptionPanel, 'the description is typed out before S').toContainText(
       'loaded with 9mm bullets.',
     );
     await inventoryPage.confirm();
@@ -103,13 +103,13 @@ test.describe('checking items', () => {
     await expect(inventoryPage.rotateArrows, 'the model can be turned again').toHaveCount(4);
   });
 
-  test('pressing K while the Beretta tumbles in shows no description', async ({ inventoryPage }) => {
+  test('pressing S while the Beretta tumbles in shows no description', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
     await inventoryPage.showDescription();
 
@@ -117,15 +117,15 @@ test.describe('checking items', () => {
     await expect(inventoryPage.descriptionPanel, 'no description is typed').not.toContainText('M92FS');
   });
 
-  test('pressing Escape while checking the Beretta brings back the action menu', async ({ inventoryPage }) => {
+  test('pressing A while checking the Beretta brings back the action menu', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
-    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before Escape').toHaveCount(4);
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before A').toHaveCount(4);
     await inventoryPage.backOut();
 
     await expect(inventoryPage.itemModel, 'the model tumbles out').toBeHidden();

@@ -21,7 +21,7 @@ const {
   hurried?: boolean;
 }>();
 
-const emit = defineEmits<{ 'description-typed': []; 'prompt-typed': []; point: [index: number]; choose: [] }>();
+const emit = defineEmits<{ 'description-typed': []; 'prompt-typed': [] }>();
 
 /** As in use-item-1.gif: one character every 4 frames at 60 fps. */
 const CHARACTER_MS = (4 * 1000) / 60;
@@ -79,12 +79,6 @@ const choiceColumns = computed(() => {
     return choiceColumn;
   });
 });
-
-/** Clicking a choice points at it, then chooses it. */
-function onChoiceClick(index: number) {
-  emit('point', index);
-  emit('choose');
-}
 </script>
 
 <template>
@@ -111,8 +105,6 @@ function onChoiceClick(index: number) {
         class="item-description-panel__text item-description-panel__choice"
         :style="{ '--choice-column': choiceColumns[index] }"
         type="button"
-        @mouseenter="emit('point', index)"
-        @click="onChoiceClick(index)"
       >
         {{ choice }}
       </button>
@@ -166,7 +158,6 @@ function onChoiceClick(index: number) {
 .item-description-panel__choice {
   top: calc(21 * var(--game-pixel) - 0.14em);
   left: calc(var(--choice-column) * var(--game-pixel));
-  cursor: pointer;
 }
 
 /* Rows 3–7 of the choice's capitals, in the column before them; the image adds

@@ -12,14 +12,6 @@ const {
   /** Disables the menu while another element has input, such as the target cursor. */
   inactive?: boolean;
 }>();
-
-const emit = defineEmits<{ point: [index: number]; choose: [] }>();
-
-/** Clicking an option points at it, then chooses it. */
-function onClick(index: number) {
-  emit('point', index);
-  emit('choose');
-}
 </script>
 
 <template>
@@ -31,8 +23,6 @@ function onClick(index: number) {
       type="button"
       role="menuitem"
       :disabled="inactive"
-      @mouseenter="inactive || emit('point', index)"
-      @click="onClick(index)"
     >
       <span class="item-action-menu__label">{{ option }}</span>
       <img v-if="index === optionIndex" class="item-action-menu__frame" :src="frame" alt="" />
@@ -65,7 +55,6 @@ function onClick(index: number) {
   color: #e3e3e5;
   background: url('../assets/ui/item-action-button.png') 0 0 / 100% 100%;
   image-rendering: pixelated;
-  cursor: pointer;
 }
 
 .item-action-menu__label {

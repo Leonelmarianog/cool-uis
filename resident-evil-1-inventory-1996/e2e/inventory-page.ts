@@ -1,6 +1,17 @@
 import type { Locator, Page } from '@playwright/test';
 import type { PlayerState } from '../src/types/player';
 
+/** The item grid's columns. */
+const GRID_COLUMNS = 2;
+
+/** How to reach each top menu button from the grid: the slot in its column, then how many times to press ↑. */
+const MENU_BUTTON_PATHS: Record<string, { slot: number; ups: number }> = {
+  MAP: { slot: 1, ups: 2 },
+  FILE: { slot: 2, ups: 2 },
+  'Item box': { slot: 1, ups: 1 },
+  EXIT: { slot: 2, ups: 1 },
+};
+
 // The inventory screen, as the tests see and use it.
 export class InventoryPage {
   readonly page: Page;
@@ -12,7 +23,7 @@ export class InventoryPage {
   readonly rotateArrows: Locator;
   // Shows the equipped weapon's sprite, named after the weapon ("BERETTA").
   readonly equippedWeaponPanel: Locator;
-  // Named after the health status, as in "Health: Caution. Click to cycle health status.".
+  // Named after the health status, as in "Health: Caution.".
   readonly healthScreen: Locator;
 
   constructor(page: Page) {
@@ -22,7 +33,7 @@ export class InventoryPage {
     this.itemModel = page.getByLabel('Item model');
     this.rotateArrows = page.getByRole('button', { name: /^Rotate / });
     this.equippedWeaponPanel = page.getByRole('region', { name: 'Equipped weapon panel' });
-    this.healthScreen = page.getByRole('button', { name: /^Health:/ });
+    this.healthScreen = page.getByRole('img', { name: /^Health:/ });
   }
 
   // Opens the app with parts of the player's starting state replaced (see
@@ -67,13 +78,64 @@ export class InventoryPage {
     return this.actionButton(action).locator('img');
   }
 
-  async chooseAction(action: string) {
-    await this.actionButton(action).click();
+  /** Presses a key the given number of times. */
+  async press(key: string, times = 1) {
+    for (let count = 0; count < times; count++) await this.page.keyboard.press(key);
   }
 
-  // Answers a question in the description panel, such as "Will you mix the herbs?".
+  /**
+   * Moves the grid cursor with input to the slot with the arrow keys: the
+   * target cursor while COMBN shows it, otherwise the main cursor.
+   */
+  async pointAt(number: number) {
+    const from = await this.page
+      .getByLabel('Inventory slots')
+      .getByRole('listitem')
+      .evaluateAll(cells => {
+        const target = cells.findIndex(cell => cell.querySelector('.inventory-grid__target'));
+        return target === -1 ? cells.findIndex(cell => cell.querySelector('.inventory-grid__selection')) : target;
+      });
+    if (from === -1) throw new Error('No cursor is in the grid.');
+    const to = number - 1;
+    const rows = Math.floor(to / GRID_COLUMNS) - Math.floor(from / GRID_COLUMNS);
+    const columns = (to % GRID_COLUMNS) - (from % GRID_COLUMNS);
+    await this.press(rows > 0 ? 'ArrowDown' : 'ArrowUp', Math.abs(rows));
+    await this.press(columns > 0 ? 'ArrowRight' : 'ArrowLeft', Math.abs(columns));
+  }
+
+  /** Moves to the slot and presses S: it selects the item, or takes it as COMBN's second item. */
+  async chooseSlot(number: number) {
+    await this.pointAt(number);
+    await this.confirm();
+  }
+
+  /** Moves the main cursor from the grid up to a top menu button: MAP, FILE, EXIT or "Item box". */
+  async pointAtMenuButton(name: string) {
+    const path = MENU_BUTTON_PATHS[name];
+    await this.pointAt(path.slot);
+    await this.press('ArrowUp', path.ups);
+  }
+
+  /** Moves the red frame to the action with ↑ / ↓, then presses S. */
+  async chooseAction(action: string) {
+    const options = this.actionMenu.getByRole('menuitem');
+    const names = (await options.allTextContents()).map(name => name.trim());
+    const framed = await options.evaluateAll(items => items.findIndex(item => item.querySelector('img')));
+    const steps = names.indexOf(action) - framed;
+    await this.press(steps > 0 ? 'ArrowDown' : 'ArrowUp', Math.abs(steps));
+    await this.confirm();
+  }
+
+  /**
+   * Answers a question in the description panel, such as "Will you mix the
+   * herbs?". It waits for the choices: S before them only hurries the question.
+   * The arrow starts on the first choice.
+   */
   async answer(choice: string) {
-    await this.descriptionPanel.getByRole('button', { name: choice }).click();
+    await this.descriptionPanel.getByRole('button', { name: choice }).waitFor();
+    const choices = (await this.descriptionPanel.getByRole('button').allTextContents()).map(name => name.trim());
+    await this.press('ArrowRight', choices.indexOf(choice));
+    await this.confirm();
   }
 
   /** S shows the checked item's description. */
@@ -89,5 +151,10 @@ export class InventoryPage {
   /** A steps back once. */
   async backOut() {
     await this.page.keyboard.press('a');
+  }
+
+  /** D shows the next health status. */
+  async cycleHealth() {
+    await this.page.keyboard.press('d');
   }
 }

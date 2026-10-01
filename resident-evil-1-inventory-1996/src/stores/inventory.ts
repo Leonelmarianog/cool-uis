@@ -51,7 +51,6 @@ const MODEL_MODES: InventoryMode[] = [
 
 /** What each intent does in one mode. A missing handler means the intent does nothing in that mode. */
 type ModeHandlers = {
-  point?: (index: number, area: CursorArea) => void;
   move?: (direction: Direction) => void;
   choose?: () => void;
   back?: () => void;
@@ -108,35 +107,26 @@ export const useInventoryStore = defineStore('inventory', () => {
   /** The text the description panel types in place of the item name: the prompt's question or the description. */
   const panelText = computed(() => prompt.question.value ?? description.text.value);
   const hasSelectedItem = computed(() => selectedItem.value !== null);
-  /** The grid takes input while the player browses or picks a target. */
-  const isGridActive = computed(
-    () => mode.value === InventoryMode.Browsing || mode.value === InventoryMode.ChoosingTarget,
-  );
   /** The action menu takes input only while the player picks an option; it stays open under a description from USE. */
   const isActionMenuActive = computed(() => mode.value === InventoryMode.ChoosingAction);
-  /** The top menu takes input only while the player browses. */
-  const isTopMenuActive = computed(() => mode.value === InventoryMode.Browsing);
   /** The model shows in place of the action menu from the moment it tumbles in until it has spun out. */
   const isModelShown = computed(() => MODEL_MODES.includes(modeBelowText.value));
   /** The model stays still while its item description is open. */
   const isModelFrozen = computed(() => isTextOpen.value && modeBelowText.value === InventoryMode.ViewingModel);
   const isModelClosing = computed(() => mode.value === InventoryMode.ClosingModel);
 
-  /** What `point`, `move`, `choose` and `back` do in each mode. */
+  /** What `move`, `choose` and `back` do in each mode. */
   const handlers: Record<InventoryMode, ModeHandlers> = {
     [InventoryMode.Browsing]: {
-      point: (index, area) => mainCursor.point(area, index),
       move: direction => mainCursor.move(direction, player.inventorySize),
       choose: () => areaHandlers[mainCursor.area.value](),
     },
     [InventoryMode.ChoosingAction]: {
-      point: index => actionMenu.cursor.point(index),
       move: direction => actionMenu.move(direction),
       choose: () => choosePointedOption(),
       back: () => releaseItem(),
     },
     [InventoryMode.ChoosingTarget]: {
-      point: index => targetCursor.point(index),
       move: direction => moveTargetCursor(direction),
       choose: () => combineWithTarget(),
       back: () => setMode(InventoryMode.ChoosingAction),
@@ -149,7 +139,6 @@ export const useInventoryStore = defineStore('inventory', () => {
       back: () => closeDescription(),
     },
     [InventoryMode.AnsweringPrompt]: {
-      point: index => prompt.cursor.point(index),
       move: direction => prompt.move(direction),
       choose: () => answerPointedChoice(),
       back: () => closePrompt(),
@@ -191,15 +180,6 @@ export const useInventoryStore = defineStore('inventory', () => {
     [OutcomeKind.Prompt]: outcome => openPrompt(outcome.question, outcome.choices),
     [OutcomeKind.Nothing]: () => {},
   };
-
-  /**
-   * Moves the cursor of the element with input to the given index. `area` says
-   * which part of the main cursor the index is in; only the grid and the top
-   * menu send it, and only browsing reads it.
-   */
-  function point(index: number, area: CursorArea = CursorArea.Grid) {
-    handlers[mode.value].point?.(index, area);
-  }
 
   /** Moves the cursor of the element with input one step. */
   function move(direction: Direction) {
@@ -363,13 +343,10 @@ export const useInventoryStore = defineStore('inventory', () => {
     panelText,
     isTextHurried,
     hasSelectedItem,
-    isGridActive,
     isActionMenuActive,
-    isTopMenuActive,
     isModelShown,
     isModelFrozen,
     isModelClosing,
-    point,
     move,
     choose,
     back,

@@ -1,28 +1,11 @@
 <script setup lang="ts">
 import panel from '../assets/ui/menu-panel.png';
-import { CursorArea } from '../types/cursor-area';
 import { TOP_MENU_OPTIONS, TopMenuOption } from '../types/top-menu-option';
 
-const { cursorIndex = null, inactive = false } = defineProps<{
+const { cursorIndex = null } = defineProps<{
   /** The main cursor's button, or `null` while the main cursor is in another area. */
   cursorIndex?: number | null;
-  /** The menu ignores the mouse while another element has input. */
-  inactive?: boolean;
 }>();
-
-const emit = defineEmits<{ point: [index: number, area: CursorArea]; choose: [] }>();
-
-/** Hovering a button points at it. */
-function onHover(index: number) {
-  if (!inactive) emit('point', index, CursorArea.TopMenu);
-}
-
-/** Clicking a button points at it, then chooses it. */
-function onClick(index: number) {
-  if (inactive) return;
-  emit('point', index, CursorArea.TopMenu);
-  emit('choose');
-}
 </script>
 
 <template>
@@ -36,8 +19,6 @@ function onClick(index: number) {
         :class="{ 'menu-panel__button--pointed': index === cursorIndex }"
         type="button"
         :aria-label="option === TopMenuOption.ItemBox ? 'Item box' : undefined"
-        @mousemove="onHover(index)"
-        @click="onClick(index)"
       >
         <span v-if="option === TopMenuOption.ItemBox" class="menu-panel__dash"></span>
         <span v-else class="menu-panel__label">{{ option }}</span>
@@ -80,7 +61,6 @@ function onClick(index: number) {
   color: #000;
   background: url('../assets/ui/menu-button.png') 0 0 / 100% 200%;
   image-rendering: pixelated;
-  cursor: pointer;
 }
 
 .menu-panel__label {
