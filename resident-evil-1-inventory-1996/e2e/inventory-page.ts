@@ -31,7 +31,7 @@ export class InventoryPage {
     this.actionMenu = page.getByRole('menu', { name: 'Item actions' });
     this.descriptionPanel = page.getByRole('region', { name: 'Item description panel' });
     this.itemModel = page.getByLabel('Item model');
-    this.rotateArrows = page.getByRole('button', { name: /^Rotate / });
+    this.rotateArrows = page.getByRole('img', { name: /^Rotate / });
     this.equippedWeaponPanel = page.getByRole('region', { name: 'Equipped weapon panel' });
     this.healthScreen = page.getByRole('img', { name: /^Health:/ });
   }
@@ -61,6 +61,11 @@ export class InventoryPage {
   // The red frame on a slot of the grid.
   slotFrame(number: number): Locator {
     return this.slot(number).locator('.inventory-grid__selection');
+  }
+
+  /** One of CHECK's red arrows: up, down, left or right. */
+  rotateArrow(direction: string): Locator {
+    return this.page.getByRole('img', { name: `Rotate ${direction}` });
   }
 
   // A button of the top menu: MAP, FILE, EXIT, or the dash button ("Item box").

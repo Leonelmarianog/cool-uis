@@ -46,18 +46,19 @@ const NEAREST = 1.1;
 
 type Control = 'up' | 'down' | 'left' | 'right' | 'clockwise' | 'counter-clockwise' | 'zoom-in' | 'zoom-out';
 
+/** The control each key holds, by the key's lowercase name. */
 const KEY_CONTROLS: Record<string, Control> = {
-  w: 'up',
-  a: 'left',
-  s: 'down',
-  d: 'right',
-  q: 'clockwise',
-  e: 'counter-clockwise',
-  z: 'zoom-in',
-  c: 'zoom-out',
+  arrowup: 'up',
+  arrowdown: 'down',
+  arrowleft: 'left',
+  arrowright: 'right',
+  z: 'clockwise',
+  c: 'counter-clockwise',
+  x: 'zoom-in',
+  v: 'zoom-out',
 };
 
-// The red arrows around the model, which can also be held down with the mouse.
+// The red arrows around the model; each lights up while its key is held.
 const ARROWS = ['up', 'down', 'left', 'right'] as const;
 
 // The camera looks down the Z axis, so these are the screen's axes.
@@ -104,7 +105,7 @@ function release(control: Control) {
 }
 
 function onKeydown(event: KeyboardEvent) {
-  if (!isControllable.value) return;
+  if (!isControllable.value || event.ctrlKey || event.altKey || event.metaKey) return;
   const control = KEY_CONTROLS[event.key.toLowerCase()];
   if (!control) return;
   event.preventDefault();
@@ -246,21 +247,14 @@ onUnmounted(() => {
   <div class="item-model-viewer">
     <canvas ref="canvas" class="item-model-viewer__canvas" aria-label="Item model"></canvas>
     <template v-if="isControllable">
-      <!-- mousedown.prevent keeps focus off the arrow, so the next key press
-           does not draw a focus outline around it. -->
-      <button
+      <span
         v-for="arrow in ARROWS"
         :key="arrow"
         class="item-model-viewer__arrow"
         :class="[`item-model-viewer__arrow--${arrow}`, { 'item-model-viewer__arrow--lit': heldControls.has(arrow) }]"
-        type="button"
+        role="img"
         :aria-label="`Rotate ${arrow}`"
-        @mousedown.prevent
-        @pointerdown="hold(arrow)"
-        @pointerup="release(arrow)"
-        @pointerleave="release(arrow)"
-        @pointercancel="release(arrow)"
-      ></button>
+      ></span>
     </template>
   </div>
 </template>
@@ -286,11 +280,8 @@ onUnmounted(() => {
    dark, and light up while the model turns their way (check-item.gif). */
 .item-model-viewer__arrow {
   position: absolute;
-  padding: 0;
-  border: 0;
   background: 0 100% / 100% 200% no-repeat;
   image-rendering: pixelated;
-  cursor: pointer;
 }
 
 .item-model-viewer__arrow--lit {

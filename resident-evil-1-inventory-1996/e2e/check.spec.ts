@@ -131,4 +131,35 @@ test.describe('checking items', () => {
     await expect(inventoryPage.itemModel, 'the model tumbles out').toBeHidden();
     await expect(inventoryPage.actionMenu, 'the menu comes back').toBeVisible();
   });
+
+  test('holding ↑ while checking the Beretta lights the up arrow', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('CHECK');
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before ↑').toHaveCount(4);
+    await inventoryPage.page.keyboard.down('ArrowUp');
+
+    await expect(inventoryPage.rotateArrow('up'), 'the up arrow is lit').toHaveClass(/item-model-viewer__arrow--lit/);
+    await inventoryPage.page.keyboard.up('ArrowUp');
+  });
+
+  test('pressing ↓ while checking the Beretta keeps CHECK framed once the model is gone', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('CHECK');
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before ↓').toHaveCount(4);
+    await inventoryPage.press('ArrowDown');
+    await inventoryPage.backOut();
+
+    await expect(inventoryPage.actionMenu, 'the menu comes back').toBeVisible();
+    await expect(inventoryPage.optionFrame('CHECK'), 'the red frame stays on CHECK').toBeVisible();
+  });
 });
