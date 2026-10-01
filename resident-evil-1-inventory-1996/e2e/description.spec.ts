@@ -1,15 +1,15 @@
 import { expect, test } from './fixtures';
 
 test.describe('descriptions', () => {
-  test("pressing K while the Beretta's description is typed shows the rest of it sooner", async ({ inventoryPage }) => {
+  test("pressing S while the Beretta's description is typed shows the rest of it sooner", async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('CHECK');
-    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before K').toHaveCount(4);
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before S').toHaveCount(4);
     await inventoryPage.showDescription();
     await inventoryPage.confirm();
 
@@ -19,7 +19,7 @@ test.describe('descriptions', () => {
     ).toContainText('loaded with 9mm bullets.', { timeout: 2000 });
   });
 
-  test('pressing Escape while "You can\'t use this alone." is typed keeps the action menu open', async ({
+  test('pressing A while "You can\'t use this alone." is typed keeps the action menu open', async ({
     inventoryPage,
   }) => {
     await inventoryPage.open({
@@ -27,7 +27,7 @@ test.describe('descriptions', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
     await inventoryPage.backOut();
 
@@ -43,27 +43,27 @@ test.describe('descriptions', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
     await expect(inventoryPage.descriptionPanel, 'the description is typed out').toContainText(
       "You can't use this alone.",
     );
     await inventoryPage.page.waitForTimeout(1000);
 
-    await expect(inventoryPage.descriptionPanel, 'the description waits for K or Escape').toContainText(
+    await expect(inventoryPage.descriptionPanel, 'the description waits for S or A').toContainText(
       "You can't use this alone.",
     );
   });
 
-  test('pressing K once "You can\'t use this alone." is typed removes it', async ({ inventoryPage }) => {
+  test('pressing S once "You can\'t use this alone." is typed removes it', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'clip', type: 'ammunition', amount: 15 }],
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
-    await expect(inventoryPage.descriptionPanel, 'the description is typed out before K').toContainText(
+    await expect(inventoryPage.descriptionPanel, 'the description is typed out before S').toContainText(
       "You can't use this alone.",
     );
     await inventoryPage.confirm();
@@ -73,15 +73,15 @@ test.describe('descriptions', () => {
     );
   });
 
-  test('pressing Escape once "You can\'t use this alone." is typed removes it', async ({ inventoryPage }) => {
+  test('pressing A once "You can\'t use this alone." is typed removes it', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'clip', type: 'ammunition', amount: 15 }],
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
-    await expect(inventoryPage.descriptionPanel, 'the description is typed out before Escape').toContainText(
+    await expect(inventoryPage.descriptionPanel, 'the description is typed out before A').toContainText(
       "You can't use this alone.",
     );
     await inventoryPage.backOut();
@@ -97,15 +97,15 @@ test.describe('descriptions', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
-    await expect(inventoryPage.descriptionPanel, 'the description is typed out before K').toContainText(
+    await expect(inventoryPage.descriptionPanel, 'the description is typed out before S').toContainText(
       "You can't use this alone.",
     );
     await inventoryPage.confirm();
     await inventoryPage.chooseAction('CHECK');
 
-    await expect(inventoryPage.itemModel, 'the menu takes the click on CHECK').toBeVisible();
+    await expect(inventoryPage.itemModel, 'the menu takes S on CHECK').toBeVisible();
   });
 
   test('closing "Mixing these does not seem to work." goes back to choosing a second item', async ({
@@ -120,14 +120,14 @@ test.describe('descriptions', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
-    await expect(inventoryPage.descriptionPanel, 'the description is typed out before K').toContainText(
+    await inventoryPage.chooseSlot(2);
+    await expect(inventoryPage.descriptionPanel, 'the description is typed out before S').toContainText(
       'Mixing these does not seem to work.',
     );
     await inventoryPage.confirm();
-    await inventoryPage.slot(3).click();
+    await inventoryPage.chooseSlot(3);
 
     await expect(inventoryPage.descriptionPanel, 'the green herb is taken as the second item').toContainText(
       'Will you mix the herbs?',

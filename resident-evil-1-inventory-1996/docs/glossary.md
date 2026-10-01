@@ -47,8 +47,9 @@ names, so the same code can be the base of other clones.
   the top menu, the grid has no frame and the description panel shows no item
   name.
   Code: `useMainCursor()`; areas are `CursorArea.Grid` and
-  `CursorArea.TopMenu`. The grid and the top menu send their area with
-  `point(index, area)`.
+  `CursorArea.TopMenu`. `move(direction, slotCount)` steps through the grid
+  and the top menu: ↑ from the grid's top row goes to the top menu button in
+  the same column, ↓ from the menu's bottom row comes back.
 - **Target cursor**: points at the second item for COMBN. It stays inside the
   grid.
   RE1: the four green arrows.
@@ -96,12 +97,12 @@ The description panel shows one of three things:
 
 Rules, the same for descriptions and prompts:
 
-- The text is typed out. While it types, K speeds it up (**hurry**): one
-  character per frame instead of one every 4 frames. Escape and the mouse do
+- The text is typed out. While it types, S speeds it up (**hurry**): one
+  character per frame instead of one every 4 frames. A and the arrow keys do
   nothing.
-- Nothing goes away by itself. Once a description is complete, K or Escape
-  closes it. Once a prompt's choices show, No or Escape closes it, and Yes
-  runs the prompt's effect.
+- Nothing goes away by itself. Once a description is complete, S or A closes
+  it. Once a prompt's choices show, ← and → move between them; No or A closes
+  it, and Yes runs the prompt's effect.
 - **Return mode**: the mode that was active when a description or prompt
   opened. Closing it goes back to that mode: to the model after an item
   description, to the action menu after "You can't use this alone." (the menu
@@ -113,18 +114,22 @@ Rules, the same for descriptions and prompts:
 An intent is what the user wants, on any device. Components and stores work
 only with intents.
 
-| Intent            | Mouse (now) | Keyboard             | Touch (later) |
-| ----------------- | ----------- | -------------------- | ------------- |
-| `point(index)`    | hover       | —                    | —             |
-| `move(direction)` | —           | arrow keys (later)   | —             |
-| `choose()`        | click       | K (now), Enter later | tap           |
-| `back()`          | —           | Escape               | a back button |
+| Intent            | Keyboard   | Touch (later)              |
+| ----------------- | ---------- | -------------------------- |
+| `move(direction)` | arrow keys | —                          |
+| `choose()`        | S          | tap (points, then chooses) |
+| `back()`          | A          | a back button              |
 
-- `choose()` has no index: it confirms the active cursor's position. A click
-  or a tap is `point(index)`, then `choose()`.
-- Only the element with input emits intents.
-- `src/input/keyboard.ts` turns Escape into `back()` and K into `choose()`.
-  The model viewer keeps its rotate and zoom keys for now.
+- `choose()` has no index: it confirms the active cursor's position.
+- Only the element with input takes an intent; the others ignore it.
+- The desktop UI uses only the keyboard; the mouse does nothing.
+- `src/input/keyboard.ts` turns the arrow keys into `move()`, S into
+  `choose()` and A into `back()`, and D into the health status demo control.
+  Keys with Ctrl, Alt or Meta are left to the browser. A held key sends once.
+- The model viewer reads its own keys: the arrows rotate, Z and C roll, X and
+  V zoom; holding keeps the model moving.
+- At an edge a cursor stops (`elements/step.ts`). The real game wraps to the
+  other side.
 
 ## Lifecycle verbs and presentation events
 
@@ -152,7 +157,7 @@ per intent. A missing handler means the intent does nothing in that mode.
 | `browsing`            | Moving the main cursor over the grid (later also the top menu)         | Grid                 |
 | `choosing-action`     | Picking an option in the action menu                                   | Action menu          |
 | `choosing-target`     | Picking the second item for COMBN with the target cursor               | Grid (target cursor) |
-| `typing-text`         | Waiting while a description or a prompt's question types; K hurries it | Description panel    |
+| `typing-text`         | Waiting while a description or a prompt's question types; S hurries it | Description panel    |
 | `reading-description` | Reading a complete description                                         | Description          |
 | `answering-prompt`    | Answering a question, such as "Will you mix the herbs?"                | Prompt               |
 | `opening-model`       | Waiting while the model tumbles in; no input                           | —                    |
@@ -168,5 +173,5 @@ per intent. A missing handler means the intent does nothing in that mode.
 | How does the action menu work?    | `elements/use-action-menu.ts`, and `choosing-action` in `stores/inventory.ts` |
 | Which options does an item get?   | `actions/available-actions.ts`                                                |
 | What happens after USE?           | `actions/use.ts`                                                              |
-| What does Escape do in each step? | the `back` handlers in the handler table in `stores/inventory.ts`             |
+| What does A do in each step?      | the `back` handlers in the handler table in `stores/inventory.ts`             |
 | What are the game's rules?        | `stores/player.ts`                                                            |

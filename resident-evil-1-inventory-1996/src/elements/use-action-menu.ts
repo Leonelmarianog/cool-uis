@@ -1,5 +1,7 @@
 import { computed, ref } from 'vue';
+import type { Direction } from '../types/direction';
 import type { ItemAction } from '../types/item-action';
+import { step } from './step';
 import { useCursor } from './use-cursor';
 
 /** The options for the selected item, and the option cursor. */
@@ -24,7 +26,12 @@ export function useActionMenu() {
     options.value = [];
   }
 
-  return { options, cursor, isOpen, pointedOption, open, close };
+  /** Moves the option cursor one option up or down; the options form one column. At either end it stays. */
+  function move(direction: Direction) {
+    cursor.point(step(cursor.index.value, direction, 1, options.value.length));
+  }
+
+  return { options, cursor, isOpen, pointedOption, open, close, move };
 }
 
 export type ActionMenu = ReturnType<typeof useActionMenu>;

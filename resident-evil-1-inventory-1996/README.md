@@ -13,26 +13,27 @@ pixel-art images and scaled by whole screen pixels, so it stays sharp.
 - **EQUIP** a weapon; the equipped weapon panel shows it.
 - **USE** a recovery item; the ECG shows the new health status.
 - **CHECK** an item: its 3D model (Three.js) tumbles in and can be turned, and
-  K types its description.
+  S types its description.
 - **COMBN** two items: reload a weapon, stack ammunition, or mix herbs after
   "Will you mix the herbs?".
-- **Descriptions** type out and wait for K or Escape, as in the game.
+- **Descriptions** type out and wait for S or A, as in the game.
 
 [UI_FEATURES.md](UI_FEATURES.md) lists every feature and its status, and
 [INVENTORY_ACTIONS.md](INVENTORY_ACTIONS.md) the game rules behind each action.
 
 ## Controls
 
-| Input          | What it does                                                                      |
-| -------------- | --------------------------------------------------------------------------------- |
-| Mouse hover    | Moves the cursor of the part that has input (grid, top menu, action menu, Yes/No) |
-| Click          | Chooses what is under the mouse                                                   |
-| K              | Chooses; hurries typing text; closes a complete description                       |
-| Escape         | Steps back once                                                                   |
-| W / A / S / D  | CHECK: turns the model (or hold the red arrows)                                   |
-| Q / E          | CHECK: rolls the model                                                            |
-| Z / C          | CHECK: zooms in and out                                                           |
-| Health display | Click it to cycle the health statuses (a demo control)                            |
+The inventory uses only the keyboard; the mouse does nothing.
+
+| Key     | What it does                                                                                      |
+| ------- | ------------------------------------------------------------------------------------------------- |
+| ↑ ↓ ← → | Moves the cursor of the part that has input (grid, top menu, action menu, Yes/No); stops at edges |
+| S       | Chooses; hurries typing text; closes a complete description                                       |
+| A       | Steps back once                                                                                   |
+| D       | Shows the next health status (a demo control)                                                     |
+| ↑ ↓ ← → | CHECK: turns the model                                                                            |
+| Z / C   | CHECK: rolls the model clockwise and counter-clockwise                                            |
+| X / V   | CHECK: zooms in and out                                                                           |
 
 ## Development
 
@@ -92,8 +93,8 @@ scripts/                extract-item-sprites.py: cuts item images from the sheet
 src/
   App.vue               Layout of the screen; connects the stores to the panels
   main.ts               Vue entry point; imports shared CSS once
-  components/           One component per panel; they get props and emit intents
-  input/                Keyboard: Escape and K as intents
+  components/           One component per panel; they get props and emit presentation events
+  input/                Keyboard: arrows, S, A and D as intents
   elements/             State of each interactive part: cursors, action menu,
                         prompt, description
   actions/              EQUIP, USE and COMBN; each returns an outcome

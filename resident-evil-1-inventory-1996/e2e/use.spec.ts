@@ -10,7 +10,7 @@ test.describe('using recovery items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
 
     await expect(inventoryPage.healthScreen, 'the health status goes up one step').toHaveAccessibleName(
@@ -27,7 +27,7 @@ test.describe('using recovery items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
 
     await expect(inventoryPage.healthScreen, 'the poison is cured and the health status is full').toHaveAccessibleName(
@@ -45,7 +45,7 @@ test.describe('using recovery items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
 
     await expect(inventoryPage.slot(1), 'the item after the green herb moves up').toHaveAccessibleName(
@@ -61,7 +61,7 @@ test.describe('using recovery items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
 
     await expect(inventoryPage.actionMenu, 'the menu closes and the item is released').toBeHidden();
@@ -77,7 +77,7 @@ test.describe('using items that only work combined', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
 
     await expect(inventoryPage.descriptionPanel, 'the panel says the clip needs another item').toContainText(
@@ -94,7 +94,7 @@ test.describe('using items that only work combined', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('USE');
 
     await expect(inventoryPage.descriptionPanel, 'the panel says the red herb needs another item').toContainText(

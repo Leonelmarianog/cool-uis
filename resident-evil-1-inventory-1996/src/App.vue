@@ -30,8 +30,6 @@ useKeyboard();
             :options="inventory.actionMenu.options"
             :option-index="inventory.actionMenu.cursor.index"
             :inactive="!inventory.isActionMenuActive"
-            @point="inventory.point"
-            @choose="inventory.choose"
           />
         </Transition>
         <ItemModelViewer
@@ -44,21 +42,11 @@ useKeyboard();
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
-        <HealthStatusPanel
-          :status="player.healthStatus"
-          :recoveries-used="player.recoveriesUsed"
-          @cycle="player.cycleHealthStatus"
-        />
+        <HealthStatusPanel :status="player.healthStatus" :recoveries-used="player.recoveriesUsed" />
         <EquippedWeaponPanel class="project-shell__weapon" :weapon="inventory.equippedWeapon" />
       </div>
       <div class="project-shell__items">
-        <MenuPanel
-          class="project-shell__menu"
-          :cursor-index="inventory.mainCursor.topMenuIndex"
-          :inactive="!inventory.isTopMenuActive"
-          @point="inventory.point"
-          @choose="inventory.choose"
-        />
+        <MenuPanel class="project-shell__menu" :cursor-index="inventory.mainCursor.topMenuIndex" />
         <InventoryGrid
           class="project-shell__grid"
           :size="player.inventorySize"
@@ -66,9 +54,6 @@ useKeyboard();
           :cursor-index="inventory.mainCursor.gridIndex"
           :has-selected-item="inventory.hasSelectedItem"
           :target-index="inventory.targetIndex"
-          :inactive="!inventory.isGridActive"
-          @point="inventory.point"
-          @choose="inventory.choose"
         />
       </div>
       <ItemDescriptionPanel
@@ -80,8 +65,6 @@ useKeyboard();
         :hurried="inventory.isTextHurried"
         @description-typed="inventory.onDescriptionTyped"
         @prompt-typed="inventory.onPromptTyped"
-        @point="inventory.point"
-        @choose="inventory.choose"
       />
     </div>
   </main>

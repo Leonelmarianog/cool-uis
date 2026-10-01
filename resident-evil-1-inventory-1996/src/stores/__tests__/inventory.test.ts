@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { useInventoryStore } from '../inventory';
 import { usePlayerStore } from '../player';
 import { CursorArea } from '../../types/cursor-area';
+import { Direction } from '../../types/direction';
 import { InventoryMode } from '../../types/inventory-mode';
 import { ItemType } from '../../types/item';
 
@@ -16,57 +17,120 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('point', () => {
+describe('move', () => {
   test('moves the main cursor while browsing', () => {
     const inventory = useInventoryStore();
 
-    inventory.point(1);
+    inventory.move(Direction.Right);
 
-    expect(inventory.mainCursor.index).toBe(1);
+    expect(inventory.mainCursor.gridIndex).toBe(1);
+  });
+
+  test('moves the main cursor to the top menu while browsing', () => {
+    const inventory = useInventoryStore();
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.mainCursor.area).toBe(CursorArea.TopMenu);
   });
 
   test('moves the option cursor while choosing an action', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
 
-    inventory.point(2);
+    inventory.move(Direction.Down);
 
-    expect(inventory.actionMenu.cursor.index).toBe(2);
+    expect(inventory.actionMenu.cursor.index).toBe(1);
   });
 
-  test('keeps the main cursor while choosing an action', () => {
+  test('keeps the main cursor on the selected item while choosing an action', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
 
-    inventory.point(2);
+    inventory.move(Direction.Up);
 
-    expect(inventory.mainCursor.index).toBe(0);
+    expect(inventory.mainCursor.gridIndex).toBe(0);
   });
 
-  test('moves the main cursor to the top menu while browsing', () => {
+  test('moves the target cursor while choosing a target', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 10 },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+    ];
     const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
+    inventory.choose();
 
-    inventory.point(1, CursorArea.TopMenu);
+    inventory.move(Direction.Right);
 
-    expect(inventory.mainCursor.area).toBe(CursorArea.TopMenu);
+    expect(inventory.targetIndex).toBe(1);
   });
 
-  test('keeps the main cursor on the grid while choosing an action', () => {
+  test('keeps the target cursor in the grid when moving up from the first row', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
+    const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
+    inventory.choose();
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.targetIndex).toBe(0);
+  });
+
+  test('moves the choice cursor while answering a prompt', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
+      { id: 'herb-2', itemId: 'red-herb', type: ItemType.Consumable },
+    ];
+    const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
+    inventory.choose();
+    inventory.move(Direction.Right);
+    inventory.choose();
+    inventory.onPromptTyped();
+
+    inventory.move(Direction.Right);
+
+    expect(inventory.prompt.cursor.index).toBe(1);
+  });
+
+  test('does nothing while viewing the model', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0, CursorArea.Grid);
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.choose();
+    inventory.onItemPreviewEntered();
+
+    inventory.move(Direction.Down);
+
+    expect(inventory.actionMenu.cursor.index).toBe(1);
+  });
+
+  test('does nothing while a description types', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
+    const inventory = useInventoryStore();
+    inventory.choose();
     inventory.choose();
 
-    inventory.point(1, CursorArea.TopMenu);
+    inventory.move(Direction.Down);
 
-    expect(inventory.mainCursor.area).toBe(CursorArea.Grid);
+    expect(inventory.actionMenu.cursor.index).toBe(0);
   });
 });
 
@@ -75,7 +139,6 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
 
     inventory.choose();
 
@@ -86,7 +149,6 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [];
     const inventory = useInventoryStore();
-    inventory.point(0);
 
     inventory.choose();
 
@@ -97,9 +159,9 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(2);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
 
     inventory.choose();
 
@@ -110,9 +172,8 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
 
     inventory.choose();
 
@@ -123,9 +184,8 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
 
     inventory.choose();
@@ -137,9 +197,8 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
     inventory.onItemPreviewEntered();
 
@@ -152,7 +211,6 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
 
     inventory.choose();
@@ -164,7 +222,6 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
     inventory.choose();
 
@@ -177,7 +234,6 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
     inventory.choose();
     inventory.choose();
@@ -193,7 +249,6 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
     inventory.choose();
     inventory.onDescriptionTyped();
@@ -207,7 +262,6 @@ describe('choose', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
 
     inventory.choose();
@@ -222,11 +276,11 @@ describe('choose', () => {
       { id: 'herb-2', itemId: 'red-herb', type: ItemType.Consumable },
     ];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(2);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Right);
     inventory.choose();
     inventory.onPromptTyped();
 
@@ -242,11 +296,12 @@ describe('choose', () => {
       { id: 'herb-2', itemId: 'green-herb', type: ItemType.Consumable },
     ];
     const inventory = useInventoryStore();
-    inventory.point(1);
+    inventory.move(Direction.Right);
     inventory.choose();
-    inventory.point(2);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
     inventory.choose();
-    inventory.point(0);
+    inventory.move(Direction.Left);
     inventory.choose();
     inventory.onPromptTyped();
 
@@ -258,7 +313,8 @@ describe('choose', () => {
   test('logs that the map screen is not built yet on MAP', () => {
     const info = vi.spyOn(console, 'info').mockImplementation(() => {});
     const inventory = useInventoryStore();
-    inventory.point(0, CursorArea.TopMenu);
+    inventory.move(Direction.Up);
+    inventory.move(Direction.Up);
 
     inventory.choose();
 
@@ -268,7 +324,9 @@ describe('choose', () => {
   test('logs that the files screen is not built yet on FILE', () => {
     const info = vi.spyOn(console, 'info').mockImplementation(() => {});
     const inventory = useInventoryStore();
-    inventory.point(1, CursorArea.TopMenu);
+    inventory.move(Direction.Up);
+    inventory.move(Direction.Up);
+    inventory.move(Direction.Right);
 
     inventory.choose();
 
@@ -278,7 +336,7 @@ describe('choose', () => {
   test('logs that the item box is not built yet on the dash button', () => {
     const info = vi.spyOn(console, 'info').mockImplementation(() => {});
     const inventory = useInventoryStore();
-    inventory.point(2, CursorArea.TopMenu);
+    inventory.move(Direction.Up);
 
     inventory.choose();
 
@@ -288,7 +346,8 @@ describe('choose', () => {
   test('logs that there is no game to go back to on EXIT', () => {
     const info = vi.spyOn(console, 'info').mockImplementation(() => {});
     const inventory = useInventoryStore();
-    inventory.point(3, CursorArea.TopMenu);
+    inventory.move(Direction.Up);
+    inventory.move(Direction.Right);
 
     inventory.choose();
 
@@ -298,7 +357,8 @@ describe('choose', () => {
   test('keeps browsing on a top menu button', () => {
     vi.spyOn(console, 'info').mockImplementation(() => {});
     const inventory = useInventoryStore();
-    inventory.point(0, CursorArea.TopMenu);
+    inventory.move(Direction.Up);
+    inventory.move(Direction.Up);
 
     inventory.choose();
 
@@ -311,7 +371,6 @@ describe('back', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
 
     inventory.back();
@@ -323,9 +382,9 @@ describe('back', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(2);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
     inventory.choose();
 
     inventory.back();
@@ -337,7 +396,6 @@ describe('back', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
     inventory.choose();
 
@@ -350,9 +408,8 @@ describe('back', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
     inventory.onItemPreviewEntered();
     inventory.choose();
@@ -370,11 +427,11 @@ describe('back', () => {
       { id: 'herb-2', itemId: 'blue-herb', type: ItemType.Consumable },
     ];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(2);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Right);
     inventory.choose();
     inventory.onDescriptionTyped();
 
@@ -390,11 +447,11 @@ describe('back', () => {
       { id: 'herb-2', itemId: 'red-herb', type: ItemType.Consumable },
     ];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(2);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Right);
     inventory.choose();
     inventory.onPromptTyped();
 
@@ -407,9 +464,8 @@ describe('back', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
 
     inventory.back();
@@ -421,9 +477,8 @@ describe('back', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
     inventory.onItemPreviewEntered();
 
@@ -436,9 +491,8 @@ describe('back', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
     inventory.onItemPreviewEntered();
     inventory.back();
@@ -462,7 +516,6 @@ describe('onDescriptionTyped', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
     inventory.choose();
 
@@ -480,11 +533,11 @@ describe('onPromptTyped', () => {
       { id: 'herb-2', itemId: 'red-herb', type: ItemType.Consumable },
     ];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(2);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Right);
     inventory.choose();
 
     inventory.onPromptTyped();
@@ -498,9 +551,8 @@ describe('onItemPreviewEntered', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
 
     inventory.onItemPreviewEntered();
@@ -514,9 +566,8 @@ describe('onItemPreviewExited', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
     inventory.onItemPreviewEntered();
     inventory.back();
@@ -532,9 +583,8 @@ describe('isModelFrozen', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
     inventory.onItemPreviewEntered();
 
@@ -547,9 +597,8 @@ describe('isModelFrozen', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Down);
     inventory.choose();
 
     inventory.onItemPreviewEntered();
@@ -563,7 +612,6 @@ describe('isModelShown', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
 
     inventory.choose();
@@ -580,11 +628,11 @@ describe('targetIndex', () => {
       { id: 'herb-2', itemId: 'red-herb', type: ItemType.Consumable },
     ];
     const inventory = useInventoryStore();
-    inventory.point(0);
     inventory.choose();
-    inventory.point(2);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
     inventory.choose();
-    inventory.point(1);
+    inventory.move(Direction.Right);
 
     inventory.choose();
 
@@ -604,7 +652,8 @@ describe('itemUnderCursor', () => {
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
     const inventory = useInventoryStore();
 
-    inventory.point(0, CursorArea.TopMenu);
+    inventory.move(Direction.Up);
+    inventory.move(Direction.Up);
 
     expect(inventory.itemUnderCursor).toBeNull();
   });

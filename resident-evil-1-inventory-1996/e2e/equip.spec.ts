@@ -9,7 +9,7 @@ test.describe('equipping weapons', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('EQUIP');
 
     await expect(
@@ -28,7 +28,7 @@ test.describe('equipping weapons', () => {
       'the Beretta is equipped before EQUIP',
     ).toBeVisible();
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('EQUIP');
 
     await expect(
@@ -43,7 +43,7 @@ test.describe('equipping weapons', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('EQUIP');
 
     await expect(inventoryPage.actionMenu, 'the menu closes and the item is released').toBeHidden();

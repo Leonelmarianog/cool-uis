@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CursorArea } from '../types/cursor-area';
 import { ItemType } from '../types/item';
 import type { ItemView } from '../types/item-view';
 
@@ -10,7 +9,6 @@ const {
   cursorIndex = null,
   hasSelectedItem = false,
   targetIndex = null,
-  inactive = false,
 } = defineProps<{
   /** The number of slots. */
   size: number;
@@ -22,23 +20,7 @@ const {
   hasSelectedItem?: boolean;
   /** The target cursor's slot, or `null` while it is hidden. */
   targetIndex?: number | null;
-  /** The grid ignores the mouse while another element has input. */
-  inactive?: boolean;
 }>();
-
-const emit = defineEmits<{ point: [index: number, area: CursorArea]; choose: [] }>();
-
-/** Hovering a slot points at it. */
-function onHover(index: number) {
-  if (!inactive) emit('point', index, CursorArea.Grid);
-}
-
-/** Clicking a slot points at it, then chooses it. */
-function onClick(index: number) {
-  if (inactive) return;
-  emit('point', index, CursorArea.Grid);
-  emit('choose');
-}
 
 /** Every slot, with its item or `null` when it is empty. */
 const cells = computed(() => Array.from({ length: size }, (_, index) => items[index] ?? null));
@@ -54,14 +36,7 @@ function cellLabel(item: ItemView | null, index: number): string {
 <template>
   <section class="inventory-grid" aria-label="Inventory panel">
     <ol class="inventory-grid__cells" aria-label="Inventory slots">
-      <li
-        v-for="(item, index) in cells"
-        :key="index"
-        class="inventory-grid__cell"
-        :aria-label="cellLabel(item, index)"
-        @mousemove="onHover(index)"
-        @click="onClick(index)"
-      >
+      <li v-for="(item, index) in cells" :key="index" class="inventory-grid__cell" :aria-label="cellLabel(item, index)">
         <template v-if="item">
           <img class="inventory-grid__sprite" :src="item.sprite" alt="" />
           <span

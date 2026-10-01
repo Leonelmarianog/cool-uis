@@ -12,9 +12,9 @@ test.describe('reloading weapons', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.slot(1), 'the Beretta fills up to its 15 rounds').toHaveAccessibleName(
       'Slot 1: BERETTA, 15',
@@ -33,9 +33,9 @@ test.describe('reloading weapons', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
 
     await expect(inventoryPage.slot(1), 'the Beretta fills up to its 15 rounds').toHaveAccessibleName(
       'Slot 1: BERETTA, 15',
@@ -52,9 +52,9 @@ test.describe('reloading weapons', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.actionMenu, 'the menu closes and the item is released').toBeHidden();
   });
@@ -71,9 +71,9 @@ test.describe('reloading weapons', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.slot(1), 'the Beretta takes all 3 rounds').toHaveAccessibleName('Slot 1: BERETTA, 13');
     await expect(inventoryPage.slot(2), 'the item after the clip moves up').toHaveAccessibleName('Slot 2: GREEN HERB');
@@ -89,9 +89,9 @@ test.describe('reloading weapons', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.actionMenu, 'the menu closes as after any combination').toBeHidden();
     await expect(inventoryPage.slot(1), 'the Beretta stays at 15 rounds').toHaveAccessibleName('Slot 1: BERETTA, 15');
@@ -111,9 +111,9 @@ test.describe('stacking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.slot(1), 'the first clip fills up to 255 rounds').toHaveAccessibleName(
       'Slot 1: CLIP, 255',
@@ -132,9 +132,9 @@ test.describe('stacking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.actionMenu, 'the menu closes and the item is released').toBeHidden();
   });
@@ -151,9 +151,9 @@ test.describe('stacking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.slot(1), 'the first clip takes all 20 rounds').toHaveAccessibleName('Slot 1: CLIP, 30');
     await expect(inventoryPage.slot(2), 'the item after the second clip moves up').toHaveAccessibleName(
@@ -171,9 +171,9 @@ test.describe('stacking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
 
     await expect(inventoryPage.actionMenu, 'the menu closes as after any combination').toBeHidden();
     await expect(inventoryPage.slot(1), 'the other clip keeps its rounds').toHaveAccessibleName('Slot 1: CLIP, 10');
@@ -189,9 +189,9 @@ test.describe('stacking items', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.actionMenu, 'the menu closes as after any combination').toBeHidden();
     await expect(inventoryPage.slot(1), 'the clip keeps its rounds').toHaveAccessibleName('Slot 1: CLIP, 10');
@@ -211,9 +211,9 @@ test.describe('mixing herbs', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.descriptionPanel, 'the panel asks before mixing').toContainText(
       'Will you mix the herbs?',
@@ -232,9 +232,9 @@ test.describe('mixing herbs', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
     await inventoryPage.answer('Yes');
 
     await expect(inventoryPage.slot(1), "the mixed herbs take the green herb's slot").toHaveAccessibleName(
@@ -259,9 +259,9 @@ test.describe('mixing herbs', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
     await inventoryPage.answer('Yes');
 
     await expect(inventoryPage.actionMenu, 'the menu closes and the item is released').toBeHidden();
@@ -276,9 +276,9 @@ test.describe('mixing herbs', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
     await inventoryPage.answer('No');
 
     await expect(inventoryPage.descriptionPanel.getByRole('button'), 'the Yes and No choices go away').toHaveCount(0);
@@ -290,7 +290,7 @@ test.describe('mixing herbs', () => {
     await expect(inventoryPage.slot(2), 'the red herb is unchanged').toHaveAccessibleName('Slot 2: RED HERB');
   });
 
-  test('pressing Escape while "Will you mix the herbs?" is asked goes back to choosing a second item', async ({
+  test('pressing A while "Will you mix the herbs?" is asked goes back to choosing a second item', async ({
     inventoryPage,
   }) => {
     await inventoryPage.open({
@@ -301,12 +301,12 @@ test.describe('mixing herbs', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
     await expect(
       inventoryPage.descriptionPanel.getByRole('button', { name: 'Yes' }),
-      'the question is asked before Escape',
+      'the question is asked before A',
     ).toBeVisible();
     await inventoryPage.backOut();
 
@@ -330,9 +330,9 @@ test.describe('mixing herbs', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.descriptionPanel, 'the panel says the herbs do not mix').toContainText(
       'Mixing these does not seem to work.',
@@ -351,13 +351,13 @@ test.describe('mixing herbs', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
     await inventoryPage.answer('Yes');
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
     await inventoryPage.answer('Yes');
 
     await expect(inventoryPage.slotSprite(1), 'the mixed herbs are the green, red and blue mix').toHaveAttribute(
@@ -378,9 +378,9 @@ test.describe('choosing items that do not combine', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
 
     await expect(
       inventoryPage.actionButton('COMBN'),
@@ -400,9 +400,9 @@ test.describe('choosing items that do not combine', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(2).click();
+    await inventoryPage.chooseSlot(2);
 
     await expect(
       inventoryPage.actionButton('COMBN'),
@@ -423,9 +423,9 @@ test.describe('choosing items that do not combine', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
-    await inventoryPage.slot(3).click();
+    await inventoryPage.chooseSlot(3);
 
     await expect(
       inventoryPage.actionButton('COMBN'),
@@ -434,9 +434,7 @@ test.describe('choosing items that do not combine', () => {
     await expect(inventoryPage.slot(1), 'the clip is unchanged').toHaveAccessibleName('Slot 1: CLIP, 15');
   });
 
-  test('pressing Escape while COMBN waits for a second item goes back to the action menu', async ({
-    inventoryPage,
-  }) => {
+  test('pressing A while COMBN waits for a second item goes back to the action menu', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [
         { id: 'player-item-1', itemId: 'clip', type: 'ammunition', amount: 15 },
@@ -445,7 +443,7 @@ test.describe('choosing items that do not combine', () => {
       equippedItemId: null,
     });
 
-    await inventoryPage.slot(1).click();
+    await inventoryPage.chooseSlot(1);
     await inventoryPage.chooseAction('COMBN');
     await inventoryPage.backOut();
 

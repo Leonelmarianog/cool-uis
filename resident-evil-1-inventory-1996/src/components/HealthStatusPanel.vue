@@ -12,9 +12,6 @@ import { HealthStatus } from '../types/health';
 // `recoveriesUsed` counts used recovery items; each change plays the heal animation.
 const { status, recoveriesUsed = 0 } = defineProps<{ status: HealthStatus; recoveriesUsed?: number }>();
 
-// Clicking the screen asks for the next status (a demo control).
-const emit = defineEmits<{ cycle: [] }>();
-
 const states: Record<
   HealthStatus,
   { name: string; accessibleName: string; labelColor: string; image: string; blinking: boolean }
@@ -88,12 +85,11 @@ onUnmounted(clearTimers);
 <template>
   <section class="health-status-panel" aria-label="Health status panel">
     <img class="health-status-panel__artwork" :src="panel" alt="" />
-    <button
+    <div
       class="health-status-panel__screen"
-      type="button"
-      :aria-label="`Health: ${state.accessibleName}. Click to cycle health status.`"
+      role="img"
+      :aria-label="`Health: ${state.accessibleName}.`"
       :style="{ '--ecg-label-color': state.labelColor }"
-      @click="emit('cycle')"
     >
       <img v-if="phase === 'band'" class="health-status-panel__heal" :src="heal" alt="" />
       <span v-else :key="status" class="health-status-panel__animation" aria-hidden="true">
@@ -104,7 +100,7 @@ onUnmounted(clearTimers);
           >{{ state.name }}</span
         >
       </span>
-    </button>
+    </div>
   </section>
 </template>
 
@@ -129,16 +125,6 @@ onUnmounted(clearTimers);
   left: calc(12 * var(--game-pixel));
   width: calc(48 * var(--game-pixel));
   height: calc(30 * var(--game-pixel));
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  cursor: pointer;
-  background: none;
-  appearance: none;
-}
-
-.health-status-panel__screen:focus-visible {
-  outline-offset: calc(-1 * var(--game-pixel));
 }
 
 .health-status-panel__animation,

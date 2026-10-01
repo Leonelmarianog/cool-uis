@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+import { Direction } from '../../types/direction';
 import { ItemAction } from '../../types/item-action';
 import { useActionMenu } from '../use-action-menu';
 
@@ -47,5 +48,54 @@ describe('pointedOption', () => {
     const menu = useActionMenu();
 
     expect(menu.pointedOption.value).toBeNull();
+  });
+});
+
+describe('move', () => {
+  test('moves the option cursor down to the next action menu option', () => {
+    const menu = useActionMenu();
+    menu.open([ItemAction.Use, ItemAction.Check]);
+
+    menu.move(Direction.Down);
+
+    expect(menu.pointedOption.value).toBe(ItemAction.Check);
+  });
+
+  test('moves the option cursor up to the previous action menu option', () => {
+    const menu = useActionMenu();
+    menu.open([ItemAction.Use, ItemAction.Check]);
+    menu.cursor.point(1);
+
+    menu.move(Direction.Up);
+
+    expect(menu.pointedOption.value).toBe(ItemAction.Use);
+  });
+
+  test('keeps the option cursor on the first action menu option when moving up', () => {
+    const menu = useActionMenu();
+    menu.open([ItemAction.Use, ItemAction.Check]);
+
+    menu.move(Direction.Up);
+
+    expect(menu.pointedOption.value).toBe(ItemAction.Use);
+  });
+
+  test('keeps the option cursor on the last action menu option when moving down', () => {
+    const menu = useActionMenu();
+    menu.open([ItemAction.Use, ItemAction.Check]);
+    menu.cursor.point(1);
+
+    menu.move(Direction.Down);
+
+    expect(menu.pointedOption.value).toBe(ItemAction.Check);
+  });
+
+  test('keeps the option cursor in place when moving right', () => {
+    const menu = useActionMenu();
+    menu.open([ItemAction.Use, ItemAction.Check]);
+
+    menu.move(Direction.Right);
+
+    expect(menu.pointedOption.value).toBe(ItemAction.Use);
   });
 });
