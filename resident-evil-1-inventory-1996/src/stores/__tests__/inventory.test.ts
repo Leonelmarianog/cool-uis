@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { useInventoryStore } from '../inventory';
 import { usePlayerStore } from '../player';
 import { CursorArea } from '../../types/cursor-area';
+import { Direction } from '../../types/direction';
 import { InventoryMode } from '../../types/inventory-mode';
 import { ItemType } from '../../types/item';
 
@@ -67,6 +68,123 @@ describe('point', () => {
     inventory.point(1, CursorArea.TopMenu);
 
     expect(inventory.mainCursor.area).toBe(CursorArea.Grid);
+  });
+});
+
+describe('move', () => {
+  test('moves the main cursor while browsing', () => {
+    const inventory = useInventoryStore();
+
+    inventory.move(Direction.Right);
+
+    expect(inventory.mainCursor.gridIndex).toBe(1);
+  });
+
+  test('moves the main cursor to the top menu while browsing', () => {
+    const inventory = useInventoryStore();
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.mainCursor.area).toBe(CursorArea.TopMenu);
+  });
+
+  test('moves the option cursor while choosing an action', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
+    const inventory = useInventoryStore();
+    inventory.choose();
+
+    inventory.move(Direction.Down);
+
+    expect(inventory.actionMenu.cursor.index).toBe(1);
+  });
+
+  test('keeps the main cursor on the selected item while choosing an action', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
+    const inventory = useInventoryStore();
+    inventory.choose();
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.mainCursor.gridIndex).toBe(0);
+  });
+
+  test('moves the target cursor while choosing a target', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 10 },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+    ];
+    const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
+    inventory.choose();
+
+    inventory.move(Direction.Right);
+
+    expect(inventory.targetIndex).toBe(1);
+  });
+
+  test('keeps the target cursor in the grid when moving up from the first row', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
+    const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
+    inventory.choose();
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.targetIndex).toBe(0);
+  });
+
+  test('moves the choice cursor while answering a prompt', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
+      { id: 'herb-2', itemId: 'red-herb', type: ItemType.Consumable },
+    ];
+    const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
+    inventory.choose();
+    inventory.move(Direction.Right);
+    inventory.choose();
+    inventory.onPromptTyped();
+
+    inventory.move(Direction.Right);
+
+    expect(inventory.prompt.cursor.index).toBe(1);
+  });
+
+  test('does nothing while viewing the model', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];
+    const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.choose();
+    inventory.onItemPreviewEntered();
+
+    inventory.move(Direction.Down);
+
+    expect(inventory.actionMenu.cursor.index).toBe(1);
+  });
+
+  test('does nothing while a description types', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
+    const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.choose();
+
+    inventory.move(Direction.Down);
+
+    expect(inventory.actionMenu.cursor.index).toBe(0);
   });
 });
 

@@ -76,17 +76,18 @@ export class InventoryPage {
     await this.descriptionPanel.getByRole('button', { name: choice }).click();
   }
 
-  // K shows the checked item's description.
+  /** S shows the checked item's description. */
   async showDescription() {
-    await this.page.keyboard.press('k');
+    await this.page.keyboard.press('s');
   }
 
-  // K, the game's action button: it hurries typing and closes a complete description.
+  /** S, the game's action button: it hurries typing and closes a complete description. */
   async confirm() {
-    await this.page.keyboard.press('k');
+    await this.page.keyboard.press('s');
   }
 
+  /** A steps back once. */
   async backOut() {
-    await this.page.keyboard.press('Escape');
+    await this.page.keyboard.press('a');
   }
 }

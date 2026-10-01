@@ -7,11 +7,13 @@ import { use } from '../actions/use';
 import { useActionMenu } from '../elements/use-action-menu';
 import { useCursor } from '../elements/use-cursor';
 import { useDescription } from '../elements/use-description';
-import { useMainCursor } from '../elements/use-main-cursor';
+import { step } from '../elements/step';
+import { ITEM_GRID_COLUMNS, useMainCursor } from '../elements/use-main-cursor';
 import { usePrompt } from '../elements/use-prompt';
 import { itemViewMapper } from '../mappers/item-view-mapper';
 import { itemService } from '../services/item-service';
 import { CursorArea } from '../types/cursor-area';
+import type { Direction } from '../types/direction';
 import { InventoryMode } from '../types/inventory-mode';
 import { ItemAction } from '../types/item-action';
 import type { ItemView } from '../types/item-view';
@@ -50,6 +52,7 @@ const MODEL_MODES: InventoryMode[] = [
 /** What each intent does in one mode. A missing handler means the intent does nothing in that mode. */
 type ModeHandlers = {
   point?: (index: number, area: CursorArea) => void;
+  move?: (direction: Direction) => void;
   choose?: () => void;
   back?: () => void;
 };
@@ -70,7 +73,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   const returnMode = ref<InventoryMode>(InventoryMode.Browsing);
   /** The item whose action menu is open. */
   const selectedItem = ref<PlayerItem | null>(null);
-  /** K was pressed while the open text types, so the rest of it types faster. */
+  /** S was pressed while the open text types, so the rest of it types faster. */
   const isTextHurried = ref(false);
 
   const mainCursor = useMainCursor();
@@ -119,19 +122,22 @@ export const useInventoryStore = defineStore('inventory', () => {
   const isModelFrozen = computed(() => isTextOpen.value && modeBelowText.value === InventoryMode.ViewingModel);
   const isModelClosing = computed(() => mode.value === InventoryMode.ClosingModel);
 
-  /** What `point`, `choose` and `back` do in each mode. */
+  /** What `point`, `move`, `choose` and `back` do in each mode. */
   const handlers: Record<InventoryMode, ModeHandlers> = {
     [InventoryMode.Browsing]: {
       point: (index, area) => mainCursor.point(area, index),
+      move: direction => mainCursor.move(direction, player.inventorySize),
       choose: () => areaHandlers[mainCursor.area.value](),
     },
     [InventoryMode.ChoosingAction]: {
       point: index => actionMenu.cursor.point(index),
+      move: direction => actionMenu.move(direction),
       choose: () => choosePointedOption(),
       back: () => releaseItem(),
     },
     [InventoryMode.ChoosingTarget]: {
       point: index => targetCursor.point(index),
+      move: direction => moveTargetCursor(direction),
       choose: () => combineWithTarget(),
       back: () => setMode(InventoryMode.ChoosingAction),
     },
@@ -144,6 +150,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     },
     [InventoryMode.AnsweringPrompt]: {
       point: index => prompt.cursor.point(index),
+      move: direction => prompt.move(direction),
       choose: () => answerPointedChoice(),
       back: () => closePrompt(),
     },
@@ -192,6 +199,11 @@ export const useInventoryStore = defineStore('inventory', () => {
    */
   function point(index: number, area: CursorArea = CursorArea.Grid) {
     handlers[mode.value].point?.(index, area);
+  }
+
+  /** Moves the cursor of the element with input one step. */
+  function move(direction: Direction) {
+    handlers[mode.value].move?.(direction);
   }
 
   /** Confirms the position of the cursor of the element with input. */
@@ -264,6 +276,11 @@ export const useInventoryStore = defineStore('inventory', () => {
   function startCombine() {
     targetCursor.point(mainCursor.index.value);
     mode.value = InventoryMode.ChoosingTarget;
+  }
+
+  /** Moves the target cursor one slot; it stays in the grid. */
+  function moveTargetCursor(direction: Direction) {
+    targetCursor.point(step(targetCursor.index.value, direction, ITEM_GRID_COLUMNS, player.inventorySize));
   }
 
   /** Combines the selected item with the one under the target cursor. */
@@ -353,6 +370,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     isModelFrozen,
     isModelClosing,
     point,
+    move,
     choose,
     back,
     onDescriptionTyped,
