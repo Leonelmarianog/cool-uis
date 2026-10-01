@@ -1,5 +1,7 @@
 import { computed, ref } from 'vue';
+import type { Direction } from '../types/direction';
 import type { PromptChoice } from '../types/prompt-choice';
+import { step } from './step';
 import { useCursor } from './use-cursor';
 
 /** A question with choices, shown in the description panel. */
@@ -26,7 +28,12 @@ export function usePrompt() {
     choices.value = [];
   }
 
-  return { question, choices, cursor, pointedChoice, open, close };
+  /** Moves the choice cursor one choice left or right; the choices form one row. At either end it stays. */
+  function move(direction: Direction) {
+    cursor.point(step(cursor.index.value, direction, choices.value.length, choices.value.length));
+  }
+
+  return { question, choices, cursor, pointedChoice, open, close, move };
 }
 
 export type Prompt = ReturnType<typeof usePrompt>;
