@@ -25,6 +25,20 @@ describe('toPlayerState', () => {
       });
     });
 
+    test('maps a weapon record without loaded rounds to a player weapon without them', () => {
+      const json = {
+        characterId: 'character-id',
+        healthStatus: 'fine',
+        inventory: [{ id: 'player-item-id', itemId: 'weapon-id', type: 'weapon' }],
+        equippedItemId: 'player-item-id',
+        itemBox: [],
+      };
+
+      const state = playerMapper.toPlayerState(json);
+
+      expect(state.inventory).toEqual([{ id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon }]);
+    });
+
     test('keeps the inventory items in the order of the record', () => {
       const json = {
         characterId: 'character-id',

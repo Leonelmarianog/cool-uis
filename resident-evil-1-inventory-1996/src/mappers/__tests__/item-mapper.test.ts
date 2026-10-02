@@ -35,9 +35,27 @@ describe('toItem', () => {
       };
 
       const item = itemMapper.toItem(json);
-      (item as WeaponItem).weapon.ammunition.push('other-ammunition-id');
+      (item as WeaponItem).weapon!.ammunition.push('other-ammunition-id');
 
       expect(json.weapon.ammunition).toEqual(['ammunition-id']);
+    });
+
+    test('maps a weapon record without weapon data to a weapon item without it', () => {
+      const json = {
+        id: 'weapon-id',
+        type: 'weapon',
+        name: 'WEAPON NAME',
+        sprite: 'weapon.png',
+      };
+
+      const item = itemMapper.toItem(json);
+
+      expect(item).toEqual({
+        id: 'weapon-id',
+        type: ItemType.Weapon,
+        name: 'WEAPON NAME',
+        sprite: 'weapon.png',
+      });
     });
   });
 

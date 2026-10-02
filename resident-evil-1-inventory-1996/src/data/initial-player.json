@@ -53,6 +53,7 @@
     { "id": "player-item-12", "itemId": "mixed-herbs-g-r", "type": "consumable" },
     { "id": "player-item-13", "itemId": "mixed-herbs-g-b", "type": "consumable" },
     { "id": "player-item-14", "itemId": "mixed-herbs-g-r-b", "type": "consumable" },
-    { "id": "player-item-15", "itemId": "serum", "type": "consumable" }
+    { "id": "player-item-15", "itemId": "serum", "type": "consumable" },
+    { "id": "player-item-16", "itemId": "combat-knife", "type": "weapon" }
   ]
 }

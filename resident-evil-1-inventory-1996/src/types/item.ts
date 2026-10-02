@@ -19,7 +19,8 @@ interface BaseItem {
 export interface WeaponItem extends BaseItem {
   type: typeof ItemType.Weapon;
 
-  weapon: {
+  /** Missing on weapons that use no ammunition, such as the combat knife. */
+  weapon?: {
     /** Rounds the weapon holds when fully loaded. */
     capacity: number;
     /** IDs of the ammunition items this weapon loads. */

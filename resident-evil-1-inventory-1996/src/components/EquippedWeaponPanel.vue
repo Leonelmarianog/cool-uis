@@ -12,7 +12,12 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>();
     <div class="equipped-weapon-panel__screen">
       <template v-if="weapon">
         <img class="equipped-weapon-panel__gun" :src="weapon.sprite" :alt="weapon.name" />
-        <span class="equipped-weapon-panel__ammo" :aria-label="`${weapon.amount} rounds`">{{ weapon.amount }}</span>
+        <span
+          v-if="weapon.amount !== undefined"
+          class="equipped-weapon-panel__ammo"
+          :aria-label="`${weapon.amount} rounds`"
+          >{{ weapon.amount }}</span
+        >
       </template>
     </div>
   </section>
