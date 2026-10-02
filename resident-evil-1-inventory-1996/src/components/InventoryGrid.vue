@@ -7,7 +7,7 @@ const {
   size,
   items = [],
   cursorIndex = null,
-  hasSelectedItem = false,
+  locked = false,
   targetIndex = null,
 } = defineProps<{
   /** The number of slots. */
@@ -16,8 +16,8 @@ const {
   items?: ItemView[];
   /** The main cursor's slot, or `null` while the main cursor is in another area. */
   cursorIndex?: number | null;
-  /** The main cursor stops blinking and stays dark while an item is selected. */
-  hasSelectedItem?: boolean;
+  /** The main cursor stops blinking and stays dark while an item is selected or the box list takes input. */
+  locked?: boolean;
   /** The target cursor's slot, or `null` while it is hidden. */
   targetIndex?: number | null;
 }>();
@@ -50,7 +50,7 @@ function cellLabel(item: ItemView | null, index: number): string {
         <span
           v-if="index === cursorIndex"
           class="inventory-grid__selection"
-          :class="{ 'inventory-grid__selection--locked': hasSelectedItem }"
+          :class="{ 'inventory-grid__selection--locked': locked }"
           aria-hidden="true"
         ></span>
         <template v-if="index === targetIndex">
@@ -133,7 +133,7 @@ function cellLabel(item: ItemView | null, index: number): string {
   pointer-events: none;
 }
 
-/* An item is selected: the frame stops blinking and stays dark. */
+/* An item is selected or the box list takes input: the frame stops blinking and stays dark. */
 .inventory-grid__selection--locked {
   animation: none;
   background-position: 0 100%;

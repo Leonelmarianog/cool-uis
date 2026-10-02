@@ -90,20 +90,6 @@ test.describe('top menu', () => {
     );
   });
 
-  test('pressing S on the dash button logs that the item box is not built yet', async ({ inventoryPage }) => {
-    await inventoryPage.open({
-      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
-    });
-    const message = inventoryPage.page.waitForEvent('console', event => event.text().startsWith('ITEM BOX'));
-
-    await inventoryPage.pointAtMenuButton('Item box');
-    await inventoryPage.confirm();
-
-    expect((await message).text(), 'the console says the item box is not built').toBe(
-      'ITEM BOX: the item box is not built yet.',
-    );
-  });
-
   test('pressing ↑ while the action menu is open keeps the red frame on the selected item', async ({
     inventoryPage,
   }) => {

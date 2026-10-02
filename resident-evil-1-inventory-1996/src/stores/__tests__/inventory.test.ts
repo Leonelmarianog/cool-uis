@@ -1,11 +1,12 @@
 import { createPinia, setActivePinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { useInventoryStore } from '../inventory';
-import { usePlayerStore } from '../player';
+import { ITEM_BOX_SIZE, usePlayerStore } from '../player';
 import { CursorArea } from '../../types/cursor-area';
 import { Direction } from '../../types/direction';
 import { InventoryMode } from '../../types/inventory-mode';
 import { ItemType } from '../../types/item';
+import { TopMenuOption } from '../../types/top-menu-option';
 
 beforeEach(() => {
   vi.stubGlobal('window', {});
@@ -16,6 +17,12 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
+
+/** Opens the item box from slot 1: ↑ to the dash button, then S. */
+function openItemBox(inventory: ReturnType<typeof useInventoryStore>) {
+  inventory.move(Direction.Up);
+  inventory.choose();
+}
 
 describe('move', () => {
   test('moves the main cursor while browsing', () => {
@@ -131,6 +138,45 @@ describe('move', () => {
     inventory.move(Direction.Down);
 
     expect(inventory.actionMenu.cursor.index).toBe(0);
+  });
+
+  test('keeps the main cursor in the grid when moving up from slot 1', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.mainCursor.gridIndex).toBe(0);
+  });
+
+  test('moves the main cursor in the grid while the item box is open', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+
+    inventory.move(Direction.Down);
+
+    expect(inventory.mainCursor.gridIndex).toBe(2);
+  });
+
+  test('moves the band down one row', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.choose();
+
+    inventory.move(Direction.Down);
+
+    expect(inventory.itemBoxRowIndex).toBe(1);
+  });
+
+  test('keeps the main cursor on the chosen slot while scrolling the box', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.move(Direction.Right);
+    inventory.choose();
+
+    inventory.move(Direction.Left);
+
+    expect(inventory.mainCursor.gridIndex).toBe(1);
   });
 });
 
@@ -333,16 +379,6 @@ describe('choose', () => {
     expect(info).toHaveBeenCalledWith('FILE: the files screen is not built yet.');
   });
 
-  test('logs that the item box is not built yet on the dash button', () => {
-    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
-    const inventory = useInventoryStore();
-    inventory.move(Direction.Up);
-
-    inventory.choose();
-
-    expect(info).toHaveBeenCalledWith('ITEM BOX: the item box is not built yet.');
-  });
-
   test('logs that there is no game to go back to on EXIT', () => {
     const info = vi.spyOn(console, 'info').mockImplementation(() => {});
     const inventory = useInventoryStore();
@@ -363,6 +399,101 @@ describe('choose', () => {
     inventory.choose();
 
     expect(inventory.mode).toBe(InventoryMode.Browsing);
+  });
+
+  test('opens the item box on S on the dash button', () => {
+    const inventory = useInventoryStore();
+
+    openItemBox(inventory);
+
+    expect(inventory.mode).toBe(InventoryMode.ChoosingBoxSlot);
+  });
+
+  test('puts the main cursor on slot 1 when the item box opens', () => {
+    const inventory = useInventoryStore();
+
+    openItemBox(inventory);
+
+    expect(inventory.mainCursor.gridIndex).toBe(0);
+  });
+
+  test('opens the box on row 1 again after it was closed', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.back();
+    inventory.back();
+
+    inventory.choose();
+
+    expect(inventory.itemBoxRowIndex).toBe(0);
+  });
+
+  test('turns the box list on for an empty slot', () => {
+    const player = usePlayerStore();
+    player.inventory = [];
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+
+    inventory.choose();
+
+    expect(inventory.isItemBoxActive).toBe(true);
+  });
+
+  test('exchanges the chosen slot with the band row on S', () => {
+    const player = usePlayerStore();
+    player.inventory = [];
+    player.itemBox[0] = { id: 'clip-9', itemId: 'clip', type: ItemType.Ammunition, amount: 9 };
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.choose();
+
+    inventory.choose();
+
+    expect(player.inventory[0]?.id).toBe('clip-9');
+  });
+
+  test('goes back to choosing a slot after an exchange', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.choose();
+
+    inventory.choose();
+
+    expect(inventory.mode).toBe(InventoryMode.ChoosingBoxSlot);
+  });
+
+  test('storing the chosen item keeps the cursor on that slot', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 1 },
+      { id: 'clip-2', itemId: 'clip', type: ItemType.Ammunition, amount: 2 },
+    ];
+    player.itemBox[0] = null;
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.move(Direction.Right);
+    inventory.choose();
+
+    inventory.choose();
+
+    expect([inventory.mainCursor.gridIndex, inventory.itemUnderCursor]).toEqual([1, null]);
+  });
+
+  test('taking a box item into a far empty slot keeps the cursor on that slot', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 1 }];
+    player.itemBox[0] = { id: 'clip-9', itemId: 'clip', type: ItemType.Ammunition, amount: 9 };
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.move(Direction.Down);
+    inventory.move(Direction.Down);
+    inventory.choose();
+
+    inventory.choose();
+
+    expect([inventory.mainCursor.gridIndex, player.inventory[1]?.id]).toEqual([4, 'clip-9']);
   });
 });
 
@@ -508,6 +639,35 @@ describe('back', () => {
     inventory.back();
 
     expect(inventory.mode).toBe(InventoryMode.Browsing);
+  });
+
+  test('closes the item box on A from the grid', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+
+    inventory.back();
+
+    expect(inventory.isItemBoxOpen).toBe(false);
+  });
+
+  test('puts the main cursor on the dash button when the item box closes', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.move(Direction.Down);
+
+    inventory.back();
+
+    expect(inventory.mainCursor.topMenuIndex).toBe(2);
+  });
+
+  test('goes back to choosing a box slot on A from the box list', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.choose();
+
+    inventory.back();
+
+    expect(inventory.mode).toBe(InventoryMode.ChoosingBoxSlot);
   });
 });
 
@@ -656,5 +816,39 @@ describe('itemUnderCursor', () => {
     inventory.move(Direction.Up);
 
     expect(inventory.itemUnderCursor).toBeNull();
+  });
+});
+
+describe('isCursorLocked', () => {
+  test('locks the main cursor while the box list is on', () => {
+    const player = usePlayerStore();
+    player.inventory = [];
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+
+    inventory.choose();
+
+    expect(inventory.isCursorLocked).toBe(true);
+  });
+});
+
+describe('itemBoxRows', () => {
+  test('shows the last row above the band on row 1', () => {
+    const player = usePlayerStore();
+    player.itemBox[ITEM_BOX_SIZE - 1] = { id: 'clip-9', itemId: 'clip', type: ItemType.Ammunition, amount: 9 };
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+
+    expect(inventory.itemBoxRows[0]?.id).toBe('clip-9');
+  });
+});
+
+describe('openOption', () => {
+  test('lights the dash button while the item box is open', () => {
+    const inventory = useInventoryStore();
+
+    openItemBox(inventory);
+
+    expect(inventory.openOption).toBe(TopMenuOption.ItemBox);
   });
 });

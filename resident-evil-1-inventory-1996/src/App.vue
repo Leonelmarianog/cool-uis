@@ -52,7 +52,7 @@ useKeyboard();
           :size="player.inventorySize"
           :items="inventory.items"
           :cursor-index="inventory.mainCursor.gridIndex"
-          :has-selected-item="inventory.hasSelectedItem"
+          :locked="inventory.isCursorLocked"
           :target-index="inventory.targetIndex"
         />
       </div>
