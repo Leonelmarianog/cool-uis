@@ -24,6 +24,10 @@ function amountOf(playerItem: PlayerItem): number | undefined {
   return undefined;
 }
 
+function amountSuffixOf(item: Item): '%' | undefined {
+  return item.type === ItemType.Weapon && item.weapon?.fuel ? '%' : undefined;
+}
+
 export const itemViewMapper = {
   toItemView(playerItem: PlayerItem, item: Item): ItemView {
     return {
@@ -32,6 +36,7 @@ export const itemViewMapper = {
       type: item.type,
       sprite: imageUrl(item.sprite),
       amount: amountOf(playerItem),
+      amountSuffix: amountSuffixOf(item),
     };
   },
 };

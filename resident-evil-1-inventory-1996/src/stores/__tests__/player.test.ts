@@ -166,4 +166,28 @@ describe('reload', () => {
 
     expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
   });
+
+  test('refuses a weapon that runs on fuel', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'flamethrower-1', itemId: 'flamethrower', type: ItemType.Weapon, loadedRounds: 100 },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+    ];
+
+    const reloaded = player.reload('flamethrower-1', 'clip-1');
+
+    expect([reloaded, player.inventory[1]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
+
+  test('refuses ammunition combined into a weapon that runs on fuel', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+      { id: 'flamethrower-1', itemId: 'flamethrower', type: ItemType.Weapon, loadedRounds: 100 },
+    ];
+
+    const reloaded = player.reload('clip-1', 'flamethrower-1');
+
+    expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
 });

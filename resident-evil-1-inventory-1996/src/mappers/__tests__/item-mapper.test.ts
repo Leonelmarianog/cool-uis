@@ -62,6 +62,21 @@ describe('toItem', () => {
         description: 'Item description.',
       });
     });
+
+    test('maps a weapon record with fuel to a weapon item with fuel', () => {
+      const json = {
+        id: 'weapon-id',
+        type: 'weapon',
+        name: 'WEAPON NAME',
+        sprite: 'weapon.png',
+        description: 'Item description.',
+        weapon: { capacity: 100, ammunition: [], fuel: true },
+      };
+
+      const item = itemMapper.toItem(json);
+
+      expect((item as WeaponItem).weapon).toEqual({ capacity: 100, ammunition: [], fuel: true });
+    });
   });
 
   describe('mapping ammunition', () => {

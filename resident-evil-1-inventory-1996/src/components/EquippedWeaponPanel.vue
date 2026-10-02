@@ -15,8 +15,8 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>();
         <span
           v-if="weapon.amount !== undefined"
           class="equipped-weapon-panel__ammo"
-          :aria-label="`${weapon.amount} rounds`"
-          >{{ weapon.amount }}</span
+          :aria-label="weapon.amountSuffix ? `${weapon.amount}${weapon.amountSuffix} fuel` : `${weapon.amount} rounds`"
+          >{{ weapon.amount }}{{ weapon.amountSuffix }}</span
         >
       </template>
     </div>

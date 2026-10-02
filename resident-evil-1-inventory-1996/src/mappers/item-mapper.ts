@@ -11,7 +11,11 @@ function toWeaponItem(json: ItemJson): WeaponItem {
     sprite: json.sprite,
     description: json.description,
     type: ItemType.Weapon,
-    weapon: json.weapon && { capacity: json.weapon.capacity, ammunition: [...json.weapon.ammunition] },
+    weapon: json.weapon && {
+      capacity: json.weapon.capacity,
+      ammunition: [...json.weapon.ammunition],
+      fuel: json.weapon.fuel,
+    },
   };
 }
 

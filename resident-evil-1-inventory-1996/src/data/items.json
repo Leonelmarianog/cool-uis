@@ -39,6 +39,18 @@
     "description": "This doesn't seem to be\nenough for this mission."
   },
   {
+    "id": "flamethrower",
+    "type": "weapon",
+    "name": "FLAMETHROWER",
+    "sprite": "weapon/flamethrower.png",
+    "description": "Can throw flame for 9\nsec. with max. fuel.",
+    "weapon": {
+      "capacity": 100,
+      "ammunition": [],
+      "fuel": true
+    }
+  },
+  {
     "id": "shells",
     "type": "ammunition",
     "name": "SHELLS",

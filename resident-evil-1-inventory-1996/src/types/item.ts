@@ -28,6 +28,8 @@ export interface WeaponItem extends BaseItem {
     capacity: number;
     /** IDs of the ammunition items this weapon loads. */
     ammunition: string[];
+    /** Whether its rounds are fuel, shown as a percentage. The weapon then loads no ammunition. */
+    fuel?: boolean;
   };
 }
 

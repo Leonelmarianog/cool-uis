@@ -34,7 +34,7 @@ const sliderPosition = computed(() => rowIndex / (ITEM_BOX_SIZE - 1));
 /** The row's accessible name, such as "Row 5: SHOTGUN, 5" or "Row 6: empty". */
 function rowLabel(item: ItemView | null, number: number): string {
   if (!item) return `Row ${number}: empty`;
-  const amount = item.amount === undefined ? '' : `, ${item.amount}`;
+  const amount = item.amount === undefined ? '' : `, ${item.amount}${item.amountSuffix ?? ''}`;
   return `Row ${number}: ${item.name}${amount}`;
 }
 </script>
