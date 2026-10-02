@@ -45,12 +45,17 @@ function rowLabel(item: ItemView | null, number: number): string {
       v-for="(item, position) in rows"
       :key="rowNumbers[position]"
       class="item-box-list__row"
-      :class="{ 'item-box-list__row--band': position === BAND_POSITION }"
+      :class="{
+        'item-box-list__row--band': position === BAND_POSITION,
+        'item-box-list__row--first': rowNumbers[position] === 1,
+      }"
       role="listitem"
       :aria-label="rowLabel(item, rowNumbers[position])"
       :aria-current="position === BAND_POSITION ? 'true' : undefined"
     >
-      <span class="item-box-list__name">{{ item?.name ?? EMPTY_ROW_TEXT }}</span>
+      <span class="item-box-list__name" :class="{ 'item-box-list__name--empty': !item }">{{
+        item?.name ?? EMPTY_ROW_TEXT
+      }}</span>
     </div>
   </div>
   <div class="item-box-scrollbar" aria-hidden="true">
@@ -106,6 +111,15 @@ function rowLabel(item: ItemView | null, number: number): string {
   transform-origin: left;
 }
 
+/* -Nothing- is about 65% as bright as an item name, in both states (item-box.gif). */
+.item-box-list__name--empty {
+  color: #302e2a;
+}
+
+.item-box-list--active .item-box-list__name--empty {
+  color: #7d7b74;
+}
+
 /* Bright letters get one game pixel of outline outside the letter face; dimmed ones have none. */
 .item-box-list--active .item-box-list__name {
   -webkit-text-stroke: calc(2 * var(--game-pixel)) #303048;
@@ -113,13 +127,16 @@ function rowLabel(item: ItemView | null, number: number): string {
 }
 
 .item-box-list__row--band {
-  border-top: var(--game-pixel) solid #7d6c1b;
   background: #010039;
 }
 
 .item-box-list--active .item-box-list__row--band {
-  border-top: 0;
   background: linear-gradient(#062055, #0c2968 50%, #062055);
+}
+
+/* The yellow line marks where the loop starts again: it is always the top of row 1. */
+.item-box-list__row--first {
+  border-top: var(--game-pixel) solid #7d6c1b;
 }
 
 .item-box-scrollbar {

@@ -8,7 +8,7 @@ const GRID_COLUMNS = 2;
 const MENU_BUTTON_PATHS: Record<string, { slot: number; ups: number }> = {
   MAP: { slot: 1, ups: 2 },
   FILE: { slot: 2, ups: 2 },
-  'Item box': { slot: 1, ups: 1 },
+  BOX: { slot: 1, ups: 1 },
   EXIT: { slot: 2, ups: 1 },
 };
 
@@ -71,7 +71,7 @@ export class InventoryPage {
     return this.page.getByRole('img', { name: `Rotate ${direction}` });
   }
 
-  // A button of the top menu: MAP, FILE, EXIT, or the dash button ("Item box").
+  // A button of the top menu: MAP, FILE, EXIT, or BOX.
   menuButton(name: string): Locator {
     return this.page.getByRole('navigation', { name: 'Inventory menu' }).getByRole('button', { name });
   }
@@ -117,16 +117,16 @@ export class InventoryPage {
     await this.confirm();
   }
 
-  /** Moves the main cursor from the grid up to a top menu button: MAP, FILE, EXIT or "Item box". */
+  /** Moves the main cursor from the grid up to a top menu button: MAP, FILE, EXIT or BOX. */
   async pointAtMenuButton(name: string) {
     const path = MENU_BUTTON_PATHS[name];
     await this.pointAt(path.slot);
     await this.press('ArrowUp', path.ups);
   }
 
-  /** Opens the item box: ↑ from slot 1 to the dash button, then S. */
+  /** Opens the item box: ↑ from slot 1 to the BOX button, then S. */
   async openItemBox() {
-    await this.pointAtMenuButton('Item box');
+    await this.pointAtMenuButton('BOX');
     await this.confirm();
   }
 

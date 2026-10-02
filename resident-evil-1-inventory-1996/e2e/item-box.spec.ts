@@ -13,16 +13,14 @@ test.describe('opening the item box', () => {
     await expect(inventoryPage.itemBox, 'the list is dimmed').not.toHaveClass(/item-box-list--active/);
   });
 
-  test('the menu panel lights the dash button and dims the other buttons', async ({ inventoryPage }) => {
+  test('the menu panel lights the BOX button and dims the other buttons', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
     });
 
     await inventoryPage.openItemBox();
 
-    await expect(inventoryPage.menuButton('Item box'), 'the dash button is lit').toHaveClass(
-      /menu-panel__button--pointed/,
-    );
+    await expect(inventoryPage.menuButton('BOX'), 'the BOX button is lit').toHaveClass(/menu-panel__button--pointed/);
     await expect(inventoryPage.menuButton('EXIT'), 'EXIT is dimmed').toHaveClass(/menu-panel__button--dimmed/);
   });
 });
@@ -139,7 +137,7 @@ test.describe('backing out of the item box', () => {
     await expect(inventoryPage.itemBox, 'the list is dimmed').not.toHaveClass(/item-box-list--active/);
   });
 
-  test('pressing A in the grid closes the item box, with the dash button pointed', async ({ inventoryPage }) => {
+  test('pressing A in the grid closes the item box, with the BOX button pointed', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
     });
@@ -149,8 +147,48 @@ test.describe('backing out of the item box', () => {
     await inventoryPage.backOut();
 
     await expect(inventoryPage.itemBox, 'the item box is closed').toBeHidden();
-    await expect(inventoryPage.menuButton('Item box'), 'the dash button is pointed').toHaveClass(
+    await expect(inventoryPage.menuButton('BOX'), 'the BOX button is pointed').toHaveClass(
       /menu-panel__button--pointed/,
+    );
+  });
+});
+
+test.describe('drawing the item box list', () => {
+  test('the yellow line stays above row 1 while the list scrolls', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+    });
+    await inventoryPage.openItemBox();
+    await inventoryPage.chooseSlot(1);
+
+    await inventoryPage.press('ArrowDown');
+
+    await expect(inventoryPage.itemBoxRow(1), 'row 1 has the yellow line').toHaveClass(/item-box-list__row--first/);
+  });
+
+  test('the yellow line stays above row 1 after going back to the grid', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+    });
+    await inventoryPage.openItemBox();
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.press('ArrowDown');
+
+    await inventoryPage.backOut();
+
+    await expect(inventoryPage.bandRow(), 'row 2 has no yellow line').not.toHaveClass(/item-box-list__row--first/);
+  });
+
+  test('an empty row shows -Nothing- greyed out', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+      itemBox: [],
+    });
+
+    await inventoryPage.openItemBox();
+
+    await expect(inventoryPage.bandRow().locator('span'), 'the empty row is greyed out').toHaveClass(
+      /item-box-list__name--empty/,
     );
   });
 });

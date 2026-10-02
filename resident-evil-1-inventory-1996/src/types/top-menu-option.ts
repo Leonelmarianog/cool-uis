@@ -2,8 +2,8 @@
 export const TopMenuOption = {
   Map: 'MAP',
   File: 'FILE',
-  /** The dash button, which opens the item box. */
-  ItemBox: 'ITEM BOX',
+  /** Opens the item box. */
+  ItemBox: 'BOX',
   Exit: 'EXIT',
 } as const;
 

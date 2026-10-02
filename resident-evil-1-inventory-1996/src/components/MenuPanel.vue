@@ -23,10 +23,8 @@ const { cursorIndex = null, openOption = null } = defineProps<{
           'menu-panel__button--dimmed': openOption !== null && option !== openOption,
         }"
         type="button"
-        :aria-label="option === TopMenuOption.ItemBox ? 'Item box' : undefined"
       >
-        <span v-if="option === TopMenuOption.ItemBox" class="menu-panel__dash"></span>
-        <span v-else class="menu-panel__label">{{ option }}</span>
+        <span class="menu-panel__label">{{ option }}</span>
       </button>
     </div>
   </nav>
@@ -81,12 +79,6 @@ const { cursorIndex = null, openOption = null } = defineProps<{
   text-align: center;
   /* Widen the condensed letters to the game's 2-pixel strokes and word widths. */
   transform: scaleX(1.22);
-}
-
-.menu-panel__dash {
-  width: calc(24 * var(--game-pixel));
-  height: calc(4 * var(--game-pixel));
-  background: currentColor;
 }
 
 /* The button under the main cursor. */

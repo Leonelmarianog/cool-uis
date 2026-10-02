@@ -199,7 +199,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     [CursorArea.TopMenu]: () => chooseTopMenuOption(),
   };
 
-  /** What each top menu button does. The dash button opens the item box; the other screens are not built yet, so those buttons log. */
+  /** What each top menu button does. The BOX button opens the item box; the other screens are not built yet, so those buttons log. */
   const topMenuHandlers: Record<TopMenuOption, () => void> = {
     [TopMenuOption.Map]: () => console.info('MAP: the map screen is not built yet.'),
     [TopMenuOption.File]: () => console.info('FILE: the files screen is not built yet.'),
@@ -304,7 +304,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     mode.value = InventoryMode.ChoosingBoxSlot;
   }
 
-  /** Closes the item box; the main cursor goes back to the dash button. */
+  /** Closes the item box; the main cursor goes back to the BOX button. */
   function closeItemBox() {
     mainCursor.point(CursorArea.TopMenu, TOP_MENU_OPTIONS.indexOf(TopMenuOption.ItemBox));
     mode.value = InventoryMode.Browsing;

@@ -18,7 +18,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-/** Opens the item box from slot 1: ↑ to the dash button, then S. */
+/** Opens the item box from slot 1: ↑ to the BOX button, then S. */
 function openItemBox(inventory: ReturnType<typeof useInventoryStore>) {
   inventory.move(Direction.Up);
   inventory.choose();
@@ -401,7 +401,7 @@ describe('choose', () => {
     expect(inventory.mode).toBe(InventoryMode.Browsing);
   });
 
-  test('opens the item box on S on the dash button', () => {
+  test('opens the item box on S on the BOX button', () => {
     const inventory = useInventoryStore();
 
     openItemBox(inventory);
@@ -650,7 +650,7 @@ describe('back', () => {
     expect(inventory.isItemBoxOpen).toBe(false);
   });
 
-  test('puts the main cursor on the dash button when the item box closes', () => {
+  test('puts the main cursor on the BOX button when the item box closes', () => {
     const inventory = useInventoryStore();
     openItemBox(inventory);
     inventory.move(Direction.Down);
@@ -844,7 +844,7 @@ describe('itemBoxRows', () => {
 });
 
 describe('openOption', () => {
-  test('lights the dash button while the item box is open', () => {
+  test('lights the BOX button while the item box is open', () => {
     const inventory = useInventoryStore();
 
     openItemBox(inventory);
