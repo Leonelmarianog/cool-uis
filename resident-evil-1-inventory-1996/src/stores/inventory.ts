@@ -149,6 +149,8 @@ export const useInventoryStore = defineStore('inventory', () => {
       back: () => setMode(InventoryMode.ClosingModel),
     },
     [InventoryMode.ClosingModel]: {},
+    [InventoryMode.ChoosingBoxSlot]: {},
+    [InventoryMode.ChoosingBoxRow]: {},
   };
 
   /** What each option of the action menu does to the selected item. CHECK and COMBN start a sequence of modes. */
