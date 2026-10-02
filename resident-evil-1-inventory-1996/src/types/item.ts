@@ -14,6 +14,9 @@ interface BaseItem {
 
   /** Image path under `src/assets/items/`, e.g. `"weapon/beretta.png"`. */
   sprite: string;
+
+  /** CHECK's text, as the game shows it. A "\n" starts its second line. */
+  description: string;
 }
 
 export interface WeaponItem extends BaseItem {

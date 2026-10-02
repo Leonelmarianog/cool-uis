@@ -11,6 +11,7 @@ describe('toItem', () => {
         type: 'weapon',
         name: 'WEAPON NAME',
         sprite: 'weapon.png',
+        description: 'Item description.',
         weapon: { capacity: 10, ammunition: ['ammunition-id'] },
       };
 
@@ -21,6 +22,7 @@ describe('toItem', () => {
         type: ItemType.Weapon,
         name: 'WEAPON NAME',
         sprite: 'weapon.png',
+        description: 'Item description.',
         weapon: { capacity: 10, ammunition: ['ammunition-id'] },
       });
     });
@@ -31,6 +33,7 @@ describe('toItem', () => {
         type: 'weapon',
         name: 'WEAPON NAME',
         sprite: 'weapon.png',
+        description: 'Item description.',
         weapon: { capacity: 10, ammunition: ['ammunition-id'] },
       };
 
@@ -46,6 +49,7 @@ describe('toItem', () => {
         type: 'weapon',
         name: 'WEAPON NAME',
         sprite: 'weapon.png',
+        description: 'Item description.',
       };
 
       const item = itemMapper.toItem(json);
@@ -55,6 +59,7 @@ describe('toItem', () => {
         type: ItemType.Weapon,
         name: 'WEAPON NAME',
         sprite: 'weapon.png',
+        description: 'Item description.',
       });
     });
   });
@@ -66,6 +71,7 @@ describe('toItem', () => {
         type: 'ammunition',
         name: 'AMMUNITION NAME',
         sprite: 'ammunition.png',
+        description: 'Item description.',
         ammunition: { maxStack: 100 },
       };
 
@@ -76,6 +82,7 @@ describe('toItem', () => {
         type: ItemType.Ammunition,
         name: 'AMMUNITION NAME',
         sprite: 'ammunition.png',
+        description: 'Item description.',
         ammunition: { maxStack: 100 },
       });
     });
@@ -86,6 +93,7 @@ describe('toItem', () => {
         type: 'ammunition',
         name: 'AMMUNITION NAME',
         sprite: 'ammunition.png',
+        description: 'Item description.',
         ammunition: { maxStack: 100 },
       };
 
@@ -103,6 +111,7 @@ describe('toItem', () => {
         type: 'consumable',
         name: 'CONSUMABLE NAME',
         sprite: 'consumable.png',
+        description: 'Item description.',
         herb: true,
         recovery: { steps: 1, curesPoison: false },
       };
@@ -114,6 +123,7 @@ describe('toItem', () => {
         type: ItemType.Consumable,
         name: 'CONSUMABLE NAME',
         sprite: 'consumable.png',
+        description: 'Item description.',
         herb: true,
         recovery: { steps: 1, curesPoison: false },
       });
@@ -125,6 +135,7 @@ describe('toItem', () => {
         type: 'consumable',
         name: 'CONSUMABLE NAME',
         sprite: 'consumable.png',
+        description: 'Item description.',
         herb: true,
       };
 
@@ -135,6 +146,7 @@ describe('toItem', () => {
         type: ItemType.Consumable,
         name: 'CONSUMABLE NAME',
         sprite: 'consumable.png',
+        description: 'Item description.',
         herb: true,
         recovery: undefined,
       });
@@ -146,6 +158,7 @@ describe('toItem', () => {
         type: 'consumable',
         name: 'CONSUMABLE NAME',
         sprite: 'consumable.png',
+        description: 'Item description.',
         recovery: { steps: 1, curesPoison: false },
       };
 
@@ -156,6 +169,7 @@ describe('toItem', () => {
         type: ItemType.Consumable,
         name: 'CONSUMABLE NAME',
         sprite: 'consumable.png',
+        description: 'Item description.',
         herb: undefined,
         recovery: { steps: 1, curesPoison: false },
       });
@@ -167,6 +181,7 @@ describe('toItem', () => {
         type: 'consumable',
         name: 'CONSUMABLE NAME',
         sprite: 'consumable.png',
+        description: 'Item description.',
         herb: true,
         recovery: { steps: 1, curesPoison: false },
       };

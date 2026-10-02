@@ -4,6 +4,7 @@
     "type": "weapon",
     "name": "BERETTA",
     "sprite": "weapon/beretta.png",
+    "description": "Beretta M92FS. Automatic\nloaded with 9mm bullets.",
     "weapon": {
       "capacity": 15,
       "ammunition": ["clip"]
@@ -14,6 +15,7 @@
     "type": "ammunition",
     "name": "CLIP",
     "sprite": "ammo/clip.png",
+    "description": "Clip for Beretta.",
     "ammunition": {
       "maxStack": 255
     }
@@ -23,6 +25,7 @@
     "type": "weapon",
     "name": "SHOTGUN",
     "sprite": "weapon/shotgun.png",
+    "description": "Remington M870. A\npump-action shotgun.",
     "weapon": {
       "capacity": 5,
       "ammunition": ["shells"]
@@ -32,13 +35,15 @@
     "id": "combat-knife",
     "type": "weapon",
     "name": "COMBAT KNIFE",
-    "sprite": "weapon/combat-knife.png"
+    "sprite": "weapon/combat-knife.png",
+    "description": "This doesn't seem to be\nenough for this mission."
   },
   {
     "id": "shells",
     "type": "ammunition",
     "name": "SHELLS",
     "sprite": "ammo/shells.png",
+    "description": "Shells for the Shotgun.",
     "ammunition": {
       "maxStack": 255
     }
@@ -48,21 +53,30 @@
     "type": "consumable",
     "name": "F.-AID SPRAY",
     "sprite": "recovery-items/first-aid-spray.png",
-    "recovery": { "steps": 3, "curesPoison": true }
+    "description": "I can heal any wound with this.",
+    "recovery": {
+      "steps": 3,
+      "curesPoison": true
+    }
   },
   {
     "id": "green-herb",
     "type": "consumable",
     "name": "GREEN HERB",
     "sprite": "recovery-items/green-herb.png",
+    "description": "It's a local herb.",
     "herb": true,
-    "recovery": { "steps": 1, "curesPoison": false }
+    "recovery": {
+      "steps": 1,
+      "curesPoison": false
+    }
   },
   {
     "id": "red-herb",
     "type": "consumable",
     "name": "RED HERB",
     "sprite": "recovery-items/red-herb.png",
+    "description": "It's a local herb.",
     "herb": true
   },
   {
@@ -70,46 +84,70 @@
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-g.png",
+    "description": "It's a mixture of 2 green herbs.",
     "herb": true,
-    "recovery": { "steps": 2, "curesPoison": false }
+    "recovery": {
+      "steps": 2,
+      "curesPoison": false
+    }
   },
   {
     "id": "mixed-herbs-g-r",
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-r.png",
+    "description": "It's a mixture of\ngreen and red herbs.",
     "herb": true,
-    "recovery": { "steps": 3, "curesPoison": false }
+    "recovery": {
+      "steps": 3,
+      "curesPoison": false
+    }
   },
   {
     "id": "blue-herb",
     "type": "consumable",
     "name": "BLUE HERB",
     "sprite": "recovery-items/blue-herb.png",
+    "description": "It's a local herb.",
     "herb": true,
-    "recovery": { "steps": 0, "curesPoison": true }
+    "recovery": {
+      "steps": 0,
+      "curesPoison": true
+    }
   },
   {
     "id": "mixed-herbs-g-b",
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-b.png",
+    "description": "It's a mixture of\ngreen and blue herbs.",
     "herb": true,
-    "recovery": { "steps": 1, "curesPoison": true }
+    "recovery": {
+      "steps": 1,
+      "curesPoison": true
+    }
   },
   {
     "id": "mixed-herbs-g-r-b",
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-r-b.png",
+    "description": "It's a mixture of green,\nblue and red herbs.",
     "herb": true,
-    "recovery": { "steps": 3, "curesPoison": true }
+    "recovery": {
+      "steps": 3,
+      "curesPoison": true
+    }
   },
   {
     "id": "serum",
     "type": "consumable",
     "name": "SERUM",
     "sprite": "recovery-items/serum.png",
-    "recovery": { "steps": 0, "curesPoison": true }
+    "description": "Only one dose is left.",
+    "recovery": {
+      "steps": 0,
+      "curesPoison": true
+    }
   }
 ]
