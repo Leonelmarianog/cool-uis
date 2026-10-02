@@ -190,4 +190,31 @@ describe('reload', () => {
 
     expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
   });
+
+  test('loads magnum rounds into the Colt Python', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'colt-1', itemId: 'colt-python', type: ItemType.Weapon, loadedRounds: 2 },
+      { id: 'magnum-1', itemId: 'magnum-rounds', type: ItemType.Ammunition, amount: 12 },
+    ];
+
+    player.reload('colt-1', 'magnum-1');
+
+    expect(player.inventory).toEqual([
+      expect.objectContaining({ loadedRounds: 6 }),
+      expect.objectContaining({ amount: 8 }),
+    ]);
+  });
+
+  test('refuses a clip combined with the rocket launcher', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'rocket-1', itemId: 'rocket-launcher', type: ItemType.Weapon, loadedRounds: 4 },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+    ];
+
+    const reloaded = player.reload('rocket-1', 'clip-1');
+
+    expect([reloaded, player.inventory[1]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
 });
