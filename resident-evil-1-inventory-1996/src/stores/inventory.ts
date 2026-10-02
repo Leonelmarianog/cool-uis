@@ -315,9 +315,15 @@ export const useInventoryStore = defineStore('inventory', () => {
     mainCursor.point(CursorArea.Grid, step(mainCursor.index.value, direction, ITEM_GRID_COLUMNS, player.inventorySize));
   }
 
-  /** Exchanges the chosen slot with the band row; the main cursor stays on the slot and the list dims. */
+  /**
+   * Exchanges the chosen slot with the band row; the main cursor stays on the slot and the list dims.
+   * An empty slot and an empty row have nothing to exchange, so the list stays on.
+   */
   function exchangeWithBandRow() {
-    player.exchangeWithBox(mainCursor.index.value, itemBox.cursor.index.value);
+    const slotIndex = mainCursor.index.value;
+    const rowIndex = itemBox.cursor.index.value;
+    if (!player.inventory[slotIndex] && !player.itemBox[rowIndex]) return;
+    player.exchangeWithBox(slotIndex, rowIndex);
     mode.value = InventoryMode.ChoosingBoxSlot;
   }
 

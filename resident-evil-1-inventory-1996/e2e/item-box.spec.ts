@@ -124,6 +124,21 @@ test.describe('moving items', () => {
   });
 });
 
+test.describe('choosing an empty row', () => {
+  test('choosing an empty row for an empty slot keeps the list on', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+      itemBox: [],
+    });
+    await inventoryPage.openItemBox();
+    await inventoryPage.chooseSlot(2);
+
+    await inventoryPage.confirm();
+
+    await expect(inventoryPage.itemBox, 'the list is still bright').toHaveClass(/item-box-list--active/);
+  });
+});
+
 test.describe('backing out of the item box', () => {
   test('pressing A in the list goes back to the grid', async ({ inventoryPage }) => {
     await inventoryPage.open({

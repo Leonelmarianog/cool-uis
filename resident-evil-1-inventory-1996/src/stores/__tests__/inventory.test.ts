@@ -495,6 +495,20 @@ describe('choose', () => {
 
     expect([inventory.mainCursor.gridIndex, player.inventory[1]?.id]).toEqual([4, 'clip-9']);
   });
+
+  test('keeps the box list on when an empty slot meets an empty row', () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 1 }];
+    player.itemBox[0] = null;
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.move(Direction.Right);
+    inventory.choose();
+
+    inventory.choose();
+
+    expect(inventory.mode).toBe(InventoryMode.ChoosingBoxRow);
+  });
 });
 
 describe('back', () => {

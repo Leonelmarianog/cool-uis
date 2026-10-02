@@ -165,7 +165,7 @@ item uses the same very low-poly model and the Beretta's description from
 | item | item | the two items swap |
 | empty | item | the item goes after the last inventory item |
 | item | empty | the item is stored; the items after it move up |
-| empty | empty | nothing |
+| empty | empty | nothing; the list stays on |
 
 - After the exchange the cursor stays on the chosen slot and the list dims.
 - A weapon that leaves the inventory is unequipped; one that comes in is not
