@@ -64,12 +64,13 @@ From this directory, build and start the production app:
 docker compose up --build -d --wait
 ```
 
-Open http://localhost:8080.
+Open http://localhost:8080/re1-1996-inventory/.
 
 The image builds with Node and serves the generated static files with Nginx.
-Compose inherits the image's healthcheck, which requests `/` every 30 seconds
-and marks the container unhealthy after three consecutive failures. The startup
-grace period is five seconds, and each check has a three-second timeout.
+Compose inherits the image's healthcheck, which requests `/re1-1996-inventory/`
+every 30 seconds and marks the container unhealthy after three consecutive
+failures. The startup grace period is five seconds, and each check has a
+three-second timeout.
 Docker does not automatically restart a container solely because it is unhealthy.
 
 ```sh
