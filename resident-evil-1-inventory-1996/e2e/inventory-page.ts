@@ -8,7 +8,7 @@ const GRID_COLUMNS = 2;
 const MENU_BUTTON_PATHS: Record<string, { slot: number; ups: number }> = {
   MAP: { slot: 1, ups: 2 },
   FILE: { slot: 2, ups: 2 },
-  'Item box': { slot: 1, ups: 1 },
+  BOX: { slot: 1, ups: 1 },
   EXIT: { slot: 2, ups: 1 },
 };
 
@@ -25,6 +25,8 @@ export class InventoryPage {
   readonly equippedWeaponPanel: Locator;
   // Named after the health status, as in "Health: Caution.".
   readonly healthScreen: Locator;
+  // The item box list; it shows three rows, the middle one in the band.
+  readonly itemBox: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -34,6 +36,7 @@ export class InventoryPage {
     this.rotateArrows = page.getByRole('img', { name: /^Rotate / });
     this.equippedWeaponPanel = page.getByRole('region', { name: 'Equipped weapon panel' });
     this.healthScreen = page.getByRole('img', { name: /^Health:/ });
+    this.itemBox = page.getByRole('list', { name: 'Item box' });
   }
 
   // Opens the app with parts of the player's starting state replaced (see
@@ -68,7 +71,7 @@ export class InventoryPage {
     return this.page.getByRole('img', { name: `Rotate ${direction}` });
   }
 
-  // A button of the top menu: MAP, FILE, EXIT, or the dash button ("Item box").
+  // A button of the top menu: MAP, FILE, EXIT, or BOX.
   menuButton(name: string): Locator {
     return this.page.getByRole('navigation', { name: 'Inventory menu' }).getByRole('button', { name });
   }
@@ -114,11 +117,27 @@ export class InventoryPage {
     await this.confirm();
   }
 
-  /** Moves the main cursor from the grid up to a top menu button: MAP, FILE, EXIT or "Item box". */
+  /** Moves the main cursor from the grid up to a top menu button: MAP, FILE, EXIT or BOX. */
   async pointAtMenuButton(name: string) {
     const path = MENU_BUTTON_PATHS[name];
     await this.pointAt(path.slot);
     await this.press('ArrowUp', path.ups);
+  }
+
+  /** Opens the item box: ↑ from slot 1 to the BOX button, then S. */
+  async openItemBox() {
+    await this.pointAtMenuButton('BOX');
+    await this.confirm();
+  }
+
+  /** A visible row of the item box, numbered from 1, as in its label ("Row 5: SHOTGUN, 5"). */
+  itemBoxRow(number: number): Locator {
+    return this.itemBox.getByRole('listitem', { name: new RegExp(`^Row ${number}:`) });
+  }
+
+  /** The row in the band. */
+  bandRow(): Locator {
+    return this.itemBox.locator('[aria-current="true"]');
   }
 
   /** Moves the red frame to the action with ↑ / ↓, then presses S. */

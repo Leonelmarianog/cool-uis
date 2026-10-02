@@ -2,9 +2,11 @@
 import panel from '../assets/ui/menu-panel.png';
 import { TOP_MENU_OPTIONS, TopMenuOption } from '../types/top-menu-option';
 
-const { cursorIndex = null } = defineProps<{
+const { cursorIndex = null, openOption = null } = defineProps<{
   /** The main cursor's button, or `null` while the main cursor is in another area. */
   cursorIndex?: number | null;
+  /** The button whose screen is open: it is lit and the other buttons are dimmed. */
+  openOption?: TopMenuOption | null;
 }>();
 </script>
 
@@ -16,12 +18,13 @@ const { cursorIndex = null } = defineProps<{
         v-for="(option, index) in TOP_MENU_OPTIONS"
         :key="option"
         class="menu-panel__button"
-        :class="{ 'menu-panel__button--pointed': index === cursorIndex }"
+        :class="{
+          'menu-panel__button--pointed': index === cursorIndex || option === openOption,
+          'menu-panel__button--dimmed': openOption !== null && option !== openOption,
+        }"
         type="button"
-        :aria-label="option === TopMenuOption.ItemBox ? 'Item box' : undefined"
       >
-        <span v-if="option === TopMenuOption.ItemBox" class="menu-panel__dash"></span>
-        <span v-else class="menu-panel__label">{{ option }}</span>
+        <span class="menu-panel__label">{{ option }}</span>
       </button>
     </div>
   </nav>
@@ -78,16 +81,15 @@ const { cursorIndex = null } = defineProps<{
   transform: scaleX(1.22);
 }
 
-.menu-panel__dash {
-  width: calc(24 * var(--game-pixel));
-  height: calc(4 * var(--game-pixel));
-  background: currentColor;
-}
-
 /* The button under the main cursor. */
 .menu-panel__button--pointed {
   color: #c5242c;
   background-position: 0 100%;
+}
+
+/* Another button's screen is open: this one cannot be chosen (item-box.gif). */
+.menu-panel__button--dimmed {
+  filter: brightness(0.45);
 }
 
 .menu-panel__button:focus-visible {

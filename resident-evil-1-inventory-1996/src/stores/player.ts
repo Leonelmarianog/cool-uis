@@ -9,6 +9,9 @@ import { ItemType } from '../types/item';
 import type { Recovery } from '../types/item';
 import type { PlayerAmmunition, PlayerItem, PlayerWeapon } from '../types/player';
 
+/** Rows in the item box, the same for every character. */
+export const ITEM_BOX_SIZE = 48;
+
 /** Health statuses from worst to best. Healing moves a status up this list. */
 const healthOrder: HealthStatus[] = [
   HealthStatus.Poison,
@@ -31,7 +34,8 @@ function recover(status: HealthStatus, recovery: Recovery): HealthStatus {
 /**
  * The player's data and the game rules that change it: health, the inventory,
  * the equipped weapon and the item box. Its functions take player item IDs,
- * not items, because the store owns the items and a caller's copy may be stale.
+ * not items, because the store owns the items and a caller's copy may be stale;
+ * `exchangeWithBox` takes positions, because an empty slot or row has no ID.
  */
 export const usePlayerStore = defineStore('player', () => {
   const state = playerService.startingState();
@@ -44,8 +48,10 @@ export const usePlayerStore = defineStore('player', () => {
   const inventory = ref<PlayerItem[]>(state.inventory);
   /** The ID of the equipped weapon in the inventory, or `null` when unarmed. */
   const equippedItemId = ref<string | null>(state.equippedItemId);
-  /** Fixed rows; `null` is an empty row. Unlike the inventory, the box keeps gaps. */
-  const itemBox = ref<(PlayerItem | null)[]>(state.itemBox);
+  /** Fixed rows: the starting rows, then empty ones up to ITEM_BOX_SIZE. `null` is an empty row. Unlike the inventory, the box keeps gaps. */
+  const itemBox = ref<(PlayerItem | null)[]>(
+    Array.from({ length: ITEM_BOX_SIZE }, (_, index) => state.itemBox[index] ?? null),
+  );
 
   /** The number of inventory slots, set by the character. */
   const inventorySize = computed(() => characterService.find(characterId.value).inventorySize);
@@ -153,6 +159,24 @@ export const usePlayerStore = defineStore('player', () => {
     return true;
   }
 
+  /**
+   * Exchanges an inventory slot with an item box row (item-box.gif). Two items
+   * swap; a box item taken into an empty slot goes after the last item; an item
+   * stored in an empty row leaves the inventory, and the items after it move up;
+   * two empty places change nothing. A weapon that leaves the inventory is
+   * unequipped; one that comes in is not equipped. It takes positions, not IDs,
+   * because an empty slot or row has no ID.
+   */
+  function exchangeWithBox(slotIndex: number, rowIndex: number) {
+    const slotItem = inventory.value[slotIndex] ?? null;
+    const rowItem = itemBox.value[rowIndex];
+    if (slotItem && rowItem) inventory.value[slotIndex] = rowItem;
+    else if (rowItem) inventory.value.push(rowItem);
+    else if (slotItem) removeItem(slotItem.id);
+    itemBox.value[rowIndex] = slotItem;
+    if (slotItem && slotItem.id === equippedItemId.value) equippedItemId.value = null;
+  }
+
   /** Removes the item; the items after it move up to fill its slot. */
   function removeItem(playerItemId: string) {
     const index = inventory.value.findIndex(playerItem => playerItem.id === playerItemId);
@@ -178,6 +202,7 @@ export const usePlayerStore = defineStore('player', () => {
     reload,
     stack,
     mix,
+    exchangeWithBox,
     cycleHealthStatus,
   };
 });

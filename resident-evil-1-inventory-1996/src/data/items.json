@@ -19,6 +19,25 @@
     }
   },
   {
+    "id": "shotgun",
+    "type": "weapon",
+    "name": "SHOTGUN",
+    "sprite": "weapon/shotgun.png",
+    "weapon": {
+      "capacity": 5,
+      "ammunition": ["shells"]
+    }
+  },
+  {
+    "id": "shells",
+    "type": "ammunition",
+    "name": "SHELLS",
+    "sprite": "ammo/shells.png",
+    "ammunition": {
+      "maxStack": 255
+    }
+  },
+  {
     "id": "first-aid-spray",
     "type": "consumable",
     "name": "F.-AID SPRAY",

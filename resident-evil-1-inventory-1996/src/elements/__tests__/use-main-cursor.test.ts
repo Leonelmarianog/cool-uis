@@ -66,7 +66,7 @@ describe('move', () => {
     expect(cursor.gridIndex.value).toBe(1);
   });
 
-  test('moves the main cursor from the first slot to the dash button', () => {
+  test('moves the main cursor from the first slot to the BOX button', () => {
     const cursor = useMainCursor();
 
     cursor.move(Direction.Up, 8);
@@ -83,7 +83,7 @@ describe('move', () => {
     expect(cursor.topMenuIndex.value).toBe(3);
   });
 
-  test('moves the main cursor from the dash button to the first slot', () => {
+  test('moves the main cursor from the BOX button to the first slot', () => {
     const cursor = useMainCursor();
     cursor.point(CursorArea.TopMenu, 2);
 
@@ -101,7 +101,7 @@ describe('move', () => {
     expect(cursor.gridIndex.value).toBe(1);
   });
 
-  test('moves the main cursor from the dash button up to MAP', () => {
+  test('moves the main cursor from the BOX button up to MAP', () => {
     const cursor = useMainCursor();
     cursor.point(CursorArea.TopMenu, 2);
 
@@ -110,7 +110,7 @@ describe('move', () => {
     expect(cursor.topMenuIndex.value).toBe(0);
   });
 
-  test('moves the main cursor from MAP down to the dash button', () => {
+  test('moves the main cursor from MAP down to the BOX button', () => {
     const cursor = useMainCursor();
     cursor.point(CursorArea.TopMenu, 0);
 

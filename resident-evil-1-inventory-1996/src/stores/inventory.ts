@@ -7,6 +7,7 @@ import { use } from '../actions/use';
 import { useActionMenu } from '../elements/use-action-menu';
 import { useCursor } from '../elements/use-cursor';
 import { useDescription } from '../elements/use-description';
+import { useItemBox } from '../elements/use-item-box';
 import { step } from '../elements/step';
 import { ITEM_GRID_COLUMNS, useMainCursor } from '../elements/use-main-cursor';
 import { usePrompt } from '../elements/use-prompt';
@@ -22,7 +23,7 @@ import type { Outcome } from '../types/outcome';
 import type { PlayerItem } from '../types/player';
 import { PromptChoice } from '../types/prompt-choice';
 import { TOP_MENU_OPTIONS, TopMenuOption } from '../types/top-menu-option';
-import { usePlayerStore } from './player';
+import { ITEM_BOX_SIZE, usePlayerStore } from './player';
 
 /**
  * Every item shows the Beretta's description (from check-item-in-out.gif)
@@ -48,6 +49,12 @@ const MODEL_MODES: InventoryMode[] = [
   InventoryMode.ViewingModel,
   InventoryMode.ClosingModel,
 ];
+
+/** The modes in which the item box shows in the item preview panel. */
+const ITEM_BOX_MODES: InventoryMode[] = [InventoryMode.ChoosingBoxSlot, InventoryMode.ChoosingBoxRow];
+
+/** The rows the box list shows, from the band row: the one above, the band row and the one below. */
+const VISIBLE_ROW_OFFSETS = [-1, 0, 1];
 
 /** What each intent does in one mode. A missing handler means the intent does nothing in that mode. */
 type ModeHandlers = {
@@ -81,6 +88,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   const actionMenu = useActionMenu();
   const description = useDescription();
   const prompt = usePrompt();
+  const itemBox = useItemBox(ITEM_BOX_SIZE);
 
   /** The grid's items, in slot order. */
   const items = computed(() => player.inventory.map(toItemView));
@@ -106,7 +114,23 @@ export const useInventoryStore = defineStore('inventory', () => {
   });
   /** The text the description panel types in place of the item name: the prompt's question or the description. */
   const panelText = computed(() => prompt.question.value ?? description.text.value);
-  const hasSelectedItem = computed(() => selectedItem.value !== null);
+  /** The item box shows in the item preview panel. */
+  const isItemBoxOpen = computed(() => ITEM_BOX_MODES.includes(mode.value));
+  /** The box list takes input and is bright; otherwise it is dimmed. */
+  const isItemBoxActive = computed(() => mode.value === InventoryMode.ChoosingBoxRow);
+  /** The main cursor stops blinking while an item is selected or the box list takes input. */
+  const isCursorLocked = computed(() => selectedItem.value !== null || isItemBoxActive.value);
+  /** The band row, from 0 to ITEM_BOX_SIZE - 1. */
+  const itemBoxRowIndex = computed(() => itemBox.cursor.index.value);
+  /** The three rows the box list shows; the list is a loop, so row 1's row above is the last row. */
+  const itemBoxRows = computed(() =>
+    VISIBLE_ROW_OFFSETS.map(offset => {
+      const row = player.itemBox[(itemBoxRowIndex.value + offset + ITEM_BOX_SIZE) % ITEM_BOX_SIZE];
+      return row ? toItemView(row) : null;
+    }),
+  );
+  /** The top menu button whose screen is open: lit, with the others dimmed. */
+  const openOption = computed(() => (isItemBoxOpen.value ? TopMenuOption.ItemBox : null));
   /** The action menu takes input only while the player picks an option; it stays open under a description from USE. */
   const isActionMenuActive = computed(() => mode.value === InventoryMode.ChoosingAction);
   /** The model shows in place of the action menu from the moment it tumbles in until it has spun out. */
@@ -149,6 +173,16 @@ export const useInventoryStore = defineStore('inventory', () => {
       back: () => setMode(InventoryMode.ClosingModel),
     },
     [InventoryMode.ClosingModel]: {},
+    [InventoryMode.ChoosingBoxSlot]: {
+      move: direction => moveMainCursorInGrid(direction),
+      choose: () => setMode(InventoryMode.ChoosingBoxRow),
+      back: () => closeItemBox(),
+    },
+    [InventoryMode.ChoosingBoxRow]: {
+      move: direction => itemBox.move(direction),
+      choose: () => exchangeWithBandRow(),
+      back: () => setMode(InventoryMode.ChoosingBoxSlot),
+    },
   };
 
   /** What each option of the action menu does to the selected item. CHECK and COMBN start a sequence of modes. */
@@ -165,11 +199,11 @@ export const useInventoryStore = defineStore('inventory', () => {
     [CursorArea.TopMenu]: () => chooseTopMenuOption(),
   };
 
-  /** What each top menu button does. The screens they open are not built yet, so each one logs. */
+  /** What each top menu button does. The BOX button opens the item box; the other screens are not built yet, so those buttons log. */
   const topMenuHandlers: Record<TopMenuOption, () => void> = {
     [TopMenuOption.Map]: () => console.info('MAP: the map screen is not built yet.'),
     [TopMenuOption.File]: () => console.info('FILE: the files screen is not built yet.'),
-    [TopMenuOption.ItemBox]: () => console.info('ITEM BOX: the item box is not built yet.'),
+    [TopMenuOption.ItemBox]: () => openItemBox(),
     [TopMenuOption.Exit]: () => console.info('EXIT: there is no game to go back to yet.'),
   };
 
@@ -263,6 +297,36 @@ export const useInventoryStore = defineStore('inventory', () => {
     targetCursor.point(step(targetCursor.index.value, direction, ITEM_GRID_COLUMNS, player.inventorySize));
   }
 
+  /** Opens the item box: row 1 in the band, the main cursor on slot 1, the list dimmed. */
+  function openItemBox() {
+    itemBox.open();
+    mainCursor.point(CursorArea.Grid, 0);
+    mode.value = InventoryMode.ChoosingBoxSlot;
+  }
+
+  /** Closes the item box; the main cursor goes back to the BOX button. */
+  function closeItemBox() {
+    mainCursor.point(CursorArea.TopMenu, TOP_MENU_OPTIONS.indexOf(TopMenuOption.ItemBox));
+    mode.value = InventoryMode.Browsing;
+  }
+
+  /** Moves the main cursor one slot; while the item box is open it stays in the grid. */
+  function moveMainCursorInGrid(direction: Direction) {
+    mainCursor.point(CursorArea.Grid, step(mainCursor.index.value, direction, ITEM_GRID_COLUMNS, player.inventorySize));
+  }
+
+  /**
+   * Exchanges the chosen slot with the band row; the main cursor stays on the slot and the list dims.
+   * An empty slot and an empty row have nothing to exchange, so the list stays on.
+   */
+  function exchangeWithBandRow() {
+    const slotIndex = mainCursor.index.value;
+    const rowIndex = itemBox.cursor.index.value;
+    if (!player.inventory[slotIndex] && !player.itemBox[rowIndex]) return;
+    player.exchangeWithBox(slotIndex, rowIndex);
+    mode.value = InventoryMode.ChoosingBoxSlot;
+  }
+
   /** Combines the selected item with the one under the target cursor. */
   function combineWithTarget() {
     const source = selectedItem.value;
@@ -337,16 +401,22 @@ export const useInventoryStore = defineStore('inventory', () => {
     actionMenu,
     description,
     prompt,
+    itemBox,
     items,
     equippedWeapon,
     itemUnderCursor,
     panelText,
     isTextHurried,
-    hasSelectedItem,
+    isCursorLocked,
     isActionMenuActive,
     isModelShown,
     isModelFrozen,
     isModelClosing,
+    isItemBoxOpen,
+    isItemBoxActive,
+    itemBoxRows,
+    itemBoxRowIndex,
+    openOption,
     move,
     choose,
     back,

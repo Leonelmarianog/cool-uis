@@ -8,6 +8,7 @@ import MenuPanel from './components/MenuPanel.vue';
 import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue';
 import ItemActionMenu from './components/ItemActionMenu.vue';
 import ItemModelViewer from './components/ItemModelViewer.vue';
+import ItemBoxList from './components/ItemBoxList.vue';
 import { useKeyboard } from './input/keyboard';
 import { useInventoryStore } from './stores/inventory';
 import { usePlayerStore } from './stores/player';
@@ -39,6 +40,12 @@ useKeyboard();
           @entered="inventory.onItemPreviewEntered"
           @exited="inventory.onItemPreviewExited"
         />
+        <ItemBoxList
+          v-if="inventory.isItemBoxOpen"
+          :rows="inventory.itemBoxRows"
+          :row-index="inventory.itemBoxRowIndex"
+          :active="inventory.isItemBoxActive"
+        />
       </ItemPreviewPanel>
       <div class="project-shell__status">
         <CharacterPortraitPanel />
@@ -46,13 +53,17 @@ useKeyboard();
         <EquippedWeaponPanel class="project-shell__weapon" :weapon="inventory.equippedWeapon" />
       </div>
       <div class="project-shell__items">
-        <MenuPanel class="project-shell__menu" :cursor-index="inventory.mainCursor.topMenuIndex" />
+        <MenuPanel
+          class="project-shell__menu"
+          :cursor-index="inventory.mainCursor.topMenuIndex"
+          :open-option="inventory.openOption"
+        />
         <InventoryGrid
           class="project-shell__grid"
           :size="player.inventorySize"
           :items="inventory.items"
           :cursor-index="inventory.mainCursor.gridIndex"
-          :has-selected-item="inventory.hasSelectedItem"
+          :locked="inventory.isCursorLocked"
           :target-index="inventory.targetIndex"
         />
       </div>

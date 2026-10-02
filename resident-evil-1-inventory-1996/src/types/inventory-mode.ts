@@ -18,6 +18,10 @@ export const InventoryMode = {
   ViewingModel: 'viewing-model',
   /** Waiting while the model spins out; no input. */
   ClosingModel: 'closing-model',
+  /** Picking an inventory slot to exchange with the item box; the box list is dimmed. */
+  ChoosingBoxSlot: 'choosing-box-slot',
+  /** Scrolling the item box list to pick the row to exchange with the chosen slot. */
+  ChoosingBoxRow: 'choosing-box-row',
 } as const;
 
 export type InventoryMode = (typeof InventoryMode)[keyof typeof InventoryMode];

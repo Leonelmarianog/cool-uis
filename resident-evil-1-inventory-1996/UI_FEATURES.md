@@ -22,7 +22,7 @@ once. Touch controls for phones are planned.
 | Feature / action | Status | Behavior |
 | --- | --- | --- |
 | View inventory | Implemented | The character's slots (8 for Jill) in two columns, with item images and empty slots. |
-| Move the cursor | Implemented | There is one cursor. The arrow keys move the blinking selection frame from slot to slot. ↑ from the top row moves the cursor to the top menu button above it (the dash button or EXIT); the grid loses its frame and the bottom panel shows no name. ↓ from the menu's bottom row moves it back to the slot below. The top menu takes the cursor only while no item is selected. |
+| Move the cursor | Implemented | There is one cursor. The arrow keys move the blinking selection frame from slot to slot. ↑ from the top row moves the cursor to the top menu button above it (the BOX button or EXIT); the grid loses its frame and the bottom panel shows no name. ↓ from the menu's bottom row moves it back to the slot below. The top menu takes the cursor only while no item is selected. |
 | View item name | Implemented | The bottom panel shows the name of the item under the cursor; empty slots show no name. |
 | View item amounts | Implemented | Weapons show loaded rounds on the left; ammunition shows its stack amount on the right. Other items have no amount. |
 | Open item actions | Implemented | S on an occupied slot selects the item: the cursor locks on it, the frame stops blinking, and the action menu grows open in the preview panel. Empty slots do nothing. |
@@ -41,7 +41,7 @@ once. Touch controls for phones are planned.
 | Open map — MAP | Partial | The cursor highlights the button; choosing it (S) logs that the map screen is not built yet. |
 | Open files — FILE | Partial | The cursor highlights the button; choosing it logs that the files screen is not built yet. |
 | Leave inventory — EXIT | Partial | The cursor highlights the button; choosing it logs that there is no game to go back to yet. |
-| Open the item box — dash button | Partial | The cursor highlights the button; choosing it logs that the item box is not built yet. |
+| Open the item box — BOX | Done | Opens the item box; the other buttons are dimmed while it is open. |
 
 ## Display and review features
 
@@ -61,7 +61,7 @@ once. Touch controls for phones are planned.
 | --- | --- | --- |
 | Map screen | Planned | Opened by MAP. |
 | Files screen | Planned | Opened by FILE; lists and shows the documents. |
-| Item box | Planned | Opened by the dash button; moves items into and out of the inventory. |
+| Item box | Done | Takes, stores and swaps items between the inventory and a 48-row box; the list jumps from row to row (the slide comes later). |
 | Other characters | Planned | Add Chris (6 slots) with his portrait and a shorter inventory grid. |
 
 This is a clone of the inventory UI, not a game: there is no game world, so

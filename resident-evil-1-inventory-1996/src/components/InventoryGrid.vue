@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ItemType } from '../types/item';
+import ItemAmount from './ItemAmount.vue';
 import type { ItemView } from '../types/item-view';
 
 const {
   size,
   items = [],
   cursorIndex = null,
-  hasSelectedItem = false,
+  locked = false,
   targetIndex = null,
 } = defineProps<{
   /** The number of slots. */
@@ -16,8 +16,8 @@ const {
   items?: ItemView[];
   /** The main cursor's slot, or `null` while the main cursor is in another area. */
   cursorIndex?: number | null;
-  /** The main cursor stops blinking and stays dark while an item is selected. */
-  hasSelectedItem?: boolean;
+  /** The main cursor stops blinking and stays dark while an item is selected or the box list takes input. */
+  locked?: boolean;
   /** The target cursor's slot, or `null` while it is hidden. */
   targetIndex?: number | null;
 }>();
@@ -39,18 +39,12 @@ function cellLabel(item: ItemView | null, index: number): string {
       <li v-for="(item, index) in cells" :key="index" class="inventory-grid__cell" :aria-label="cellLabel(item, index)">
         <template v-if="item">
           <img class="inventory-grid__sprite" :src="item.sprite" alt="" />
-          <span
-            v-if="item.amount !== undefined"
-            class="inventory-grid__amount"
-            :class="{ 'inventory-grid__amount--weapon': item.type === ItemType.Weapon }"
-            aria-hidden="true"
-            >{{ item.amount }}</span
-          >
+          <ItemAmount :item="item" />
         </template>
         <span
           v-if="index === cursorIndex"
           class="inventory-grid__selection"
-          :class="{ 'inventory-grid__selection--locked': hasSelectedItem }"
+          :class="{ 'inventory-grid__selection--locked': locked }"
           aria-hidden="true"
         ></span>
         <template v-if="index === targetIndex">
@@ -99,31 +93,6 @@ function cellLabel(item: ItemView | null, index: number): string {
   image-rendering: pixelated;
 }
 
-.inventory-grid__amount {
-  position: absolute;
-  /* The digits fill rows 20–26 of the slot; stacks end at column 35. */
-  top: calc(17 * var(--game-pixel));
-  right: calc(3.5 * var(--game-pixel));
-  color: #29a229;
-  font-family: 'VT323', monospace;
-  /* 7 game pixels tall; widened to the game's 5-pixel digits and 7-pixel spacing. */
-  font-size: calc(12.5 * var(--game-pixel));
-  font-weight: 400;
-  line-height: 1;
-  transform: scaleX(1.4);
-  transform-origin: right;
-  /* The horizontal offset is divided by the scale so the shadow stays one pixel wide. */
-  text-shadow: calc(var(--game-pixel) / 1.4) var(--game-pixel) #065909;
-  pointer-events: none;
-}
-
-/* A weapon's loaded rounds start at column 6 instead. */
-.inventory-grid__amount--weapon {
-  right: auto;
-  left: calc(4.5 * var(--game-pixel));
-  transform-origin: left;
-}
-
 /* item-selection-frame.png holds the bright frame above the dark one. */
 .inventory-grid__selection {
   position: absolute;
@@ -133,7 +102,7 @@ function cellLabel(item: ItemView | null, index: number): string {
   pointer-events: none;
 }
 
-/* An item is selected: the frame stops blinking and stays dark. */
+/* An item is selected or the box list takes input: the frame stops blinking and stays dark. */
 .inventory-grid__selection--locked {
   animation: none;
   background-position: 0 100%;

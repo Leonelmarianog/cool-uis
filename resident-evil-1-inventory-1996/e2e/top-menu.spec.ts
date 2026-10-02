@@ -1,14 +1,22 @@
 import { expect, test } from './fixtures';
 
 test.describe('top menu', () => {
-  test('pressing ↑ on slot 1 highlights the dash button', async ({ inventoryPage }) => {
+  test('the item box button reads BOX', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+    });
+
+    await expect(inventoryPage.menuButton('BOX'), 'the button reads BOX').toHaveText('BOX');
+  });
+
+  test('pressing ↑ on slot 1 highlights the BOX button', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
     });
 
     await inventoryPage.press('ArrowUp');
 
-    await expect(inventoryPage.menuButton('Item box'), 'the dash button is highlighted').toHaveClass(
+    await expect(inventoryPage.menuButton('BOX'), 'the BOX button is highlighted').toHaveClass(
       /menu-panel__button--pointed/,
     );
   });
@@ -54,12 +62,12 @@ test.describe('top menu', () => {
     await expect(inventoryPage.descriptionPanel, 'the description panel is empty').not.toContainText('BERETTA');
   });
 
-  test('pressing ↓ on the dash button moves the red frame back to slot 1', async ({ inventoryPage }) => {
+  test('pressing ↓ on the BOX button moves the red frame back to slot 1', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
     });
 
-    await inventoryPage.pointAtMenuButton('Item box');
+    await inventoryPage.pointAtMenuButton('BOX');
     await inventoryPage.press('ArrowDown');
 
     await expect(inventoryPage.slotFrame(1), 'the red frame is back on the slot').toBeVisible();
@@ -87,20 +95,6 @@ test.describe('top menu', () => {
 
     expect((await message).text(), 'the console says the map is not built').toBe(
       'MAP: the map screen is not built yet.',
-    );
-  });
-
-  test('pressing S on the dash button logs that the item box is not built yet', async ({ inventoryPage }) => {
-    await inventoryPage.open({
-      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
-    });
-    const message = inventoryPage.page.waitForEvent('console', event => event.text().startsWith('ITEM BOX'));
-
-    await inventoryPage.pointAtMenuButton('Item box');
-    await inventoryPage.confirm();
-
-    expect((await message).text(), 'the console says the item box is not built').toBe(
-      'ITEM BOX: the item box is not built yet.',
     );
   });
 

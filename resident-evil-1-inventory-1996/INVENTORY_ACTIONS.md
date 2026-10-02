@@ -145,11 +145,42 @@ item uses the same very low-poly model and the Beretta's description from
   The user checked this in the game.
 - Items without an amount (herbs, spray, keys) show no number, not a hidden 1.
 
+## Item box
+
+- `item-box.gif`: the dash button opens the item box (the clone labels it BOX,
+  stated by the user). The main cursor goes to slot 1 and the list shows row 1
+  in its band, dimmed. The BOX button stays lit; MAP, FILE and EXIT are dimmed.
+  While the box is open the cursor cannot leave the grid.
+- A yellow line marks where the loop starts again: it is always the top border
+  of row 1 and does not move with the band (stated by the user).
+- Empty rows read "-Nothing-", greyed out (`item-box.gif`).
+- The box has 48 rows, the same for every character (stated by the user). The
+  list loops: ↑ on row 1 goes to row 48, ↓ on row 48 goes to row 1. It always
+  opens on row 1.
+- S on a slot, empty or not, turns the list on. ↑ ↓ scroll it. S exchanges the
+  slot with the row in the band:
+
+| Slot | Row | Result |
+| --- | --- | --- |
+| item | item | the two items swap |
+| empty | item | the item goes after the last inventory item |
+| item | empty | the item is stored; the items after it move up |
+| empty | empty | nothing; the list stays on |
+
+- After the exchange the cursor stays on the chosen slot and the list dims.
+- A weapon that leaves the inventory is unequipped; one that comes in is not
+  equipped.
+- Items never stack in the box, and items never move inside the box. To
+  reorder the box, items go through the inventory (stated by the user).
+- The description panel shows only grid items, never the row in the band.
+- A with the list on goes back to the grid. A in the grid closes the box, with
+  the cursor on the BOX button.
+
 ## Scope
 
 This is a clone of the inventory UI, not a game. The screens in scope are the
-inventory, the map, the files, and the item box (opened from the dash button;
-`item-box.gif` is not reviewed yet). There is no game world, so items are never
-picked up, key items are never used on anything, and spent keys are never
-discarded. Key items can still be shown and checked. Do not invent a general
-drop, sort, or move command without reference support.
+inventory, the map, the files, and the item box (opened from the BOX button).
+There is no game world, so items are never picked up, key items are never used
+on anything, and spent keys are never discarded. Key items can still be shown
+and checked. Do not invent a general drop, sort, or move command without
+reference support.
