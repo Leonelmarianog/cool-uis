@@ -207,4 +207,17 @@ test.describe('drawing the item box list', () => {
       /item-box-list__name--empty/,
     );
   });
+
+  test('the band stays inside the list frame for the longest item name', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+      itemBox: [{ id: 'key-1', itemId: 'control-room-key', type: 'key' }],
+    });
+
+    await inventoryPage.openItemBox();
+
+    const list = await inventoryPage.itemBox.boundingBox();
+    const band = await inventoryPage.bandRow().boundingBox();
+    expect(band!.x + band!.width, 'the band ends inside the list').toBeLessThanOrEqual(list!.x + list!.width);
+  });
 });

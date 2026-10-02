@@ -82,6 +82,9 @@ function rowLabel(item: ItemView | null, number: number): string {
   top: calc(13 * var(--game-pixel));
   left: calc(10 * var(--game-pixel));
   display: grid;
+  /* Names are narrowed by a transform, which layout ignores; without the cap a
+     long name would widen the column, and the band, past the list. */
+  grid-template-columns: minmax(0, 1fr);
   grid-auto-rows: calc(15 * var(--game-pixel));
   width: calc(129 * var(--game-pixel));
   height: calc(48 * var(--game-pixel));
