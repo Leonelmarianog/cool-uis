@@ -18,7 +18,7 @@ function toPlayerWeapon(json: PlayerItemJson): PlayerWeapon {
     id: json.id,
     itemId: json.itemId,
     type: ItemType.Weapon,
-    loadedRounds: json.loadedRounds!,
+    loadedRounds: json.loadedRounds,
   };
 }
 

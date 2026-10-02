@@ -99,14 +99,16 @@ export const usePlayerStore = defineStore('player', () => {
 
   /**
    * Moves rounds into the weapon up to its capacity. A full weapon still counts
-   * as reloaded, with no rounds moved. A stack that reaches 0 is removed.
+   * as reloaded, with no rounds moved. A stack that reaches 0 is removed. A
+   * weapon that uses no ammunition loads nothing.
    */
   function loadWeapon(weapon: PlayerWeapon, ammunition: PlayerAmmunition): boolean {
     const item = itemService.find(weapon.itemId);
-    if (item.type !== ItemType.Weapon || !item.weapon.ammunition.includes(ammunition.itemId)) return false;
+    if (item.type !== ItemType.Weapon || !item.weapon?.ammunition.includes(ammunition.itemId)) return false;
 
-    const rounds = Math.min(item.weapon.capacity - weapon.loadedRounds, ammunition.amount);
-    weapon.loadedRounds += rounds;
+    const loadedRounds = weapon.loadedRounds!;
+    const rounds = Math.min(item.weapon.capacity - loadedRounds, ammunition.amount);
+    weapon.loadedRounds = loadedRounds + rounds;
     ammunition.amount -= rounds;
     if (ammunition.amount === 0) removeItem(ammunition.id);
     return true;

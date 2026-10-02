@@ -10,8 +10,8 @@ interface BasePlayerItem {
 
 export interface PlayerWeapon extends BasePlayerItem {
   type: typeof ItemType.Weapon;
-  /** From 0 to the weapon's capacity. */
-  loadedRounds: number;
+  /** From 0 to the weapon's capacity; missing when the weapon uses no ammunition. */
+  loadedRounds?: number;
 }
 
 export interface PlayerAmmunition extends BasePlayerItem {

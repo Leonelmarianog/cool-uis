@@ -24,6 +24,12 @@ describe('itemBox', () => {
 
     expect(player.itemBox[ITEM_BOX_SIZE - 1]).toBeNull();
   });
+
+  test('has the combat knife in row 9', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[8]).toEqual({ id: 'player-item-16', itemId: 'combat-knife', type: ItemType.Weapon });
+  });
 });
 
 describe('exchangeWithBox', () => {
@@ -133,5 +139,31 @@ describe('exchangeWithBox', () => {
     player.exchangeWithBox(0, 3);
 
     expect(player.equippedItemId).toBeNull();
+  });
+});
+
+describe('reload', () => {
+  test('refuses a weapon that uses no ammunition', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'knife-1', itemId: 'combat-knife', type: ItemType.Weapon },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+    ];
+
+    const reloaded = player.reload('knife-1', 'clip-1');
+
+    expect([reloaded, player.inventory[1]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
+
+  test('refuses ammunition combined into a weapon that uses no ammunition', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+      { id: 'knife-1', itemId: 'combat-knife', type: ItemType.Weapon },
+    ];
+
+    const reloaded = player.reload('clip-1', 'knife-1');
+
+    expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
   });
 });

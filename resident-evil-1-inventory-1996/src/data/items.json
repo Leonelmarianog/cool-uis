@@ -29,6 +29,12 @@
     }
   },
   {
+    "id": "combat-knife",
+    "type": "weapon",
+    "name": "COMBAT KNIFE",
+    "sprite": "weapon/combat-knife.png"
+  },
+  {
     "id": "shells",
     "type": "ammunition",
     "name": "SHELLS",

@@ -31,6 +31,20 @@ describe('toItemView', () => {
         amount: 10,
       });
     });
+
+    test('maps a player weapon without rounds to an item view without an amount', () => {
+      const playerItem: PlayerItem = { id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon };
+      const item: Item = {
+        id: 'weapon-id',
+        type: ItemType.Weapon,
+        name: 'WEAPON NAME',
+        sprite: 'weapon/combat-knife.png',
+      };
+
+      const view = itemViewMapper.toItemView(playerItem, item);
+
+      expect(view.amount).toBeUndefined();
+    });
   });
 
   describe('mapping ammunition', () => {
