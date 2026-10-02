@@ -10,7 +10,7 @@ import type { Recovery } from '../types/item';
 import type { PlayerAmmunition, PlayerItem, PlayerWeapon } from '../types/player';
 
 /** Rows in the item box, the same for every character. */
-export const ITEM_BOX_SIZE = 48;
+export const ITEM_BOX_SIZE = 64;
 
 /** Health statuses from worst to best. Healing moves a status up this list. */
 const healthOrder: HealthStatus[] = [

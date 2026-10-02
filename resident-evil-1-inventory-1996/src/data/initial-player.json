@@ -3,57 +3,68 @@
   "healthStatus": "fine",
 
   "inventory": [
-    {
-      "id": "player-item-1",
-      "itemId": "beretta",
-      "type": "weapon",
-      "loadedRounds": 10
-    },
-    {
-      "id": "player-item-2",
-      "itemId": "clip",
-      "type": "ammunition",
-      "amount": 15
-    },
-    {
-      "id": "player-item-3",
-      "itemId": "clip",
-      "type": "ammunition",
-      "amount": 250
-    },
-    {
-      "id": "player-item-4",
-      "itemId": "green-herb",
-      "type": "consumable"
-    },
-    {
-      "id": "player-item-5",
-      "itemId": "red-herb",
-      "type": "consumable"
-    },
-    {
-      "id": "player-item-6",
-      "itemId": "first-aid-spray",
-      "type": "consumable"
-    },
-    {
-      "id": "player-item-7",
-      "itemId": "blue-herb",
-      "type": "consumable"
-    }
+    { "id": "player-item-1", "itemId": "beretta", "type": "weapon", "loadedRounds": 15 },
+    { "id": "player-item-2", "itemId": "combat-knife", "type": "weapon" }
   ],
 
   "equippedItemId": "player-item-1",
 
   "itemBox": [
-    { "id": "player-item-8", "itemId": "shotgun", "type": "weapon", "loadedRounds": 5 },
-    { "id": "player-item-9", "itemId": "shells", "type": "ammunition", "amount": 255 },
-    { "id": "player-item-10", "itemId": "clip", "type": "ammunition", "amount": 255 },
-    { "id": "player-item-11", "itemId": "mixed-herbs-g-g", "type": "consumable" },
-    { "id": "player-item-12", "itemId": "mixed-herbs-g-r", "type": "consumable" },
-    { "id": "player-item-13", "itemId": "mixed-herbs-g-b", "type": "consumable" },
-    { "id": "player-item-14", "itemId": "mixed-herbs-g-r-b", "type": "consumable" },
-    { "id": "player-item-15", "itemId": "serum", "type": "consumable" },
-    { "id": "player-item-16", "itemId": "combat-knife", "type": "weapon" }
+    { "id": "player-item-3", "itemId": "shotgun", "type": "weapon", "loadedRounds": 5 },
+    { "id": "player-item-4", "itemId": "colt-python", "type": "weapon", "loadedRounds": 6 },
+    { "id": "player-item-5", "itemId": "flamethrower", "type": "weapon", "loadedRounds": 100 },
+    { "id": "player-item-6", "itemId": "rocket-launcher", "type": "weapon", "loadedRounds": 4 },
+    { "id": "player-item-7", "itemId": "green-herb", "type": "consumable" },
+    { "id": "player-item-8", "itemId": "green-herb", "type": "consumable" },
+    { "id": "player-item-9", "itemId": "green-herb", "type": "consumable" },
+    { "id": "player-item-10", "itemId": "blue-herb", "type": "consumable" },
+    { "id": "player-item-11", "itemId": "blue-herb", "type": "consumable" },
+    { "id": "player-item-12", "itemId": "blue-herb", "type": "consumable" },
+    { "id": "player-item-13", "itemId": "red-herb", "type": "consumable" },
+    { "id": "player-item-14", "itemId": "red-herb", "type": "consumable" },
+    { "id": "player-item-15", "itemId": "red-herb", "type": "consumable" },
+    { "id": "player-item-16", "itemId": "first-aid-spray", "type": "consumable" },
+    { "id": "player-item-17", "itemId": "first-aid-spray", "type": "consumable" },
+    { "id": "player-item-18", "itemId": "serum", "type": "consumable" },
+    { "id": "player-item-19", "itemId": "serum", "type": "consumable" },
+    { "id": "player-item-20", "itemId": "clip", "type": "ammunition", "amount": 25 },
+    { "id": "player-item-21", "itemId": "clip", "type": "ammunition", "amount": 25 },
+    { "id": "player-item-22", "itemId": "shells", "type": "ammunition", "amount": 10 },
+    { "id": "player-item-23", "itemId": "shells", "type": "ammunition", "amount": 10 },
+    { "id": "player-item-24", "itemId": "magnum-rounds", "type": "ammunition", "amount": 12 },
+    { "id": "player-item-25", "itemId": "magnum-rounds", "type": "ammunition", "amount": 12 },
+    { "id": "player-item-26", "itemId": "ink-ribbon", "type": "key" },
+    { "id": "player-item-27", "itemId": "desk-key", "type": "key" },
+    { "id": "player-item-28", "itemId": "sword-key", "type": "key" },
+    { "id": "player-item-29", "itemId": "armor-key", "type": "key" },
+    { "id": "player-item-30", "itemId": "shield-key", "type": "key" },
+    { "id": "player-item-31", "itemId": "helmet-key", "type": "key" },
+    { "id": "player-item-32", "itemId": "herbicide", "type": "key" },
+    { "id": "player-item-33", "itemId": "blue-jewel", "type": "key" },
+    { "id": "player-item-34", "itemId": "red-jewel", "type": "key" },
+    { "id": "player-item-35", "itemId": "broken-shotgun", "type": "key" },
+    { "id": "player-item-36", "itemId": "lighter", "type": "key" },
+    { "id": "player-item-37", "itemId": "music-notes", "type": "key" },
+    { "id": "player-item-38", "itemId": "emblem", "type": "key" },
+    { "id": "player-item-39", "itemId": "gold-emblem", "type": "key" },
+    { "id": "player-item-40", "itemId": "wind-crest", "type": "key" },
+    { "id": "player-item-41", "itemId": "star-crest", "type": "key" },
+    { "id": "player-item-42", "itemId": "sun-crest", "type": "key" },
+    { "id": "player-item-43", "itemId": "moon-crest", "type": "key" },
+    { "id": "player-item-44", "itemId": "square-crank", "type": "key" },
+    { "id": "player-item-45", "itemId": "hex-crank", "type": "key" },
+    { "id": "player-item-46", "itemId": "blank-book", "type": "key" },
+    { "id": "player-item-47", "itemId": "002-key", "type": "key" },
+    { "id": "player-item-48", "itemId": "003-key", "type": "key" },
+    { "id": "player-item-49", "itemId": "control-room-key", "type": "key" },
+    { "id": "player-item-50", "itemId": "battery", "type": "key" },
+    { "id": "player-item-51", "itemId": "doom-book-1", "type": "key" },
+    { "id": "player-item-52", "itemId": "doom-book-2", "type": "key" },
+    { "id": "player-item-53", "itemId": "mo-disk", "type": "key" },
+    { "id": "player-item-54", "itemId": "slides", "type": "key" },
+    { "id": "player-item-55", "itemId": "power-room-key", "type": "key" },
+    { "id": "player-item-56", "itemId": "flare", "type": "key" },
+    { "id": "player-item-57", "itemId": "master-key", "type": "key" },
+    { "id": "player-item-58", "itemId": "closet-key", "type": "key" }
   ]
 }

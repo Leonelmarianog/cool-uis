@@ -12,11 +12,44 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('itemBox', () => {
-  test('has 48 rows', () => {
+describe('inventory', () => {
+  test('has the Beretta in slot 1', () => {
     const player = usePlayerStore();
 
-    expect(player.itemBox).toHaveLength(ITEM_BOX_SIZE);
+    expect(player.inventory[0]).toEqual({
+      id: 'player-item-1',
+      itemId: 'beretta',
+      type: ItemType.Weapon,
+      loadedRounds: 15,
+    });
+  });
+
+  test('has the combat knife in slot 2', () => {
+    const player = usePlayerStore();
+
+    expect(player.inventory[1]).toEqual({ id: 'player-item-2', itemId: 'combat-knife', type: ItemType.Weapon });
+  });
+
+  test('has nothing after slot 2', () => {
+    const player = usePlayerStore();
+
+    expect(player.inventory).toHaveLength(2);
+  });
+});
+
+describe('equippedItemId', () => {
+  test('starts with the Beretta equipped', () => {
+    const player = usePlayerStore();
+
+    expect(player.equippedItemId).toBe('player-item-1');
+  });
+});
+
+describe('itemBox', () => {
+  test('has 64 rows', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox).toHaveLength(64);
   });
 
   test('has empty rows after the starting items', () => {
@@ -25,10 +58,27 @@ describe('itemBox', () => {
     expect(player.itemBox[ITEM_BOX_SIZE - 1]).toBeNull();
   });
 
-  test('has the combat knife in row 9', () => {
+  test('has the shotgun in row 1', () => {
     const player = usePlayerStore();
 
-    expect(player.itemBox[8]).toEqual({ id: 'player-item-16', itemId: 'combat-knife', type: ItemType.Weapon });
+    expect(player.itemBox[0]).toEqual({
+      id: 'player-item-3',
+      itemId: 'shotgun',
+      type: ItemType.Weapon,
+      loadedRounds: 5,
+    });
+  });
+
+  test('has the closet key in row 56', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[55]).toEqual({ id: 'player-item-58', itemId: 'closet-key', type: ItemType.Key });
+  });
+
+  test('has an empty row 57', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[56]).toBeNull();
   });
 });
 
