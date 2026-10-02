@@ -25,6 +25,8 @@ export class InventoryPage {
   readonly equippedWeaponPanel: Locator;
   // Named after the health status, as in "Health: Caution.".
   readonly healthScreen: Locator;
+  // The item box list; it shows three rows, the middle one in the band.
+  readonly itemBox: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -34,6 +36,7 @@ export class InventoryPage {
     this.rotateArrows = page.getByRole('img', { name: /^Rotate / });
     this.equippedWeaponPanel = page.getByRole('region', { name: 'Equipped weapon panel' });
     this.healthScreen = page.getByRole('img', { name: /^Health:/ });
+    this.itemBox = page.getByRole('list', { name: 'Item box' });
   }
 
   // Opens the app with parts of the player's starting state replaced (see
@@ -119,6 +122,22 @@ export class InventoryPage {
     const path = MENU_BUTTON_PATHS[name];
     await this.pointAt(path.slot);
     await this.press('ArrowUp', path.ups);
+  }
+
+  /** Opens the item box: ↑ from slot 1 to the dash button, then S. */
+  async openItemBox() {
+    await this.pointAtMenuButton('Item box');
+    await this.confirm();
+  }
+
+  /** A visible row of the item box, numbered from 1, as in its label ("Row 5: SHOTGUN, 5"). */
+  itemBoxRow(number: number): Locator {
+    return this.itemBox.getByRole('listitem', { name: new RegExp(`^Row ${number}:`) });
+  }
+
+  /** The row in the band. */
+  bandRow(): Locator {
+    return this.itemBox.locator('[aria-current="true"]');
   }
 
   /** Moves the red frame to the action with ↑ / ↓, then presses S. */
