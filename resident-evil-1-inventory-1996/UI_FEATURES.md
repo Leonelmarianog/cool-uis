@@ -41,7 +41,7 @@ once. Touch controls for phones are planned.
 | Open map — MAP | Partial | The cursor highlights the button; choosing it (S) logs that the map screen is not built yet. |
 | Open files — FILE | Partial | The cursor highlights the button; choosing it logs that the files screen is not built yet. |
 | Leave inventory — EXIT | Partial | The cursor highlights the button; choosing it logs that there is no game to go back to yet. |
-| Open the item box — dash button | Partial | The cursor highlights the button; choosing it logs that the item box is not built yet. |
+| Open the item box — dash button | Done | Opens the item box; the other buttons are dimmed while it is open. |
 
 ## Display and review features
 
@@ -61,7 +61,7 @@ once. Touch controls for phones are planned.
 | --- | --- | --- |
 | Map screen | Planned | Opened by MAP. |
 | Files screen | Planned | Opened by FILE; lists and shows the documents. |
-| Item box | Planned | Opened by the dash button; moves items into and out of the inventory. |
+| Item box | Done | Takes, stores and swaps items between the inventory and a 48-row box; the list jumps from row to row (the slide comes later). |
 | Other characters | Planned | Add Chris (6 slots) with his portrait and a shorter inventory grid. |
 
 This is a clone of the inventory UI, not a game: there is no game world, so
