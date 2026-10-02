@@ -18,7 +18,7 @@ Questions to verify against the original game before the design is final.
    (`fkSpriteSheetId`), or only the diagram (code keeps `spriteSheetId`)?
 5. **Item box size.** How many rows does the item box list have? Is it the same
    for Jill and Chris?
-   **Answered:** 48 rows, the same for every character.
+   **Answered:** 64 rows (48 until 2026-10-02), the same for every character.
 6. **Reordering the box.** Does moving an item up or down swap it with the
    neighboring row (item or No Item), or can it jump to any row?
    **Answered:** items never move inside the box. To reorder it, items go

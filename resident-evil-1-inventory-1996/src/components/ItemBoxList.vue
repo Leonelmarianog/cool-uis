@@ -168,7 +168,7 @@ function rowLabel(item: ItemView | null, number: number): string {
   background: #011150;
 }
 
-/* The slider moves from the track's top to its bottom as the band goes from row 1 to row 48. */
+/* The slider moves from the track's top to its bottom as the band goes from row 1 to the last row. */
 .item-box-scrollbar__slider {
   position: absolute;
   top: calc(var(--slider-position) * (100% - 3 * var(--game-pixel)));

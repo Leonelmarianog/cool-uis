@@ -267,4 +267,16 @@ describe('reload', () => {
 
     expect([reloaded, player.inventory[1]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
   });
+
+  test('refuses a clip combined into the rocket launcher', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+      { id: 'rocket-1', itemId: 'rocket-launcher', type: ItemType.Weapon, loadedRounds: 4 },
+    ];
+
+    const reloaded = player.reload('clip-1', 'rocket-1');
+
+    expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
 });
