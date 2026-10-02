@@ -14,6 +14,9 @@ interface BaseItem {
 
   /** Image path under `src/assets/items/`, e.g. `"weapon/beretta.png"`. */
   sprite: string;
+
+  /** CHECK's text, as the game shows it. A "\n" starts its second line. */
+  description: string;
 }
 
 export interface WeaponItem extends BaseItem {
@@ -25,6 +28,8 @@ export interface WeaponItem extends BaseItem {
     capacity: number;
     /** IDs of the ammunition items this weapon loads. */
     ammunition: string[];
+    /** Whether its rounds are fuel, shown as a percentage. The weapon then loads no ammunition. */
+    fuel?: boolean;
   };
 }
 

@@ -11,7 +11,8 @@ import type {
 } from '../types/player';
 
 type PlayerJson = typeof initialPlayerJson;
-type PlayerItemJson = PlayerJson['inventory'][number];
+/** One inventory or box record; the JSON's inferred types differ between the two arrays. */
+type PlayerItemJson = { id: string; itemId: string; type: string; loadedRounds?: number; amount?: number };
 
 function toPlayerWeapon(json: PlayerItemJson): PlayerWeapon {
   return {

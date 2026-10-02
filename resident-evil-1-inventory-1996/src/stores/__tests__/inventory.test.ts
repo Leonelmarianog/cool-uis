@@ -226,6 +226,20 @@ describe('choose', () => {
     expect(inventory.mode).toBe(InventoryMode.OpeningModel);
   });
 
+  test("types the checked item's description on S while viewing the model", () => {
+    const player = usePlayerStore();
+    player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 }];
+    const inventory = useInventoryStore();
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.choose();
+    inventory.onItemPreviewEntered();
+
+    inventory.choose();
+
+    expect(inventory.panelText).toBe('Clip for Beretta.');
+  });
+
   test('does nothing while the model tumbles in', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 15 }];

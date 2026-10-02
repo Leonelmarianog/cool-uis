@@ -28,7 +28,7 @@ const cells = computed(() => Array.from({ length: size }, (_, index) => items[in
 /** The slot's accessible name, such as "Slot 1: BERETTA, 15" or "Slot 2: empty". */
 function cellLabel(item: ItemView | null, index: number): string {
   if (!item) return `Slot ${index + 1}: empty`;
-  const amount = item.amount === undefined ? '' : `, ${item.amount}`;
+  const amount = item.amount === undefined ? '' : `, ${item.amount}${item.amountSuffix ?? ''}`;
   return `Slot ${index + 1}: ${item.name}${amount}`;
 }
 </script>

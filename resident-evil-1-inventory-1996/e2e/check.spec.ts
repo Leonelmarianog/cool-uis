@@ -46,6 +46,22 @@ test.describe('checking items', () => {
     );
   });
 
+  test('pressing S while checking the MO disk shows its description', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'player-item-1', itemId: 'mo-disk', type: 'key' }],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('CHECK');
+    await expect(inventoryPage.rotateArrows, 'the model has tumbled in before S').toHaveCount(4);
+    await inventoryPage.showDescription();
+
+    await expect(inventoryPage.descriptionPanel, 'the description is typed out').toContainText(
+      'It seems to be a startup disk.',
+    );
+  });
+
   test('pressing S while checking the Beretta hides the rotate arrows', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'player-item-1', itemId: 'beretta', type: 'weapon', loadedRounds: 10 }],

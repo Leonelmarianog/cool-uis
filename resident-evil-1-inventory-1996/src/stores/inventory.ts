@@ -25,12 +25,6 @@ import { PromptChoice } from '../types/prompt-choice';
 import { TOP_MENU_OPTIONS, TopMenuOption } from '../types/top-menu-option';
 import { ITEM_BOX_SIZE, usePlayerStore } from './player';
 
-/**
- * Every item shows the Beretta's description (from check-item-in-out.gif)
- * until real descriptions exist.
- */
-const PLACEHOLDER_DESCRIPTION = 'Beretta M92FS. Automatic\nloaded with 9mm bullets.';
-
 /** Joins a player item with its catalog data for display. */
 function toItemView(playerItem: PlayerItem): ItemView {
   return itemViewMapper.toItemView(playerItem, itemService.find(playerItem.itemId));
@@ -169,7 +163,7 @@ export const useInventoryStore = defineStore('inventory', () => {
     },
     [InventoryMode.OpeningModel]: {},
     [InventoryMode.ViewingModel]: {
-      choose: () => openDescription(PLACEHOLDER_DESCRIPTION),
+      choose: () => openCheckedItemDescription(),
       back: () => setMode(InventoryMode.ClosingModel),
     },
     [InventoryMode.ClosingModel]: {},
@@ -361,6 +355,12 @@ export const useInventoryStore = defineStore('inventory', () => {
     isTextHurried.value = false;
     description.open(text);
     mode.value = InventoryMode.TypingText;
+  }
+
+  /** Types the description of the item being checked. */
+  function openCheckedItemDescription() {
+    const item = selectedItem.value;
+    if (item) openDescription(itemService.find(item.itemId).description);
   }
 
   /** Removes the description and goes back to the return mode. */

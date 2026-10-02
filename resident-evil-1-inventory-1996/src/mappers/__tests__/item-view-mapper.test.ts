@@ -18,6 +18,7 @@ describe('toItemView', () => {
         type: ItemType.Weapon,
         name: 'WEAPON NAME',
         sprite: 'weapon/beretta.png',
+        description: 'Item description.',
         weapon: { capacity: 15, ammunition: ['ammunition-id'] },
       };
 
@@ -39,11 +40,54 @@ describe('toItemView', () => {
         type: ItemType.Weapon,
         name: 'WEAPON NAME',
         sprite: 'weapon/combat-knife.png',
+        description: 'Item description.',
       };
 
       const view = itemViewMapper.toItemView(playerItem, item);
 
       expect(view.amount).toBeUndefined();
+    });
+
+    test('maps a player weapon with fuel to an item view with a percent sign', () => {
+      const playerItem: PlayerItem = {
+        id: 'player-item-id',
+        itemId: 'weapon-id',
+        type: ItemType.Weapon,
+        loadedRounds: 100,
+      };
+      const item: Item = {
+        id: 'weapon-id',
+        type: ItemType.Weapon,
+        name: 'WEAPON NAME',
+        sprite: 'weapon/flamethrower.png',
+        description: 'Item description.',
+        weapon: { capacity: 100, ammunition: [], fuel: true },
+      };
+
+      const view = itemViewMapper.toItemView(playerItem, item);
+
+      expect(view.amountSuffix).toBe('%');
+    });
+
+    test('maps a player weapon with rounds to an item view without a suffix', () => {
+      const playerItem: PlayerItem = {
+        id: 'player-item-id',
+        itemId: 'weapon-id',
+        type: ItemType.Weapon,
+        loadedRounds: 10,
+      };
+      const item: Item = {
+        id: 'weapon-id',
+        type: ItemType.Weapon,
+        name: 'WEAPON NAME',
+        sprite: 'weapon/beretta.png',
+        description: 'Item description.',
+        weapon: { capacity: 15, ammunition: ['ammunition-id'] },
+      };
+
+      const view = itemViewMapper.toItemView(playerItem, item);
+
+      expect(view.amountSuffix).toBeUndefined();
     });
   });
 
@@ -60,6 +104,7 @@ describe('toItemView', () => {
         type: ItemType.Ammunition,
         name: 'AMMUNITION NAME',
         sprite: 'ammo/clip.png',
+        description: 'Item description.',
         ammunition: { maxStack: 255 },
       };
 
@@ -83,6 +128,7 @@ describe('toItemView', () => {
         type: ItemType.Consumable,
         name: 'CONSUMABLE NAME',
         sprite: 'recovery-items/green-herb.png',
+        description: 'Item description.',
         herb: true,
         recovery: { steps: 1, curesPoison: false },
       };
@@ -107,6 +153,7 @@ describe('toItemView', () => {
         type: ItemType.Consumable,
         name: 'CONSUMABLE NAME',
         sprite: 'missing.png',
+        description: 'Item description.',
       };
 
       expect(() => itemViewMapper.toItemView(playerItem, item)).toThrow('Unknown item image "missing.png"');

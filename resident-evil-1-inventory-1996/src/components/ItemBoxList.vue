@@ -34,7 +34,7 @@ const sliderPosition = computed(() => rowIndex / (ITEM_BOX_SIZE - 1));
 /** The row's accessible name, such as "Row 5: SHOTGUN, 5" or "Row 6: empty". */
 function rowLabel(item: ItemView | null, number: number): string {
   if (!item) return `Row ${number}: empty`;
-  const amount = item.amount === undefined ? '' : `, ${item.amount}`;
+  const amount = item.amount === undefined ? '' : `, ${item.amount}${item.amountSuffix ?? ''}`;
   return `Row ${number}: ${item.name}${amount}`;
 }
 </script>
@@ -82,6 +82,9 @@ function rowLabel(item: ItemView | null, number: number): string {
   top: calc(13 * var(--game-pixel));
   left: calc(10 * var(--game-pixel));
   display: grid;
+  /* Names are narrowed by a transform, which layout ignores; without the cap a
+     long name would widen the column, and the band, past the list. */
+  grid-template-columns: minmax(0, 1fr);
   grid-auto-rows: calc(15 * var(--game-pixel));
   width: calc(129 * var(--game-pixel));
   height: calc(48 * var(--game-pixel));
@@ -168,7 +171,7 @@ function rowLabel(item: ItemView | null, number: number): string {
   background: #011150;
 }
 
-/* The slider moves from the track's top to its bottom as the band goes from row 1 to row 48. */
+/* The slider moves from the track's top to its bottom as the band goes from row 1 to the last row. */
 .item-box-scrollbar__slider {
   position: absolute;
   top: calc(var(--slider-position) * (100% - 3 * var(--game-pixel)));

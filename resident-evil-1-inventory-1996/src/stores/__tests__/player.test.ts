@@ -12,11 +12,44 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('itemBox', () => {
-  test('has 48 rows', () => {
+describe('inventory', () => {
+  test('has the Beretta in slot 1', () => {
     const player = usePlayerStore();
 
-    expect(player.itemBox).toHaveLength(ITEM_BOX_SIZE);
+    expect(player.inventory[0]).toEqual({
+      id: 'player-item-1',
+      itemId: 'beretta',
+      type: ItemType.Weapon,
+      loadedRounds: 15,
+    });
+  });
+
+  test('has the combat knife in slot 2', () => {
+    const player = usePlayerStore();
+
+    expect(player.inventory[1]).toEqual({ id: 'player-item-2', itemId: 'combat-knife', type: ItemType.Weapon });
+  });
+
+  test('has nothing after slot 2', () => {
+    const player = usePlayerStore();
+
+    expect(player.inventory).toHaveLength(2);
+  });
+});
+
+describe('equippedItemId', () => {
+  test('starts with the Beretta equipped', () => {
+    const player = usePlayerStore();
+
+    expect(player.equippedItemId).toBe('player-item-1');
+  });
+});
+
+describe('itemBox', () => {
+  test('has 64 rows', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox).toHaveLength(64);
   });
 
   test('has empty rows after the starting items', () => {
@@ -25,10 +58,27 @@ describe('itemBox', () => {
     expect(player.itemBox[ITEM_BOX_SIZE - 1]).toBeNull();
   });
 
-  test('has the combat knife in row 9', () => {
+  test('has the shotgun in row 1', () => {
     const player = usePlayerStore();
 
-    expect(player.itemBox[8]).toEqual({ id: 'player-item-16', itemId: 'combat-knife', type: ItemType.Weapon });
+    expect(player.itemBox[0]).toEqual({
+      id: 'player-item-3',
+      itemId: 'shotgun',
+      type: ItemType.Weapon,
+      loadedRounds: 5,
+    });
+  });
+
+  test('has the closet key in row 56', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[55]).toEqual({ id: 'player-item-58', itemId: 'closet-key', type: ItemType.Key });
+  });
+
+  test('has an empty row 57', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[56]).toBeNull();
   });
 });
 
@@ -163,6 +213,69 @@ describe('reload', () => {
     ];
 
     const reloaded = player.reload('clip-1', 'knife-1');
+
+    expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
+
+  test('refuses a weapon that runs on fuel', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'flamethrower-1', itemId: 'flamethrower', type: ItemType.Weapon, loadedRounds: 100 },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+    ];
+
+    const reloaded = player.reload('flamethrower-1', 'clip-1');
+
+    expect([reloaded, player.inventory[1]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
+
+  test('refuses ammunition combined into a weapon that runs on fuel', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+      { id: 'flamethrower-1', itemId: 'flamethrower', type: ItemType.Weapon, loadedRounds: 100 },
+    ];
+
+    const reloaded = player.reload('clip-1', 'flamethrower-1');
+
+    expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
+
+  test('loads magnum rounds into the Colt Python', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'colt-1', itemId: 'colt-python', type: ItemType.Weapon, loadedRounds: 2 },
+      { id: 'magnum-1', itemId: 'magnum-rounds', type: ItemType.Ammunition, amount: 12 },
+    ];
+
+    player.reload('colt-1', 'magnum-1');
+
+    expect(player.inventory).toEqual([
+      expect.objectContaining({ loadedRounds: 6 }),
+      expect.objectContaining({ amount: 8 }),
+    ]);
+  });
+
+  test('refuses a clip combined with the rocket launcher', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'rocket-1', itemId: 'rocket-launcher', type: ItemType.Weapon, loadedRounds: 4 },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+    ];
+
+    const reloaded = player.reload('rocket-1', 'clip-1');
+
+    expect([reloaded, player.inventory[1]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
+  });
+
+  test('refuses a clip combined into the rocket launcher', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+      { id: 'rocket-1', itemId: 'rocket-launcher', type: ItemType.Weapon, loadedRounds: 4 },
+    ];
+
+    const reloaded = player.reload('clip-1', 'rocket-1');
 
     expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
   });

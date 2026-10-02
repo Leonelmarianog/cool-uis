@@ -37,16 +37,17 @@ test.describe('choosing in the item box', () => {
     await expect(inventoryPage.itemBox, 'the list is bright').toHaveClass(/item-box-list--active/);
   });
 
-  test('pressing ↑ on row 1 shows row 48 in the band', async ({ inventoryPage }) => {
+  test('pressing ↑ on row 1 shows row 64 in the band', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+      itemBox: [],
     });
     await inventoryPage.openItemBox();
     await inventoryPage.chooseSlot(1);
 
     await inventoryPage.press('ArrowUp');
 
-    await expect(inventoryPage.bandRow(), 'row 48 is in the band').toHaveAccessibleName('Row 48: empty');
+    await expect(inventoryPage.bandRow(), 'row 64 is in the band').toHaveAccessibleName('Row 64: empty');
   });
 
   test('the description panel keeps the chosen slot item name while the list is on', async ({ inventoryPage }) => {
@@ -205,5 +206,18 @@ test.describe('drawing the item box list', () => {
     await expect(inventoryPage.bandRow().locator('span'), 'the empty row is greyed out').toHaveClass(
       /item-box-list__name--empty/,
     );
+  });
+
+  test('the band stays inside the list frame for the longest item name', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+      itemBox: [{ id: 'key-1', itemId: 'control-room-key', type: 'key' }],
+    });
+
+    await inventoryPage.openItemBox();
+
+    const list = await inventoryPage.itemBox.boundingBox();
+    const band = await inventoryPage.bandRow().boundingBox();
+    expect(band!.x + band!.width, 'the band ends inside the list').toBeLessThanOrEqual(list!.x + list!.width);
   });
 });

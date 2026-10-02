@@ -43,6 +43,29 @@ test.describe('reloading weapons', () => {
     await expect(inventoryPage.slot(2), 'the clip gives up 5 rounds').toHaveAccessibleName('Slot 2: CLIP, 10');
   });
 
+  test('choosing the Colt Python, then COMBN, then magnum rounds loads rounds into the Colt Python', async ({
+    inventoryPage,
+  }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'colt-python', type: 'weapon', loadedRounds: 2 },
+        { id: 'player-item-2', itemId: 'magnum-rounds', type: 'ammunition', amount: 12 },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(2);
+
+    await expect(inventoryPage.slot(1), 'the Colt Python fills up to its 6 rounds').toHaveAccessibleName(
+      'Slot 1: COLT PYTHON, 6',
+    );
+    await expect(inventoryPage.slot(2), 'the magnum rounds give up 4 rounds').toHaveAccessibleName(
+      'Slot 2: MAGNUM ROUNDS, 8',
+    );
+  });
+
   test('loading the Beretta with a clip closes the action menu', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [

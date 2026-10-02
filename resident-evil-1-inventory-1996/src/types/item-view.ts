@@ -10,4 +10,6 @@ export interface ItemView {
   sprite: string;
   /** Loaded rounds for weapons, stack size for ammunition; other items have none. */
   amount?: number;
+  /** Shown after the amount: "%" for a weapon's fuel; rounds and stacks have none. */
+  amountSuffix?: '%';
 }

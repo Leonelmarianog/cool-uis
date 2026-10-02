@@ -9,8 +9,13 @@ function toWeaponItem(json: ItemJson): WeaponItem {
     id: json.id,
     name: json.name,
     sprite: json.sprite,
+    description: json.description,
     type: ItemType.Weapon,
-    weapon: json.weapon && { capacity: json.weapon.capacity, ammunition: [...json.weapon.ammunition] },
+    weapon: json.weapon && {
+      capacity: json.weapon.capacity,
+      ammunition: [...json.weapon.ammunition],
+      fuel: json.weapon.fuel,
+    },
   };
 }
 
@@ -19,6 +24,7 @@ function toAmmunitionItem(json: ItemJson): AmmunitionItem {
     id: json.id,
     name: json.name,
     sprite: json.sprite,
+    description: json.description,
     type: ItemType.Ammunition,
     ammunition: { maxStack: json.ammunition!.maxStack },
   };
@@ -29,6 +35,7 @@ function toConsumableItem(json: ItemJson): ConsumableItem {
     id: json.id,
     name: json.name,
     sprite: json.sprite,
+    description: json.description,
     type: ItemType.Consumable,
     herb: json.herb,
     recovery: json.recovery && { steps: json.recovery.steps, curesPoison: json.recovery.curesPoison },
@@ -40,6 +47,7 @@ function toKeyItem(json: ItemJson): KeyItem {
     id: json.id,
     name: json.name,
     sprite: json.sprite,
+    description: json.description,
     type: ItemType.Key,
   };
 }

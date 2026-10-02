@@ -4,6 +4,7 @@
     "type": "weapon",
     "name": "BERETTA",
     "sprite": "weapon/beretta.png",
+    "description": "Beretta M92FS. Automatic\nloaded with 9mm bullets.",
     "weapon": {
       "capacity": 15,
       "ammunition": ["clip"]
@@ -14,6 +15,7 @@
     "type": "ammunition",
     "name": "CLIP",
     "sprite": "ammo/clip.png",
+    "description": "Clip for Beretta.",
     "ammunition": {
       "maxStack": 255
     }
@@ -23,6 +25,7 @@
     "type": "weapon",
     "name": "SHOTGUN",
     "sprite": "weapon/shotgun.png",
+    "description": "Remington M870. A\npump-action shotgun.",
     "weapon": {
       "capacity": 5,
       "ammunition": ["shells"]
@@ -32,13 +35,59 @@
     "id": "combat-knife",
     "type": "weapon",
     "name": "COMBAT KNIFE",
-    "sprite": "weapon/combat-knife.png"
+    "sprite": "weapon/combat-knife.png",
+    "description": "This doesn't seem to be\nenough for this mission."
+  },
+  {
+    "id": "flamethrower",
+    "type": "weapon",
+    "name": "FLAMETHROWER",
+    "sprite": "weapon/flamethrower.png",
+    "description": "Can throw flame for 9\nsec. with max. fuel.",
+    "weapon": {
+      "capacity": 100,
+      "ammunition": [],
+      "fuel": true
+    }
+  },
+  {
+    "id": "colt-python",
+    "type": "weapon",
+    "name": "COLT PYTHON",
+    "sprite": "weapon/colt-python.png",
+    "description": "Magnum Rounds loaded.",
+    "weapon": {
+      "capacity": 6,
+      "ammunition": ["magnum-rounds"]
+    }
+  },
+  {
+    "id": "rocket-launcher",
+    "type": "weapon",
+    "name": "ROCKET LAUNCHER",
+    "sprite": "weapon/rocket-launcher.png",
+    "description": "One shot can destroy any target.",
+    "weapon": {
+      "capacity": 4,
+      "ammunition": []
+    }
   },
   {
     "id": "shells",
     "type": "ammunition",
     "name": "SHELLS",
     "sprite": "ammo/shells.png",
+    "description": "Shells for the Shotgun.",
+    "ammunition": {
+      "maxStack": 255
+    }
+  },
+  {
+    "id": "magnum-rounds",
+    "type": "ammunition",
+    "name": "MAGNUM ROUNDS",
+    "sprite": "ammo/magnum-rounds.png",
+    "description": ".357 magnum rounds.\nFor the Colt Python.",
     "ammunition": {
       "maxStack": 255
     }
@@ -48,21 +97,30 @@
     "type": "consumable",
     "name": "F.-AID SPRAY",
     "sprite": "recovery-items/first-aid-spray.png",
-    "recovery": { "steps": 3, "curesPoison": true }
+    "description": "I can heal any wound with this.",
+    "recovery": {
+      "steps": 3,
+      "curesPoison": true
+    }
   },
   {
     "id": "green-herb",
     "type": "consumable",
     "name": "GREEN HERB",
     "sprite": "recovery-items/green-herb.png",
+    "description": "It's a local herb.",
     "herb": true,
-    "recovery": { "steps": 1, "curesPoison": false }
+    "recovery": {
+      "steps": 1,
+      "curesPoison": false
+    }
   },
   {
     "id": "red-herb",
     "type": "consumable",
     "name": "RED HERB",
     "sprite": "recovery-items/red-herb.png",
+    "description": "It's a local herb.",
     "herb": true
   },
   {
@@ -70,46 +128,301 @@
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-g.png",
+    "description": "It's a mixture of 2 green herbs.",
     "herb": true,
-    "recovery": { "steps": 2, "curesPoison": false }
+    "recovery": {
+      "steps": 2,
+      "curesPoison": false
+    }
   },
   {
     "id": "mixed-herbs-g-r",
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-r.png",
+    "description": "It's a mixture of\ngreen and red herbs.",
     "herb": true,
-    "recovery": { "steps": 3, "curesPoison": false }
+    "recovery": {
+      "steps": 3,
+      "curesPoison": false
+    }
   },
   {
     "id": "blue-herb",
     "type": "consumable",
     "name": "BLUE HERB",
     "sprite": "recovery-items/blue-herb.png",
+    "description": "It's a local herb.",
     "herb": true,
-    "recovery": { "steps": 0, "curesPoison": true }
+    "recovery": {
+      "steps": 0,
+      "curesPoison": true
+    }
   },
   {
     "id": "mixed-herbs-g-b",
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-b.png",
+    "description": "It's a mixture of\ngreen and blue herbs.",
     "herb": true,
-    "recovery": { "steps": 1, "curesPoison": true }
+    "recovery": {
+      "steps": 1,
+      "curesPoison": true
+    }
   },
   {
     "id": "mixed-herbs-g-r-b",
     "type": "consumable",
     "name": "MIXED HERBS",
     "sprite": "recovery-items/mixed-herbs-g-r-b.png",
+    "description": "It's a mixture of green,\nblue and red herbs.",
     "herb": true,
-    "recovery": { "steps": 3, "curesPoison": true }
+    "recovery": {
+      "steps": 3,
+      "curesPoison": true
+    }
   },
   {
     "id": "serum",
     "type": "consumable",
     "name": "SERUM",
     "sprite": "recovery-items/serum.png",
-    "recovery": { "steps": 0, "curesPoison": true }
+    "description": "Only one dose is left.",
+    "recovery": {
+      "steps": 0,
+      "curesPoison": true
+    }
+  },
+  {
+    "id": "ink-ribbon",
+    "type": "key",
+    "name": "INK RIBBON",
+    "sprite": "key-items/ink-ribbon.png",
+    "description": "It's used with a typewriter."
+  },
+  {
+    "id": "desk-key",
+    "type": "key",
+    "name": "DESK KEY",
+    "sprite": "key-items/desk-key.png",
+    "description": "A desk key."
+  },
+  {
+    "id": "sword-key",
+    "type": "key",
+    "name": "SWORD KEY",
+    "sprite": "key-items/sword-key.png",
+    "description": "A carving of a sword."
+  },
+  {
+    "id": "armor-key",
+    "type": "key",
+    "name": "ARMOR KEY",
+    "sprite": "key-items/armor-key.png",
+    "description": "A carving of armor."
+  },
+  {
+    "id": "shield-key",
+    "type": "key",
+    "name": "SHIELD KEY",
+    "sprite": "key-items/shield-key.png",
+    "description": "A carving of a shield."
+  },
+  {
+    "id": "helmet-key",
+    "type": "key",
+    "name": "HELMET KEY",
+    "sprite": "key-items/helmet-key.png",
+    "description": "A carving of a helmet."
+  },
+  {
+    "id": "herbicide",
+    "type": "key",
+    "name": "HERBICIDE",
+    "sprite": "key-items/herbicide.png",
+    "description": "A chemical to kill the weeds."
+  },
+  {
+    "id": "blue-jewel",
+    "type": "key",
+    "name": "BLUE JEWEL",
+    "sprite": "key-items/blue-jewel.png",
+    "description": "It's shining beautifully."
+  },
+  {
+    "id": "red-jewel",
+    "type": "key",
+    "name": "RED JEWEL",
+    "sprite": "key-items/red-jewel.png",
+    "description": "It's shining beautifully."
+  },
+  {
+    "id": "broken-shotgun",
+    "type": "key",
+    "name": "BROKEN SHOTGUN",
+    "sprite": "key-items/broken-shotgun.png",
+    "description": "It's too dangerous to fire!\nDoes it have another use?"
+  },
+  {
+    "id": "lighter",
+    "type": "key",
+    "name": "LIGHTER",
+    "sprite": "key-items/lighter.png",
+    "description": "Some fluid is left."
+  },
+  {
+    "id": "music-notes",
+    "type": "key",
+    "name": "MUSIC NOTES",
+    "sprite": "key-items/music-notes.png",
+    "description": "The title is \"Moonlight Sonata\"."
+  },
+  {
+    "id": "emblem",
+    "type": "key",
+    "name": "EMBLEM",
+    "sprite": "key-items/emblem.png",
+    "description": "There's a scratch,\nsomeone may have used it."
+  },
+  {
+    "id": "gold-emblem",
+    "type": "key",
+    "name": "GOLD EMBLEM",
+    "sprite": "key-items/gold-emblem.png",
+    "description": "There's a scratch,\nsomeone may have used it."
+  },
+  {
+    "id": "wind-crest",
+    "type": "key",
+    "name": "WIND CREST",
+    "sprite": "key-items/wind-crest.png",
+    "description": "It represents wind."
+  },
+  {
+    "id": "star-crest",
+    "type": "key",
+    "name": "STAR CREST",
+    "sprite": "key-items/star-crest.png",
+    "description": "A carving of the star."
+  },
+  {
+    "id": "sun-crest",
+    "type": "key",
+    "name": "SUN CREST",
+    "sprite": "key-items/sun-crest.png",
+    "description": "A carving of the sun."
+  },
+  {
+    "id": "moon-crest",
+    "type": "key",
+    "name": "MOON CREST",
+    "sprite": "key-items/moon-crest.png",
+    "description": "A carving of the moon."
+  },
+  {
+    "id": "square-crank",
+    "type": "key",
+    "name": "SQUARE CRANK",
+    "sprite": "key-items/square-crank.png",
+    "description": "The end is square-shaped."
+  },
+  {
+    "id": "hex-crank",
+    "type": "key",
+    "name": "HEX CRANK",
+    "sprite": "key-items/hex-crank.png",
+    "description": "Its end is hex.-shaped."
+  },
+  {
+    "id": "blank-book",
+    "type": "key",
+    "name": "BLANK BOOK",
+    "sprite": "key-items/blank-book.png",
+    "description": "All pages are blank.\nWhat's it for...?"
+  },
+  {
+    "id": "002-key",
+    "type": "key",
+    "name": "002 KEY",
+    "sprite": "key-items/002-key.png",
+    "description": "The number 002 is engraved."
+  },
+  {
+    "id": "003-key",
+    "type": "key",
+    "name": "003 KEY",
+    "sprite": "key-items/003-key.png",
+    "description": "The number 003 is engraved."
+  },
+  {
+    "id": "control-room-key",
+    "type": "key",
+    "name": "CONTROL ROOM KEY",
+    "sprite": "key-items/control-room-key.png",
+    "description": "The key for the Control Room."
+  },
+  {
+    "id": "battery",
+    "type": "key",
+    "name": "BATTERY",
+    "sprite": "key-items/battery.png",
+    "description": "Now I can move the elevator."
+  },
+  {
+    "id": "doom-book-1",
+    "type": "key",
+    "name": "DOOM BOOK 1",
+    "sprite": "key-items/doom-book-1.png",
+    "description": "There was a medal in the book."
+  },
+  {
+    "id": "doom-book-2",
+    "type": "key",
+    "name": "DOOM BOOK 2",
+    "sprite": "key-items/doom-book-2.png",
+    "description": "There was a medal in the book."
+  },
+  {
+    "id": "mo-disk",
+    "type": "key",
+    "name": "MO DISK",
+    "sprite": "key-items/mo-disk.png",
+    "description": "It seems to be a startup disk."
+  },
+  {
+    "id": "slides",
+    "type": "key",
+    "name": "SLIDES",
+    "sprite": "key-items/slides.png",
+    "description": "It seems to be some kind\nof research report."
+  },
+  {
+    "id": "power-room-key",
+    "type": "key",
+    "name": "POWER ROOM KEY",
+    "sprite": "key-items/power-room-key.png",
+    "description": "A strange mark is carved here."
+  },
+  {
+    "id": "flare",
+    "type": "key",
+    "name": "FLARE",
+    "sprite": "key-items/flare.png",
+    "description": "I can signal Brad with this."
+  },
+  {
+    "id": "master-key",
+    "type": "key",
+    "name": "MASTER KEY",
+    "sprite": "key-items/master-key.png",
+    "description": "It's specially coated\nand looks important."
+  },
+  {
+    "id": "closet-key",
+    "type": "key",
+    "name": "CLOSET KEY",
+    "sprite": "key-items/closet-key.png",
+    "description": "There must be a\ncloset somewhere."
   }
 ]
