@@ -45,5 +45,14 @@
 
   "equippedItemId": "player-item-1",
 
-  "itemBox": []
+  "itemBox": [
+    { "id": "player-item-8", "itemId": "shotgun", "type": "weapon", "loadedRounds": 5 },
+    { "id": "player-item-9", "itemId": "shells", "type": "ammunition", "amount": 255 },
+    { "id": "player-item-10", "itemId": "clip", "type": "ammunition", "amount": 255 },
+    { "id": "player-item-11", "itemId": "mixed-herbs-g-g", "type": "consumable" },
+    { "id": "player-item-12", "itemId": "mixed-herbs-g-r", "type": "consumable" },
+    { "id": "player-item-13", "itemId": "mixed-herbs-g-b", "type": "consumable" },
+    { "id": "player-item-14", "itemId": "mixed-herbs-g-r-b", "type": "consumable" },
+    { "id": "player-item-15", "itemId": "serum", "type": "consumable" }
+  ]
 }
