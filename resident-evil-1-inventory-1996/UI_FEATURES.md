@@ -24,7 +24,7 @@ once. Touch controls for phones are planned.
 | View inventory | Implemented | The character's slots (8 for Jill) in two columns, with item images and empty slots. |
 | Move the cursor | Implemented | There is one cursor. The arrow keys move the blinking selection frame from slot to slot. ↑ from the top row moves the cursor to the top menu button above it (the BOX button or EXIT); the grid loses its frame and the bottom panel shows no name. ↓ from the menu's bottom row moves it back to the slot below. The top menu takes the cursor only while no item is selected. |
 | View item name | Implemented | The bottom panel shows the name of the item under the cursor; empty slots show no name. |
-| View item amounts | Implemented | Weapons show loaded rounds on the left; ammunition shows its stack amount on the right. Other items have no amount. |
+| View item amounts | Implemented | Weapons show loaded rounds on the left; ammunition shows its stack amount on the right. The combat knife and other items have no amount. |
 | Open item actions | Implemented | S on an occupied slot selects the item: the cursor locks on it, the frame stops blinking, and the action menu grows open in the preview panel. Empty slots do nothing. |
 | Choose an item action | Implemented | Weapons offer EQUIP / CHECK / COMBN; other items offer USE / CHECK / COMBN. The red frame starts on the first option; ↑ and ↓ move it. |
 | Close item actions | Implemented | A shrinks the menu closed and unlocks the cursor. |

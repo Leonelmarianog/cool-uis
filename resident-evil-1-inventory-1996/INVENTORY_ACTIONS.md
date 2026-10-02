@@ -143,7 +143,18 @@ item uses the same very low-poly model and the Beretta's description from
 - A weapon's loaded rounds are drawn on the left of its slot (from column 6);
   other stackable items show their amount on the right (ending at column 35).
   The user checked this in the game.
-- Items without an amount (herbs, spray, keys) show no number, not a hidden 1.
+- Items without an amount (the combat knife, herbs, spray, keys) show no number,
+  not a hidden 1.
+
+## COMBAT KNIFE
+
+- Stated by the user: the COMBAT KNIFE is a weapon with no ammunition and no
+  rounds. Its menu is EQUIP / CHECK / COMBN, like any weapon.
+- Its slot, its box row and the box square show no number; equipped, the
+  equipped weapon panel shows only its sprite.
+- COMBN of the knife and ammunition does nothing and shows nothing, like any
+  other pair that is not herbs (stated by the user).
+- It starts in box row 9, after the SERUM.
 
 ## Item box
 
