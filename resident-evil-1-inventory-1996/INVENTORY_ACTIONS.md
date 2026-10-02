@@ -5,9 +5,8 @@ inventory action, to build the actions from. For what the UI does today, see
 [UI_FEATURES.md](UI_FEATURES.md). Questions still open about the data model are
 in [docs/data-model/open-questions.md](docs/data-model/open-questions.md).
 
-Only rules backed by a recording or stated by the user belong here. Item
-descriptions and other weapons' capacities still need reference material
-before they are coded.
+Only rules backed by a recording or stated by the user belong here. The item
+descriptions and the weapons' capacities were given by the user.
 
 ## Action menu
 
@@ -134,9 +133,11 @@ follow a PS1 pad laid on the keyboard.
 - A with the description shown removes it and gives the model's controls
   back. A without it leaves CHECK and returns to the menu.
 
-Placeholders (stated by the user): until real models and texts exist, every
-item uses the same very low-poly model and the Beretta's description from
-`check-item-in-out.gif`.
+Each item types its own description, as the game shows it (given by the
+user). A description that fits on one line (32 characters) stays on one line;
+a longer one breaks at the space closest to its middle, which matches the
+Beretta's break in `check-item-in-out.gif`. Placeholder (stated by the user):
+until real models exist, every item uses the same very low-poly model.
 
 ## Amounts
 
@@ -145,6 +146,8 @@ item uses the same very low-poly model and the Beretta's description from
   The user checked this in the game.
 - Items without an amount (the combat knife, herbs, spray, keys) show no number,
   not a hidden 1.
+- The FLAMETHROWER's fuel shows like rounds, with "%" after the number: it
+  starts at 100% (stated by the user).
 
 ## COMBAT KNIFE
 
@@ -154,7 +157,16 @@ item uses the same very low-poly model and the Beretta's description from
   equipped weapon panel shows only its sprite.
 - COMBN of the knife and ammunition does nothing and shows nothing, like any
   other pair that is not herbs (stated by the user).
-- It starts in box row 9, after the SERUM.
+- It starts in slot 2 (stated by the user).
+
+## FLAMETHROWER and ROCKET LAUNCHER
+
+- Stated by the user: no ammunition item exists for the FLAMETHROWER. It
+  starts at 100%, and once its fuel is used up it is spent. Nothing uses fuel
+  yet.
+- The ROCKET LAUNCHER holds 4 rounds and has no ammunition item.
+- COMBN of either with ammunition does nothing and shows nothing, like the
+  combat knife.
 
 ## Item box
 
@@ -165,8 +177,8 @@ item uses the same very low-poly model and the Beretta's description from
 - A yellow line marks where the loop starts again: it is always the top border
   of row 1 and does not move with the band (stated by the user).
 - Empty rows read "-Nothing-", greyed out (`item-box.gif`).
-- The box has 48 rows, the same for every character (stated by the user). The
-  list loops: ↑ on row 1 goes to row 48, ↓ on row 48 goes to row 1. It always
+- The box has 64 rows, the same for every character (stated by the user). The
+  list loops: ↑ on row 1 goes to row 64, ↓ on row 64 goes to row 1. It always
   opens on row 1.
 - S on a slot, empty or not, turns the list on. ↑ ↓ scroll it. S exchanges the
   slot with the row in the band:
