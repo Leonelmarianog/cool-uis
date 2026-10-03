@@ -179,7 +179,7 @@ describe('exchangeWithBox', () => {
     expect(player.equippedItemId).toBeNull();
   });
 
-  test('a stored equipped weapon taken back is not equipped', () => {
+  test('does not equip a stored equipped weapon taken back', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'weapon-1', itemId: 'weapon', type: ItemType.Weapon, loadedRounds: 1 }];
     player.equippedItemId = 'weapon-1';
@@ -253,6 +253,21 @@ describe('reload', () => {
     expect(player.inventory).toEqual([
       expect.objectContaining({ loadedRounds: 6 }),
       expect.objectContaining({ amount: 8 }),
+    ]);
+  });
+
+  test('loads a weapon with no loaded rounds from 0', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'weapon-1', itemId: 'beretta', type: ItemType.Weapon },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 20 },
+    ];
+
+    player.reload('weapon-1', 'clip-1');
+
+    expect(player.inventory).toEqual([
+      expect.objectContaining({ loadedRounds: 15 }),
+      expect.objectContaining({ amount: 5 }),
     ]);
   });
 
