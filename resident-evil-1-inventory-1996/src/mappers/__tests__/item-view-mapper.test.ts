@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { ItemType } from '../../types/item';
 import type { Item } from '../../types/item';
 import type { PlayerItem } from '../../types/player';
+import { RoundsColor } from '../../types/rounds-color';
 import { itemViewMapper } from '../item-view-mapper';
 
 describe('toItemView', () => {
@@ -29,7 +30,9 @@ describe('toItemView', () => {
         name: 'WEAPON NAME',
         type: ItemType.Weapon,
         sprite: expect.stringContaining('weapon/beretta.png'),
+        description: 'Item description.',
         amount: 10,
+        amountColor: RoundsColor.Green,
       });
     });
 
@@ -89,6 +92,64 @@ describe('toItemView', () => {
 
       expect(view.amountSuffix).toBeUndefined();
     });
+
+    test('maps a player weapon with loaded rounds to the description of those rounds', () => {
+      const playerItem: PlayerItem = {
+        id: 'player-item-id',
+        itemId: 'weapon-id',
+        type: ItemType.Weapon,
+        loadedRounds: 3,
+        loadedAmmunitionId: 'second-ammunition-id',
+      };
+      const item: Item = {
+        id: 'weapon-id',
+        type: ItemType.Weapon,
+        name: 'WEAPON NAME',
+        sprite: 'weapon/bazooka.png',
+        description: 'Item description.',
+        weapon: {
+          capacity: 6,
+          ammunition: ['first-ammunition-id', 'second-ammunition-id'],
+          rounds: {
+            'first-ammunition-id': { description: 'First description.', color: RoundsColor.Green },
+            'second-ammunition-id': { description: 'Second description.', color: RoundsColor.Red },
+          },
+        },
+      };
+
+      const view = itemViewMapper.toItemView(playerItem, item);
+
+      expect(view.description).toBe('Second description.');
+    });
+
+    test('maps a player weapon with loaded rounds to the colour of those rounds', () => {
+      const playerItem: PlayerItem = {
+        id: 'player-item-id',
+        itemId: 'weapon-id',
+        type: ItemType.Weapon,
+        loadedRounds: 0,
+        loadedAmmunitionId: 'second-ammunition-id',
+      };
+      const item: Item = {
+        id: 'weapon-id',
+        type: ItemType.Weapon,
+        name: 'WEAPON NAME',
+        sprite: 'weapon/bazooka.png',
+        description: 'Item description.',
+        weapon: {
+          capacity: 6,
+          ammunition: ['first-ammunition-id', 'second-ammunition-id'],
+          rounds: {
+            'first-ammunition-id': { description: 'First description.', color: RoundsColor.Green },
+            'second-ammunition-id': { description: 'Second description.', color: RoundsColor.Yellow },
+          },
+        },
+      };
+
+      const view = itemViewMapper.toItemView(playerItem, item);
+
+      expect(view.amountColor).toBe(RoundsColor.Yellow);
+    });
   });
 
   describe('mapping ammunition', () => {
@@ -115,7 +176,9 @@ describe('toItemView', () => {
         name: 'AMMUNITION NAME',
         type: ItemType.Ammunition,
         sprite: expect.stringContaining('ammo/clip.png'),
+        description: 'Item description.',
         amount: 15,
+        amountColor: RoundsColor.Green,
       });
     });
   });
@@ -140,6 +203,7 @@ describe('toItemView', () => {
         name: 'CONSUMABLE NAME',
         type: ItemType.Consumable,
         sprite: expect.stringContaining('recovery-items/green-herb.png'),
+        description: 'Item description.',
         amount: undefined,
       });
     });
