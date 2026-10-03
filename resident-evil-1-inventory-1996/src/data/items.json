@@ -487,5 +487,45 @@
     "name": "V-JOLT",
     "sprite": "key-items/v-jolt.png",
     "description": "Now I can destroy\nthat Ivy Monster."
+  },
+  {
+    "id": "bazooka",
+    "type": "weapon",
+    "name": "BAZOOKA",
+    "sprite": "weapon/bazooka.png",
+    "description": "E.Rounds Loaded",
+    "weapon": {
+      "capacity": 6,
+      "ammunition": ["explosive-rounds", "flame-rounds", "acid-rounds"],
+      "rounds": [
+        { "ammunition": "explosive-rounds", "description": "E.Rounds Loaded", "color": "green" },
+        { "ammunition": "flame-rounds", "description": "F.Rounds Loaded", "color": "red" },
+        { "ammunition": "acid-rounds", "description": "A.Rounds Loaded", "color": "yellow" }
+      ]
+    }
+  },
+  {
+    "id": "explosive-rounds",
+    "type": "ammunition",
+    "name": "EXPLOSIVE ROUNDS",
+    "sprite": "ammo/explosive-rounds.png",
+    "description": "Powerful Rounds\nfor the Bazooka.",
+    "ammunition": { "maxStack": 255 }
+  },
+  {
+    "id": "flame-rounds",
+    "type": "ammunition",
+    "name": "FLAME ROUNDS",
+    "sprite": "ammo/flame-rounds.png",
+    "description": "Powerful Rounds\nfor the Bazooka.",
+    "ammunition": { "maxStack": 255 }
+  },
+  {
+    "id": "acid-rounds",
+    "type": "ammunition",
+    "name": "ACID ROUNDS",
+    "sprite": "ammo/acid-rounds.png",
+    "description": "Powerful Rounds\nfor the Bazooka.",
+    "ammunition": { "maxStack": 255 }
   }
 ]

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { ItemType } from '../../types/item';
 import type { AmmunitionItem, ConsumableItem, WeaponItem } from '../../types/item';
+import { RoundsColor } from '../../types/rounds-color';
 import { itemMapper } from '../item-mapper';
 
 describe('toItem', () => {
@@ -76,6 +77,31 @@ describe('toItem', () => {
       const item = itemMapper.toItem(json);
 
       expect((item as WeaponItem).weapon).toEqual({ capacity: 100, ammunition: [], fuel: true });
+    });
+
+    test('maps a weapon record with rounds to a weapon item with them by ammunition', () => {
+      const json = {
+        id: 'weapon-id',
+        type: 'weapon',
+        name: 'WEAPON NAME',
+        sprite: 'weapon.png',
+        description: 'Item description.',
+        weapon: {
+          capacity: 6,
+          ammunition: ['first-ammunition-id', 'second-ammunition-id'],
+          rounds: [
+            { ammunition: 'first-ammunition-id', description: 'First description.', color: 'green' },
+            { ammunition: 'second-ammunition-id', description: 'Second description.', color: 'red' },
+          ],
+        },
+      };
+
+      const item = itemMapper.toItem(json);
+
+      expect((item as WeaponItem).weapon?.rounds).toEqual({
+        'first-ammunition-id': { description: 'First description.', color: RoundsColor.Green },
+        'second-ammunition-id': { description: 'Second description.', color: RoundsColor.Red },
+      });
     });
   });
 

@@ -1,3 +1,5 @@
+import type { RoundsColor } from './rounds-color';
+
 // The kinds of item, named so code never compares against bare strings.
 export const ItemType = {
   Weapon: 'weapon',
@@ -19,6 +21,14 @@ interface BaseItem {
   description: string;
 }
 
+/** How a weapon shows one kind of loaded rounds. */
+export interface LoadedRounds {
+  /** CHECK's text while these rounds are loaded. */
+  description: string;
+  /** The round counter's colour. */
+  color: RoundsColor;
+}
+
 export interface WeaponItem extends BaseItem {
   type: typeof ItemType.Weapon;
 
@@ -30,6 +40,8 @@ export interface WeaponItem extends BaseItem {
     ammunition: string[];
     /** Whether its rounds are fuel, shown as a percentage. The weapon then loads no ammunition. */
     fuel?: boolean;
+    /** How it shows each kind of rounds, keyed by ammunition item ID. Missing on weapons that load one kind. */
+    rounds?: Record<string, LoadedRounds>;
   };
 }
 

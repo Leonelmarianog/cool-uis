@@ -39,6 +39,36 @@ describe('toPlayerState', () => {
       expect(state.inventory).toEqual([{ id: 'player-item-id', itemId: 'weapon-id', type: ItemType.Weapon }]);
     });
 
+    test('maps a weapon record with loaded ammunition to a player weapon with it', () => {
+      const json = {
+        characterId: 'character-id',
+        healthStatus: 'fine',
+        inventory: [
+          {
+            id: 'player-item-id',
+            itemId: 'weapon-id',
+            type: 'weapon',
+            loadedRounds: 4,
+            loadedAmmunitionId: 'ammunition-id',
+          },
+        ],
+        equippedItemId: 'player-item-id',
+        itemBox: [],
+      };
+
+      const state = playerMapper.toPlayerState(json);
+
+      expect(state.inventory).toEqual([
+        {
+          id: 'player-item-id',
+          itemId: 'weapon-id',
+          type: ItemType.Weapon,
+          loadedRounds: 4,
+          loadedAmmunitionId: 'ammunition-id',
+        },
+      ]);
+    });
+
     test('keeps the inventory items in the order of the record', () => {
       const json = {
         characterId: 'character-id',
