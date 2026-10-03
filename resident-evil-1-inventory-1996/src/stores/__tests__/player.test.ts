@@ -350,10 +350,10 @@ describe('reload', () => {
         loadedRounds: 2,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'explosive-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
+      { id: 'rounds-3', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
     ];
 
-    player.reload('bazooka-1', 'explosive-1');
+    player.reload('bazooka-1', 'rounds-3');
 
     expect(player.inventory).toEqual([
       {
@@ -363,7 +363,7 @@ describe('reload', () => {
         loadedRounds: 6,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'explosive-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 6 },
+      { id: 'rounds-3', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 6 },
     ]);
   });
 
@@ -377,10 +377,10 @@ describe('reload', () => {
         loadedRounds: 0,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
     ];
 
-    player.reload('bazooka-1', 'flame-1');
+    player.reload('bazooka-1', 'rounds-1');
 
     expect(player.inventory).toEqual([
       {
@@ -390,7 +390,7 @@ describe('reload', () => {
         loadedRounds: 6,
         loadedAmmunitionId: 'flame-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 4 },
     ]);
   });
 
@@ -404,11 +404,11 @@ describe('reload', () => {
         loadedRounds: 4,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
       { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
     ];
 
-    player.reload('bazooka-1', 'flame-1');
+    player.reload('bazooka-1', 'rounds-1');
 
     expect(player.inventory).toEqual([
       {
@@ -418,7 +418,7 @@ describe('reload', () => {
         loadedRounds: 5,
         loadedAmmunitionId: 'flame-rounds',
       },
-      { id: 'flame-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'rounds-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
       { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
     ]);
   });
@@ -433,11 +433,11 @@ describe('reload', () => {
         loadedRounds: 4,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
       { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
     ];
 
-    player.reload('bazooka-1', 'flame-1');
+    player.reload('bazooka-1', 'rounds-1');
 
     expect(player.inventory).toEqual([
       {
@@ -447,7 +447,7 @@ describe('reload', () => {
         loadedRounds: 6,
         loadedAmmunitionId: 'flame-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 4 },
       { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
       { id: expect.any(String), itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
     ]);
@@ -463,15 +463,15 @@ describe('reload', () => {
         loadedRounds: 4,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
-      { id: 'explosive-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      { id: 'rounds-3', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
     ];
 
-    player.reload('bazooka-1', 'flame-1');
+    player.reload('bazooka-1', 'rounds-1');
 
     expect(player.inventory.slice(1)).toEqual([
-      { id: 'flame-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
-      { id: 'explosive-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
+      { id: 'rounds-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'rounds-3', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
     ]);
   });
 
@@ -485,16 +485,17 @@ describe('reload', () => {
         loadedRounds: 4,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
       ...['1', '2', '3', '4', '5', '6'].map(
         n => ({ id: `herb-${n}`, itemId: 'green-herb', type: ItemType.Consumable }) as const,
       ),
     ];
     const before = player.inventory.map(playerItem => ({ ...playerItem }));
 
-    const reloaded = player.reload('bazooka-1', 'flame-1');
+    const reloaded = player.reload('bazooka-1', 'rounds-1');
 
-    expect([reloaded, player.inventory]).toEqual([false, before]);
+    expect(reloaded).toBe(false);
+    expect(player.inventory).toEqual(before);
   });
 
   test('swaps in a full inventory when the stack is used up', () => {
@@ -507,24 +508,24 @@ describe('reload', () => {
         loadedRounds: 4,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
       ...['1', '2', '3', '4', '5', '6'].map(
         n => ({ id: `herb-${n}`, itemId: 'green-herb', type: ItemType.Consumable }) as const,
       ),
     ];
 
-    const reloaded = player.reload('bazooka-1', 'flame-1');
+    const reloaded = player.reload('bazooka-1', 'rounds-1');
 
     expect([reloaded, player.inventory[1]]).toEqual([
       true,
-      { id: 'flame-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'rounds-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
     ]);
   });
 
   test('swaps rounds combined into the bazooka', () => {
     const player = usePlayerStore();
     player.inventory = [
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
       {
         id: 'bazooka-1',
         itemId: 'bazooka',
@@ -534,10 +535,10 @@ describe('reload', () => {
       },
     ];
 
-    player.reload('flame-1', 'bazooka-1');
+    player.reload('rounds-1', 'bazooka-1');
 
     expect(player.inventory).toEqual([
-      { id: 'flame-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'rounds-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
       {
         id: 'bazooka-1',
         itemId: 'bazooka',
@@ -558,14 +559,14 @@ describe('reload', () => {
         loadedRounds: 6,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'acid-1', itemId: 'acid-rounds', type: ItemType.Ammunition, amount: 3 },
+      { id: 'rounds-2', itemId: 'acid-rounds', type: ItemType.Ammunition, amount: 3 },
     ];
 
-    player.reload('bazooka-1', 'acid-1');
+    player.reload('bazooka-1', 'rounds-2');
 
     expect(player.inventory).toEqual([
       { id: 'bazooka-1', itemId: 'bazooka', type: ItemType.Weapon, loadedRounds: 3, loadedAmmunitionId: 'acid-rounds' },
-      { id: 'acid-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 6 },
+      { id: 'rounds-2', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 6 },
     ]);
   });
 
@@ -579,11 +580,11 @@ describe('reload', () => {
         loadedRounds: 4,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
     ];
     player.equippedItemId = 'bazooka-1';
 
-    player.reload('bazooka-1', 'flame-1');
+    player.reload('bazooka-1', 'rounds-1');
 
     expect(player.equippedItemId).toBe('bazooka-1');
   });
@@ -598,12 +599,12 @@ describe('reload', () => {
         loadedRounds: 4,
         loadedAmmunitionId: 'explosive-rounds',
       },
-      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 20 },
-      { id: 'acid-1', itemId: 'acid-rounds', type: ItemType.Ammunition, amount: 20 },
+      { id: 'rounds-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 20 },
+      { id: 'rounds-2', itemId: 'acid-rounds', type: ItemType.Ammunition, amount: 20 },
     ];
-    player.reload('bazooka-1', 'flame-1');
+    player.reload('bazooka-1', 'rounds-1');
 
-    player.reload('bazooka-1', 'acid-1');
+    player.reload('bazooka-1', 'rounds-2');
 
     expect(new Set(player.inventory.map(playerItem => playerItem.id)).size).toBe(5);
   });
