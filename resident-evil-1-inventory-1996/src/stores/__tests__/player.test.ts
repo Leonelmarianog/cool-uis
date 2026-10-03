@@ -46,10 +46,10 @@ describe('equippedItemId', () => {
 });
 
 describe('itemBox', () => {
-  test('has 64 rows', () => {
+  test('has 80 rows', () => {
     const player = usePlayerStore();
 
-    expect(player.itemBox).toHaveLength(64);
+    expect(player.itemBox).toHaveLength(80);
   });
 
   test('has the shotgun in row 1', () => {
@@ -87,14 +87,43 @@ describe('itemBox', () => {
     expect(player.itemBox[61]).toEqual({ id: 'player-item-64', itemId: 'umb-no-4', type: ItemType.Key });
   });
 
-  test('has the empty bottle in the last row', () => {
+  test('has the empty bottle in row 64', () => {
     const player = usePlayerStore();
 
-    expect(player.itemBox[ITEM_BOX_SIZE - 1]).toEqual({
+    expect(player.itemBox[63]).toEqual({
       id: 'player-item-66',
       itemId: 'empty-bottle',
       type: ItemType.Key,
     });
+  });
+
+  test('has the bazooka loaded with explosive rounds in row 65', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[64]).toEqual({
+      id: 'player-item-67',
+      itemId: 'bazooka',
+      type: ItemType.Weapon,
+      loadedRounds: 6,
+      loadedAmmunitionId: 'explosive-rounds',
+    });
+  });
+
+  test('has the acid rounds in row 68', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[67]).toEqual({
+      id: 'player-item-70',
+      itemId: 'acid-rounds',
+      type: ItemType.Ammunition,
+      amount: 12,
+    });
+  });
+
+  test('has an empty last row', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[ITEM_BOX_SIZE - 1]).toBeNull();
   });
 });
 

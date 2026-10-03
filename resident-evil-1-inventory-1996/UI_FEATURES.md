@@ -61,7 +61,7 @@ once. Touch controls for phones are planned.
 | --- | --- | --- |
 | Map screen | Planned | Opened by MAP. |
 | Files screen | Planned | Opened by FILE; lists and shows the documents. |
-| Item box | Done | Takes, stores and swaps items between the inventory and a 64-row box; the list jumps from row to row (the slide comes later). |
+| Item box | Done | Takes, stores and swaps items between the inventory and an 80-row box; the list jumps from row to row (the slide comes later). |
 | Other characters | Planned | Add Chris (6 slots) with his portrait and a shorter inventory grid. |
 
 This is a clone of the inventory UI, not a game: there is no game world, so

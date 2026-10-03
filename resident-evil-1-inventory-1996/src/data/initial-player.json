@@ -73,6 +73,16 @@
     { "id": "player-item-63", "itemId": "umb-no-2", "type": "key" },
     { "id": "player-item-64", "itemId": "umb-no-4", "type": "key" },
     { "id": "player-item-65", "itemId": "umb-no-4", "type": "key" },
-    { "id": "player-item-66", "itemId": "empty-bottle", "type": "key" }
+    { "id": "player-item-66", "itemId": "empty-bottle", "type": "key" },
+    {
+      "id": "player-item-67",
+      "itemId": "bazooka",
+      "type": "weapon",
+      "loadedRounds": 6,
+      "loadedAmmunitionId": "explosive-rounds"
+    },
+    { "id": "player-item-68", "itemId": "explosive-rounds", "type": "ammunition", "amount": 12 },
+    { "id": "player-item-69", "itemId": "flame-rounds", "type": "ammunition", "amount": 12 },
+    { "id": "player-item-70", "itemId": "acid-rounds", "type": "ammunition", "amount": 12 }
   ]
 }

@@ -186,8 +186,9 @@ until real models exist, every item uses the same very low-poly model.
 - A yellow line marks where the loop starts again: it is always the top border
   of row 1 and does not move with the band (stated by the user).
 - Empty rows read "-Nothing-", greyed out (`item-box.gif`).
-- The box has 64 rows, the same for every character (stated by the user). The
-  list loops: ↑ on row 1 goes to row 64, ↓ on row 64 goes to row 1. It always
+- The box has 80 rows, the same for every character (stated by the user; it
+  grew from 64 for the BAZOOKA). The list loops: ↑ on row 1 goes to row 80, ↓
+  on row 80 goes to row 1. It always
   opens on row 1.
 - S on a slot, empty or not, turns the list on. ↑ ↓ scroll it. S exchanges the
   slot with the row in the band:
