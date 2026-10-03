@@ -18,5 +18,25 @@
   {
     "ingredients": ["mixed-herbs-g-b", "red-herb"],
     "result": "mixed-herbs-g-r-b"
+  },
+  {
+    "ingredients": ["water", "umb-no-2"],
+    "result": "np-003"
+  },
+  {
+    "ingredients": ["umb-no-2", "umb-no-4"],
+    "result": "yellow-6"
+  },
+  {
+    "ingredients": ["np-003", "umb-no-4"],
+    "result": "umb-no-7"
+  },
+  {
+    "ingredients": ["yellow-6", "umb-no-7"],
+    "result": "umb-no-13"
+  },
+  {
+    "ingredients": ["np-003", "umb-no-13"],
+    "result": "v-jolt"
   }
 ]

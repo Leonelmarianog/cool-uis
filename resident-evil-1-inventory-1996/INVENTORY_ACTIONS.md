@@ -99,6 +99,15 @@ Rules stated by the user:
 - "Will you mix the herbs?": Yes mixes; No or A returns to choosing a target.
   The choices appear as soon as the question is typed out; the user dropped
   the recording's 0.85 s wait.
+- V-JOLT chemicals (stated by the user): WATER + UMB No. 2 → NP-003; UMB No. 2
+  + UMB No. 4 → Yellow-6; NP-003 + UMB No. 4 → UMB No. 7; Yellow-6 + UMB No. 7
+  → UMB No. 13; NP-003 + UMB No. 13 → V-JOLT. One V-JOLT takes 2 WATER, 3 UMB
+  No. 2 and 2 UMB No. 4; the item box starts with exactly those, plus one EMPTY
+  BOTTLE that nothing uses yet.
+- Chemicals mix at once, with no question, like herbs after Yes: the result
+  takes the first item's slot, the second item goes away and the items after
+  it move up. Chemicals that do not mix do nothing; COMBN keeps waiting for a
+  second item.
 - After a successful combine, the menu closes and the item is released.
 - The recipes are in `src/data/recipes.json`; capacities and stack limits are in
   `src/data/items.json`.

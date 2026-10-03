@@ -65,6 +65,14 @@
     { "id": "player-item-55", "itemId": "power-room-key", "type": "key" },
     { "id": "player-item-56", "itemId": "flare", "type": "key" },
     { "id": "player-item-57", "itemId": "master-key", "type": "key" },
-    { "id": "player-item-58", "itemId": "closet-key", "type": "key" }
+    { "id": "player-item-58", "itemId": "closet-key", "type": "key" },
+    { "id": "player-item-59", "itemId": "water", "type": "key" },
+    { "id": "player-item-60", "itemId": "water", "type": "key" },
+    { "id": "player-item-61", "itemId": "umb-no-2", "type": "key" },
+    { "id": "player-item-62", "itemId": "umb-no-2", "type": "key" },
+    { "id": "player-item-63", "itemId": "umb-no-2", "type": "key" },
+    { "id": "player-item-64", "itemId": "umb-no-4", "type": "key" },
+    { "id": "player-item-65", "itemId": "umb-no-4", "type": "key" },
+    { "id": "player-item-66", "itemId": "empty-bottle", "type": "key" }
   ]
 }

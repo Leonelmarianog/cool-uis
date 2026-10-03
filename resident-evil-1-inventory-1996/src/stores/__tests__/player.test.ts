@@ -52,12 +52,6 @@ describe('itemBox', () => {
     expect(player.itemBox).toHaveLength(64);
   });
 
-  test('has empty rows after the starting items', () => {
-    const player = usePlayerStore();
-
-    expect(player.itemBox[ITEM_BOX_SIZE - 1]).toBeNull();
-  });
-
   test('has the shotgun in row 1', () => {
     const player = usePlayerStore();
 
@@ -75,10 +69,32 @@ describe('itemBox', () => {
     expect(player.itemBox[55]).toEqual({ id: 'player-item-58', itemId: 'closet-key', type: ItemType.Key });
   });
 
-  test('has an empty row 57', () => {
+  test('has the water in row 57', () => {
     const player = usePlayerStore();
 
-    expect(player.itemBox[56]).toBeNull();
+    expect(player.itemBox[56]).toEqual({ id: 'player-item-59', itemId: 'water', type: ItemType.Key });
+  });
+
+  test('has the first UMB No. 2 in row 59', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[58]).toEqual({ id: 'player-item-61', itemId: 'umb-no-2', type: ItemType.Key });
+  });
+
+  test('has the first UMB No. 4 in row 62', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[61]).toEqual({ id: 'player-item-64', itemId: 'umb-no-4', type: ItemType.Key });
+  });
+
+  test('has the empty bottle in the last row', () => {
+    const player = usePlayerStore();
+
+    expect(player.itemBox[ITEM_BOX_SIZE - 1]).toEqual({
+      id: 'player-item-66',
+      itemId: 'empty-bottle',
+      type: ItemType.Key,
+    });
   });
 });
 
