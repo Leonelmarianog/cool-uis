@@ -30,3 +30,41 @@
   font-weight: 400;
   font-display: block;
 }
+
+/* re1-text palette entries 0–5 shade the letter face; 6 is its outline. The
+   item box list dims to about 38% (no outline); -Nothing- is about 65% as
+   bright as a name, and 25% when dimmed (item-box.gif). */
+@font-palette-values --dimmed {
+  font-family: 're1-text';
+  override-colors:
+    0 #55554f,
+    1 #4f4f49,
+    2 #43433c,
+    3 #363633,
+    4 #2c2c29,
+    5 #202020,
+    6 transparent;
+}
+
+@font-palette-values --nothing {
+  font-family: 're1-text';
+  override-colors:
+    0 #909086,
+    1 #86867b,
+    2 #707065,
+    3 #5b5b56,
+    4 #4b4b46,
+    5 #353535;
+}
+
+@font-palette-values --nothing-dimmed {
+  font-family: 're1-text';
+  override-colors:
+    0 #383834,
+    1 #34342f,
+    2 #2b2b27,
+    3 #232321,
+    4 #1d1d1b,
+    5 #141414,
+    6 transparent;
+}
