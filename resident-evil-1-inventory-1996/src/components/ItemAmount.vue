@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ItemType } from '../types/item';
 import type { ItemView } from '../types/item-view';
+import { roundsColorStyle } from './rounds-colors';
 
 /** The item whose amount shows: loaded rounds for a weapon, stack size for ammunition. */
 const { item } = defineProps<{ item: ItemView }>();
@@ -11,6 +12,7 @@ const { item } = defineProps<{ item: ItemView }>();
     v-if="item.amount !== undefined"
     class="item-amount"
     :class="{ 'item-amount--weapon': item.type === ItemType.Weapon }"
+    :style="roundsColorStyle(item.amountColor)"
     aria-hidden="true"
     >{{ item.amount }}{{ item.amountSuffix }}</span
   >
@@ -23,7 +25,7 @@ const { item } = defineProps<{ item: ItemView }>();
   /* The digits fill rows 20–26 of the slot; stacks end at column 35. */
   top: calc(17 * var(--game-pixel));
   right: calc(3.5 * var(--game-pixel));
-  color: #29a229;
+  color: var(--rounds-color);
   font-family: 'VT323', monospace;
   /* 7 game pixels tall; widened to the game's 5-pixel digits and 7-pixel spacing. */
   font-size: calc(12.5 * var(--game-pixel));
@@ -32,7 +34,7 @@ const { item } = defineProps<{ item: ItemView }>();
   transform: scaleX(1.4);
   transform-origin: right;
   /* The horizontal offset is divided by the scale so the shadow stays one pixel wide. */
-  text-shadow: calc(var(--game-pixel) / 1.4) var(--game-pixel) #065909;
+  text-shadow: calc(var(--game-pixel) / 1.4) var(--game-pixel) var(--rounds-shadow);
   pointer-events: none;
 }
 
