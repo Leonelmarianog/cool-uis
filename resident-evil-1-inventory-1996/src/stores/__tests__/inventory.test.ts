@@ -444,6 +444,19 @@ describe('choose', () => {
     expect(inventory.itemBoxRowIndex).toBe(0);
   });
 
+  test('opens the box on row 1 again after an exchange', () => {
+    const inventory = useInventoryStore();
+    openItemBox(inventory);
+    inventory.choose();
+    inventory.move(Direction.Down);
+    inventory.choose();
+    inventory.back();
+
+    inventory.choose();
+
+    expect(inventory.itemBoxRowIndex).toBe(0);
+  });
+
   test('turns the box list on for an empty slot', () => {
     const player = usePlayerStore();
     player.inventory = [];
@@ -478,7 +491,7 @@ describe('choose', () => {
     expect(inventory.mode).toBe(InventoryMode.ChoosingBoxSlot);
   });
 
-  test('storing the chosen item keeps the cursor on that slot', () => {
+  test('keeps the cursor on the slot of a stored item', () => {
     const player = usePlayerStore();
     player.inventory = [
       { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 1 },
@@ -495,7 +508,7 @@ describe('choose', () => {
     expect([inventory.mainCursor.gridIndex, inventory.itemUnderCursor]).toEqual([1, null]);
   });
 
-  test('taking a box item into a far empty slot keeps the cursor on that slot', () => {
+  test('keeps the cursor on a far empty slot that takes a box item', () => {
     const player = usePlayerStore();
     player.inventory = [{ id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 1 }];
     player.itemBox[0] = { id: 'clip-9', itemId: 'clip', type: ItemType.Ammunition, amount: 9 };

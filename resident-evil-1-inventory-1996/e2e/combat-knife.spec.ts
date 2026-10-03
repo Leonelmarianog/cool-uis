@@ -68,7 +68,7 @@ test.describe('equipping the combat knife', () => {
 });
 
 test.describe('combining the combat knife', () => {
-  test('choosing the knife, then COMBN, then a clip leaves the description panel empty', async ({ inventoryPage }) => {
+  test('choosing the knife, then COMBN, then a clip keeps waiting for a second item', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [
         { id: 'knife-1', itemId: 'combat-knife', type: 'weapon' },
@@ -81,7 +81,12 @@ test.describe('combining the combat knife', () => {
     await inventoryPage.chooseAction('COMBN');
     await inventoryPage.chooseSlot(2);
 
+    await expect(
+      inventoryPage.actionButton('COMBN'),
+      'the menu stays inactive while a second item is chosen',
+    ).toBeDisabled();
+    await expect(inventoryPage.slot(1), 'the knife is unchanged').toHaveAccessibleName('Slot 1: COMBAT KNIFE');
     await expect(inventoryPage.slot(2), 'the clip is unchanged').toHaveAccessibleName('Slot 2: CLIP, 15');
-    await expect(inventoryPage.descriptionPanel, 'the panel shows no message').not.toContainText('seem');
+    await expect(inventoryPage.descriptionPanel, 'the panel names the clip and shows no message').toHaveText('CLIP');
   });
 });
