@@ -91,10 +91,10 @@ ITEMS = {
     'key-items/water': (0, 13),
     'key-items/umb-no-2': (1, 13),
     'key-items/umb-no-4': (2, 13),
-    'key-items/np-003': (3, 13),
-    'key-items/yellow-6': (4, 13),
-    'key-items/umb-no-7': (0, 14),
-    'key-items/umb-no-13': (1, 14),
+    'key-items/umb-no-7': (3, 13),
+    'key-items/umb-no-13': (4, 13),
+    'key-items/yellow-6': (0, 14),
+    'key-items/np-003': (1, 14),
 }
 
 # Blue items whose own blue the tint removal would destroy; they keep the plain cut.
