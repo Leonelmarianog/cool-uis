@@ -21,3 +21,12 @@
   font-weight: 400;
   font-display: swap;
 }
+
+/* Built from the game's sprite sheets by scripts/build-fonts.py; colour (COLR) fonts. */
+@font-face {
+  font-family: 're1-text';
+  src: url('../assets/fonts/re1-text.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
