@@ -83,6 +83,39 @@ describe('combine', () => {
 
     expect(outcome).toEqual({ kind: OutcomeKind.Description, text: 'Mixing these does not seem to work.' });
   });
+
+  test('finishes the action after mixing chemicals', () => {
+    const player = usePlayerStore();
+    const water = { id: 'water-1', itemId: 'water', type: ItemType.Key } as const;
+    const umbNo2 = { id: 'umb-no-2-1', itemId: 'umb-no-2', type: ItemType.Key } as const;
+    player.inventory = [water, umbNo2];
+
+    const outcome = combine(water, umbNo2);
+
+    expect(outcome).toEqual({ kind: OutcomeKind.Done });
+  });
+
+  test("puts the mixed chemical in the first chemical's slot", () => {
+    const player = usePlayerStore();
+    const water = { id: 'water-1', itemId: 'water', type: ItemType.Key } as const;
+    const umbNo2 = { id: 'umb-no-2-1', itemId: 'umb-no-2', type: ItemType.Key } as const;
+    player.inventory = [umbNo2, water];
+
+    combine(umbNo2, water);
+
+    expect(player.inventory).toEqual([{ id: 'umb-no-2-1', itemId: 'np-003', type: ItemType.Key }]);
+  });
+
+  test('does nothing with chemicals that do not mix', () => {
+    const player = usePlayerStore();
+    const water = { id: 'water-1', itemId: 'water', type: ItemType.Key } as const;
+    const umbNo4 = { id: 'umb-no-4-1', itemId: 'umb-no-4', type: ItemType.Key } as const;
+    player.inventory = [water, umbNo4];
+
+    const outcome = combine(water, umbNo4);
+
+    expect([outcome, player.inventory]).toEqual([{ kind: OutcomeKind.Nothing }, [water, umbNo4]]);
+  });
 });
 
 describe('mix', () => {

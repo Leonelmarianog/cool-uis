@@ -424,5 +424,68 @@
     "name": "CLOSET KEY",
     "sprite": "key-items/closet-key.png",
     "description": "There must be a\ncloset somewhere."
+  },
+  {
+    "id": "empty-bottle",
+    "type": "key",
+    "name": "EMPTY BOTTLE",
+    "sprite": "key-items/empty-bottle.png",
+    "description": "A glass bottle to\nput chemicals in."
+  },
+  {
+    "id": "water",
+    "type": "key",
+    "name": "WATER",
+    "sprite": "key-items/water.png",
+    "description": "There's water in the bottle."
+  },
+  {
+    "id": "umb-no-2",
+    "type": "key",
+    "name": "UMB No. 2",
+    "sprite": "key-items/umb-no-2.png",
+    "description": "This is needed to\ngenerate V-JOLT."
+  },
+  {
+    "id": "umb-no-4",
+    "type": "key",
+    "name": "UMB No. 4",
+    "sprite": "key-items/umb-no-4.png",
+    "description": "This is needed to\ngenerate V-JOLT."
+  },
+  {
+    "id": "np-003",
+    "type": "key",
+    "name": "NP-003",
+    "sprite": "key-items/np-003.png",
+    "description": "This is not the chemical I need."
+  },
+  {
+    "id": "yellow-6",
+    "type": "key",
+    "name": "Yellow-6",
+    "sprite": "key-items/yellow-6.png",
+    "description": "This is not the chemical I need."
+  },
+  {
+    "id": "umb-no-7",
+    "type": "key",
+    "name": "UMB No. 7",
+    "sprite": "key-items/umb-no-7.png",
+    "description": "This is not the chemical I need."
+  },
+  {
+    "id": "umb-no-13",
+    "type": "key",
+    "name": "UMB No. 13",
+    "sprite": "key-items/umb-no-13.png",
+    "description": "This is not the chemical I need."
+  },
+  {
+    "id": "v-jolt",
+    "type": "key",
+    "name": "V-JOLT",
+    "sprite": "key-items/v-jolt.png",
+    "description": "Now I can destroy\nthat Ivy Monster."
   }
 ]

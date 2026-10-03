@@ -391,6 +391,117 @@ test.describe('mixing herbs', () => {
   });
 });
 
+test.describe('mixing chemicals', () => {
+  test("choosing water, then COMBN, then UMB No. 2 puts NP-003 in the water's slot and removes UMB No. 2", async ({
+    inventoryPage,
+  }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'water', type: 'key' },
+        { id: 'player-item-2', itemId: 'umb-no-2', type: 'key' },
+        { id: 'player-item-3', itemId: 'umb-no-4', type: 'key' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(2);
+
+    await expect(inventoryPage.slot(1), "NP-003 takes the water's slot").toHaveAccessibleName('Slot 1: NP-003');
+    await expect(inventoryPage.slot(2), 'the item after UMB No. 2 moves up').toHaveAccessibleName('Slot 2: UMB No. 4');
+    await expect(inventoryPage.slot(3), 'the last slot is left empty').toHaveAccessibleName('Slot 3: empty');
+  });
+
+  test('mixing water with UMB No. 2 closes the action menu without asking', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'water', type: 'key' },
+        { id: 'player-item-2', itemId: 'umb-no-2', type: 'key' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(2);
+
+    await expect(inventoryPage.actionMenu, 'the menu closes and the item is released').toBeHidden();
+    await expect(inventoryPage.descriptionPanel.getByRole('button'), 'no Yes and No choices show').toHaveCount(0);
+  });
+
+  test('choosing water, then COMBN, then UMB No. 4 keeps waiting for a second item', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'water', type: 'key' },
+        { id: 'player-item-2', itemId: 'umb-no-4', type: 'key' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(2);
+
+    await expect(
+      inventoryPage.actionButton('COMBN'),
+      'the menu stays inactive while a second item is chosen',
+    ).toBeDisabled();
+    await expect(inventoryPage.slot(1), 'the water is unchanged').toHaveAccessibleName('Slot 1: WATER');
+    await expect(inventoryPage.slot(2), 'UMB No. 4 is unchanged').toHaveAccessibleName('Slot 2: UMB No. 4');
+  });
+
+  test('mixing the item box chemicals step by step makes the V-JOLT', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [
+        { id: 'player-item-1', itemId: 'water', type: 'key' },
+        { id: 'player-item-2', itemId: 'umb-no-2', type: 'key' },
+        { id: 'player-item-3', itemId: 'umb-no-2', type: 'key' },
+        { id: 'player-item-4', itemId: 'umb-no-4', type: 'key' },
+        { id: 'player-item-5', itemId: 'umb-no-4', type: 'key' },
+        { id: 'player-item-6', itemId: 'water', type: 'key' },
+        { id: 'player-item-7', itemId: 'umb-no-2', type: 'key' },
+      ],
+      equippedItemId: null,
+    });
+
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(2);
+    await expect(inventoryPage.slot(1), 'water and UMB No. 2 make NP-003').toHaveAccessibleName('Slot 1: NP-003');
+    await inventoryPage.chooseSlot(2);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(3);
+    await expect(inventoryPage.slot(2), 'UMB No. 2 and UMB No. 4 make Yellow-6').toHaveAccessibleName(
+      'Slot 2: Yellow-6',
+    );
+    await inventoryPage.chooseSlot(1);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(3);
+    await expect(inventoryPage.slot(1), 'NP-003 and UMB No. 4 make UMB No. 7').toHaveAccessibleName(
+      'Slot 1: UMB No. 7',
+    );
+    await inventoryPage.chooseSlot(2);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(1);
+    await expect(inventoryPage.slot(1), 'Yellow-6 and UMB No. 7 make UMB No. 13').toHaveAccessibleName(
+      'Slot 1: UMB No. 13',
+    );
+    await inventoryPage.chooseSlot(2);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(3);
+    await expect(inventoryPage.slot(2), 'water and UMB No. 2 make another NP-003').toHaveAccessibleName(
+      'Slot 2: NP-003',
+    );
+    await inventoryPage.chooseSlot(2);
+    await inventoryPage.chooseAction('COMBN');
+    await inventoryPage.chooseSlot(1);
+
+    await expect(inventoryPage.slot(1), 'NP-003 and UMB No. 13 make the V-JOLT').toHaveAccessibleName('Slot 1: V-JOLT');
+    await expect(inventoryPage.slot(2), 'no other chemical is left').toHaveAccessibleName('Slot 2: empty');
+  });
+});
+
 test.describe('choosing items that do not combine', () => {
   test('choosing a clip, then COMBN, then the same clip keeps waiting for a second item', async ({ inventoryPage }) => {
     await inventoryPage.open({

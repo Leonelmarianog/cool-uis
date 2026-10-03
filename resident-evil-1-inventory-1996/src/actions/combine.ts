@@ -19,15 +19,18 @@ function hasRecipe(source: PlayerItem, target: PlayerItem): boolean {
 }
 
 /**
- * COMBN: reloads a weapon, stacks ammunition, or asks before herbs are mixed.
- * The item itself, an empty slot and items that do not combine have no effect;
+ * COMBN: reloads a weapon, stacks ammunition, asks before herbs are mixed, or
+ * mixes other items with a recipe, such as the V-JOLT chemicals, at once. The
+ * item itself, an empty slot and items that do not combine have no effect;
  * herbs that do not mix show why.
  */
 export function combine(source: PlayerItem, target: PlayerItem | null): Outcome {
   const player = usePlayerStore();
   if (!target || target.id === source.id) return { kind: OutcomeKind.Nothing };
   if (player.reload(source.id, target.id) || player.stack(source.id, target.id)) return { kind: OutcomeKind.Done };
-  if (!isHerb(source) || !isHerb(target)) return { kind: OutcomeKind.Nothing };
+  if (!isHerb(source) || !isHerb(target)) {
+    return player.mix(source.id, target.id) ? { kind: OutcomeKind.Done } : { kind: OutcomeKind.Nothing };
+  }
   if (!hasRecipe(source, target)) {
     return { kind: OutcomeKind.Description, text: 'Mixing these does not seem to work.' };
   }
