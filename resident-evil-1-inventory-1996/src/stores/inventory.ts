@@ -360,7 +360,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   /** Types the description of the item being checked. */
   function openCheckedItemDescription() {
     const item = selectedItem.value;
-    if (item) openDescription(itemService.find(item.itemId).description);
+    if (item) openDescription(toItemView(item).description);
   }
 
   /** Removes the description and goes back to the return mode. */

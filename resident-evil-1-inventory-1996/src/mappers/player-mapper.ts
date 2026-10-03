@@ -12,7 +12,14 @@ import type {
 
 type PlayerJson = typeof initialPlayerJson;
 /** One inventory or box record; the JSON's inferred types differ between the two arrays. */
-type PlayerItemJson = { id: string; itemId: string; type: string; loadedRounds?: number; amount?: number };
+type PlayerItemJson = {
+  id: string;
+  itemId: string;
+  type: string;
+  loadedRounds?: number;
+  loadedAmmunitionId?: string;
+  amount?: number;
+};
 
 function toPlayerWeapon(json: PlayerItemJson): PlayerWeapon {
   return {
@@ -20,6 +27,7 @@ function toPlayerWeapon(json: PlayerItemJson): PlayerWeapon {
     itemId: json.itemId,
     type: ItemType.Weapon,
     loadedRounds: json.loadedRounds,
+    loadedAmmunitionId: json.loadedAmmunitionId,
   };
 }
 

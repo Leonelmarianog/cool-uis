@@ -37,7 +37,7 @@ test.describe('choosing in the item box', () => {
     await expect(inventoryPage.itemBox, 'the list is bright').toHaveClass(/item-box-list--active/);
   });
 
-  test('pressing ↑ on row 1 shows row 64 in the band', async ({ inventoryPage }) => {
+  test('pressing ↑ on row 1 shows row 80 in the band', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
       itemBox: [],
@@ -47,7 +47,7 @@ test.describe('choosing in the item box', () => {
 
     await inventoryPage.press('ArrowUp');
 
-    await expect(inventoryPage.bandRow(), 'row 64 is in the band').toHaveAccessibleName('Row 64: empty');
+    await expect(inventoryPage.bandRow(), 'row 80 is in the band').toHaveAccessibleName('Row 80: empty');
   });
 
   test('the description panel keeps the chosen slot item name while the list is on', async ({ inventoryPage }) => {

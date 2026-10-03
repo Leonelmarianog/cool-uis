@@ -108,6 +108,14 @@ Rules stated by the user:
   takes the first item's slot, the second item goes away and the items after
   it move up. Chemicals that do not mix do nothing; COMBN keeps waiting for a
   second item.
+- The BAZOOKA (stated by the user) holds up to 6 rounds of one kind:
+  EXPLOSIVE, FLAME or ACID ROUNDS. The same kind, or any kind into an empty
+  BAZOOKA, reloads like any weapon. Another kind swaps: the BAZOOKA loads up
+  to 6 of it, and its old rounds take the used-up stack's slot, or go after
+  the last item when new rounds are left. They never join another stack.
+  When they need a slot and the inventory is full, nothing happens. Its
+  description follows the loaded rounds: "E.Rounds Loaded", "F.Rounds
+  Loaded", "A.Rounds Loaded".
 - After a successful combine, the menu closes and the item is released.
 - The recipes are in `src/data/recipes.json`; capacities and stack limits are in
   `src/data/items.json`.
@@ -157,6 +165,11 @@ until real models exist, every item uses the same very low-poly model.
   not a hidden 1.
 - The FLAMETHROWER's fuel shows like rounds, with "%" after the number: it
   starts at 100% (stated by the user).
+- The BAZOOKA's counter takes the colour of its loaded rounds, also at 0:
+  explosive green, flame red, acid yellow (stated by the user). This shows in
+  the slot, the box row and square, and the equipped weapon panel. Every other
+  counter is green. The red and yellow shades are placeholders for the user
+  to adjust.
 
 ## COMBAT KNIFE
 
@@ -186,8 +199,9 @@ until real models exist, every item uses the same very low-poly model.
 - A yellow line marks where the loop starts again: it is always the top border
   of row 1 and does not move with the band (stated by the user).
 - Empty rows read "-Nothing-", greyed out (`item-box.gif`).
-- The box has 64 rows, the same for every character (stated by the user). The
-  list loops: ↑ on row 1 goes to row 64, ↓ on row 64 goes to row 1. It always
+- The box has 80 rows, the same for every character (stated by the user; it
+  grew from 64 for the BAZOOKA). The list loops: ↑ on row 1 goes to row 80, ↓
+  on row 80 goes to row 1. It always
   opens on row 1.
 - S on a slot, empty or not, turns the list on. ↑ ↓ scroll it. S exchanges the
   slot with the row in the band:

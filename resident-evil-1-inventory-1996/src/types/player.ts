@@ -12,6 +12,8 @@ export interface PlayerWeapon extends BasePlayerItem {
   type: typeof ItemType.Weapon;
   /** From 0 to the weapon's capacity; missing when the weapon uses no ammunition. */
   loadedRounds?: number;
+  /** The ammunition item ID of the loaded rounds; kept at 0 rounds. Only on weapons with `rounds`. */
+  loadedAmmunitionId?: string;
 }
 
 export interface PlayerAmmunition extends BasePlayerItem {

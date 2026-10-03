@@ -1,8 +1,17 @@
 import type itemsJson from '../data/items.json';
 import { ItemType } from '../types/item';
-import type { AmmunitionItem, ConsumableItem, Item, KeyItem, WeaponItem } from '../types/item';
+import type { AmmunitionItem, ConsumableItem, Item, KeyItem, LoadedRounds, WeaponItem } from '../types/item';
+import type { RoundsColor } from '../types/rounds-color';
 
 type ItemJson = (typeof itemsJson)[number];
+type RoundsJson = { ammunition: string; description: string; color: string }[];
+
+/** Keys the JSON's list of loaded rounds by ammunition item ID. */
+function toRounds(json: RoundsJson): Record<string, LoadedRounds> {
+  return Object.fromEntries(
+    json.map(rounds => [rounds.ammunition, { description: rounds.description, color: rounds.color as RoundsColor }]),
+  );
+}
 
 function toWeaponItem(json: ItemJson): WeaponItem {
   return {
@@ -15,6 +24,7 @@ function toWeaponItem(json: ItemJson): WeaponItem {
       capacity: json.weapon.capacity,
       ammunition: [...json.weapon.ammunition],
       fuel: json.weapon.fuel,
+      rounds: json.weapon.rounds && toRounds(json.weapon.rounds),
     },
   };
 }
