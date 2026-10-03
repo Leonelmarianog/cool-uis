@@ -14,7 +14,7 @@ const { item } = defineProps<{ item: ItemView }>();
     :class="{ 'item-amount--weapon': item.type === ItemType.Weapon }"
     :style="roundsColorStyle(item.amountColor)"
     aria-hidden="true"
-    >{{ item.amount }}{{ item.amountSuffix }}</span
+    >{{ item.amount }}</span
   >
 </template>
 

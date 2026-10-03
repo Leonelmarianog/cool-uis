@@ -17,8 +17,8 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>();
           v-if="weapon.amount !== undefined"
           class="equipped-weapon-panel__ammo"
           :style="roundsColorStyle(weapon.amountColor)"
-          :aria-label="weapon.amountSuffix ? `${weapon.amount}${weapon.amountSuffix} fuel` : `${weapon.amount} rounds`"
-          >{{ weapon.amount }}{{ weapon.amountSuffix }}</span
+          :aria-label="weapon.fuel ? `${weapon.amount} fuel` : `${weapon.amount} rounds`"
+          >{{ weapon.amount }}</span
         >
       </template>
     </div>

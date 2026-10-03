@@ -51,7 +51,7 @@ describe('toItemView', () => {
       expect(view.amount).toBeUndefined();
     });
 
-    test('maps a player weapon with fuel to an item view with a percent sign', () => {
+    test('maps a player weapon with fuel to an item view marked as fuel', () => {
       const playerItem: PlayerItem = {
         id: 'player-item-id',
         itemId: 'weapon-id',
@@ -69,10 +69,10 @@ describe('toItemView', () => {
 
       const view = itemViewMapper.toItemView(playerItem, item);
 
-      expect(view.amountSuffix).toBe('%');
+      expect(view.fuel).toBe(true);
     });
 
-    test('maps a player weapon with rounds to an item view without a suffix', () => {
+    test('maps a player weapon with rounds to an item view not marked as fuel', () => {
       const playerItem: PlayerItem = {
         id: 'player-item-id',
         itemId: 'weapon-id',
@@ -90,7 +90,7 @@ describe('toItemView', () => {
 
       const view = itemViewMapper.toItemView(playerItem, item);
 
-      expect(view.amountSuffix).toBeUndefined();
+      expect(view.fuel).toBeUndefined();
     });
 
     test('maps a player weapon with loaded rounds to the description of those rounds', () => {
