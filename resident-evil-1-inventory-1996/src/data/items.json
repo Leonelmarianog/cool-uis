@@ -500,7 +500,7 @@
       "rounds": [
         { "ammunition": "explosive-rounds", "description": "E.Rounds Loaded", "color": "green" },
         { "ammunition": "flame-rounds", "description": "F.Rounds Loaded", "color": "red" },
-        { "ammunition": "acid-rounds", "description": "A.Rounds Loaded", "color": "yellow" }
+        { "ammunition": "acid-rounds", "description": "A.Rounds Loaded", "color": "orange" }
       ]
     }
   },

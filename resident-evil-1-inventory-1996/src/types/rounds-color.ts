@@ -2,7 +2,7 @@
 export const RoundsColor = {
   Green: 'green',
   Red: 'red',
-  Yellow: 'yellow',
+  Orange: 'orange',
 } as const;
 
 export type RoundsColor = (typeof RoundsColor)[keyof typeof RoundsColor];

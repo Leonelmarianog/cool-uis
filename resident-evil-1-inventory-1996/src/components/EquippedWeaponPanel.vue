@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import panel from '../assets/ui/equipped-weapon-panel.png';
 import type { ItemView } from '../types/item-view';
-import { roundsColorStyle } from './rounds-colors';
+import { roundsPalette } from './rounds-colors';
 
 // null leaves the screen empty.
 const { weapon = null } = defineProps<{ weapon?: ItemView | null }>();
@@ -16,7 +16,7 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>();
         <span
           v-if="weapon.amount !== undefined"
           class="equipped-weapon-panel__ammo"
-          :style="roundsColorStyle(weapon.amountColor)"
+          :style="{ fontPalette: roundsPalette(weapon.amountColor) }"
           :aria-label="weapon.fuel ? `${weapon.amount} fuel` : `${weapon.amount} rounds`"
           >{{ weapon.amount }}</span
         >
@@ -61,15 +61,10 @@ const { weapon = null } = defineProps<{ weapon?: ItemView | null }>();
 .equipped-weapon-panel__ammo {
   position: absolute;
   /* Same digits as the inventory's weapon amounts: rows 20–26, from column 6. */
-  top: calc(17 * var(--game-pixel));
-  left: calc(4.5 * var(--game-pixel));
-  color: var(--rounds-color);
-  font-family: 'VT323', monospace;
-  font-size: calc(12.5 * var(--game-pixel));
-  font-weight: 400;
+  top: calc(20 * var(--game-pixel));
+  left: calc(6 * var(--game-pixel));
+  font-family: 're1-digits';
+  font-size: calc(8 * var(--game-pixel));
   line-height: 1;
-  transform: scaleX(1.4);
-  transform-origin: left;
-  text-shadow: calc(var(--game-pixel) / 1.4) var(--game-pixel) var(--rounds-shadow);
 }
 </style>

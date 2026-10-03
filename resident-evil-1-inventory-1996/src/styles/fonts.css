@@ -68,3 +68,29 @@
     5 #141414,
     6 transparent;
 }
+
+@font-face {
+  font-family: 're1-digits';
+  src: url('../assets/fonts/re1-digits.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
+/* re1-digits palette entries: 0 fill, 1 edge, 2 shadow. The font's own palette
+   is green; these are the red and orange sets of design/ui-sprites.png. */
+@font-palette-values --red {
+  font-family: 're1-digits';
+  override-colors:
+    0 #d60021,
+    1 #633921,
+    2 #5a1010;
+}
+
+@font-palette-values --orange {
+  font-family: 're1-digits';
+  override-colors:
+    0 #ef8c00,
+    1 #633921,
+    2 #5a1010;
+}
