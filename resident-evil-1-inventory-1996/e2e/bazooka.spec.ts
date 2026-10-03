@@ -88,8 +88,8 @@ test.describe('the bazooka counter colour', () => {
     });
 
     await expect(inventoryPage.slot(1).locator('.item-amount'), 'the counter is green').toHaveCSS(
-      'color',
-      'rgb(41, 162, 41)',
+      'font-palette',
+      'normal',
     );
   });
 
@@ -107,12 +107,12 @@ test.describe('the bazooka counter colour', () => {
     await inventoryPage.chooseSlot(2);
 
     await expect(inventoryPage.slot(1).locator('.item-amount'), 'the counter is red').toHaveCSS(
-      'color',
-      'rgb(196, 41, 41)',
+      'font-palette',
+      '--red',
     );
   });
 
-  test('the equipped weapon panel shows acid rounds in yellow', async ({ inventoryPage }) => {
+  test('the equipped weapon panel shows acid rounds in orange', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [
         { id: 'bazooka-1', itemId: 'bazooka', type: 'weapon', loadedRounds: 3, loadedAmmunitionId: 'acid-rounds' },
@@ -120,9 +120,9 @@ test.describe('the bazooka counter colour', () => {
       equippedItemId: 'bazooka-1',
     });
 
-    await expect(inventoryPage.equippedWeaponPanel.getByLabel('3 rounds'), 'the panel counter is yellow').toHaveCSS(
-      'color',
-      'rgb(196, 196, 41)',
+    await expect(inventoryPage.equippedWeaponPanel.getByLabel('3 rounds'), 'the panel counter is orange').toHaveCSS(
+      'font-palette',
+      '--orange',
     );
   });
 
@@ -139,7 +139,7 @@ test.describe('the bazooka counter colour', () => {
     await expect(
       inventoryPage.page.locator('.item-box-square .item-amount'),
       'the box square counter is red',
-    ).toHaveCSS('color', 'rgb(196, 41, 41)');
+    ).toHaveCSS('font-palette', '--red');
   });
 
   test('the counter of flame rounds is green', async ({ inventoryPage }) => {
@@ -149,8 +149,8 @@ test.describe('the bazooka counter colour', () => {
     });
 
     await expect(inventoryPage.slot(1).locator('.item-amount'), 'stack counters stay green').toHaveCSS(
-      'color',
-      'rgb(41, 162, 41)',
+      'font-palette',
+      'normal',
     );
   });
 });

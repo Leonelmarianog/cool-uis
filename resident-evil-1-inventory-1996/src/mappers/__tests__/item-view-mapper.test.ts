@@ -141,14 +141,14 @@ describe('toItemView', () => {
           ammunition: ['first-ammunition-id', 'second-ammunition-id'],
           rounds: {
             'first-ammunition-id': { description: 'First description.', color: RoundsColor.Green },
-            'second-ammunition-id': { description: 'Second description.', color: RoundsColor.Yellow },
+            'second-ammunition-id': { description: 'Second description.', color: RoundsColor.Orange },
           },
         },
       };
 
       const view = itemViewMapper.toItemView(playerItem, item);
 
-      expect(view.amountColor).toBe(RoundsColor.Yellow);
+      expect(view.amountColor).toBe(RoundsColor.Orange);
     });
   });
 

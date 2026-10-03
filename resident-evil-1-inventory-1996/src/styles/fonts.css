@@ -14,10 +14,75 @@
   font-display: swap;
 }
 
+/* Built from the game's sprite sheets by scripts/build-fonts.py; colour (COLR) fonts. */
 @font-face {
-  font-family: 'Courier Prime';
-  src: url('../assets/fonts/CourierPrime-Regular.ttf') format('truetype');
+  font-family: 're1-text';
+  src: url('../assets/fonts/re1-text.woff') format('woff');
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: block;
+}
+
+/* re1-text palette entries 0–5 shade the letter face; 6 is its outline. The
+   item box list dims to about 38% (no outline); -Nothing- is about 65% as
+   bright as a name, and 25% when dimmed (item-box.gif). */
+@font-palette-values --dimmed {
+  font-family: 're1-text';
+  override-colors:
+    0 #55554f,
+    1 #4f4f49,
+    2 #43433c,
+    3 #363633,
+    4 #2c2c29,
+    5 #202020,
+    6 transparent;
+}
+
+@font-palette-values --nothing {
+  font-family: 're1-text';
+  override-colors:
+    0 #909086,
+    1 #86867b,
+    2 #707065,
+    3 #5b5b56,
+    4 #4b4b46,
+    5 #353535;
+}
+
+@font-palette-values --nothing-dimmed {
+  font-family: 're1-text';
+  override-colors:
+    0 #383834,
+    1 #34342f,
+    2 #2b2b27,
+    3 #232321,
+    4 #1d1d1b,
+    5 #141414,
+    6 transparent;
+}
+
+@font-face {
+  font-family: 're1-digits';
+  src: url('../assets/fonts/re1-digits.woff') format('woff');
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+}
+
+/* re1-digits palette entries: 0 fill, 1 edge, 2 shadow. The font's own palette
+   is green; these are the red and orange sets of design/ui-sprites.png. */
+@font-palette-values --red {
+  font-family: 're1-digits';
+  override-colors:
+    0 #d60021,
+    1 #633921,
+    2 #5a1010;
+}
+
+@font-palette-values --orange {
+  font-family: 're1-digits';
+  override-colors:
+    0 #ef8c00,
+    1 #633921,
+    2 #5a1010;
 }

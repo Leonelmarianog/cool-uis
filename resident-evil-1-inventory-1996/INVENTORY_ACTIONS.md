@@ -167,10 +167,9 @@ until real models exist, every item uses the same very low-poly model.
   it starts at 100 (stated by the user; corrected on 2026-10-03, it was "100%"
   before).
 - The BAZOOKA's counter takes the colour of its loaded rounds, also at 0:
-  explosive green, flame red, acid yellow (stated by the user). This shows in
-  the slot, the box row and square, and the equipped weapon panel. Every other
-  counter is green. The red and yellow shades are placeholders for the user
-  to adjust.
+  explosive green, flame red, acid orange (stated by the user; the game's digit
+  colours, from `design/ui-sprites.png`). This shows in the slot, the box row
+  and square, and the equipped weapon panel. Every other counter is green.
 
 ## COMBAT KNIFE
 
