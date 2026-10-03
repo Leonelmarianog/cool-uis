@@ -137,5 +137,6 @@ Unit tests live in a `__tests__` folder next to the code they test.
   [The Spriters Resource](https://www.spriters-resource.com/playstation/residentevildirectorscut/).
 - Fonts, hosted locally with their SIL Open Font Licenses in `src/assets/fonts/`:
   - [Teko](https://fonts.google.com/specimen/Teko): the top menu and the action menu.
-  - [Courier Prime](https://fonts.google.com/specimen/Courier+Prime): the description panel.
-  - [VT323](https://fonts.google.com/specimen/VT323): amounts and the ECG label.
+  - [VT323](https://fonts.google.com/specimen/VT323): the ECG label.
+- `re1-text` and `re1-digits` (`src/assets/fonts/`) are built by
+  `scripts/build-fonts.py` from Badassbill's font and UI sprite rips.

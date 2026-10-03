@@ -14,14 +14,6 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Courier Prime';
-  src: url('../assets/fonts/CourierPrime-Regular.ttf') format('truetype');
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-}
-
 /* Built from the game's sprite sheets by scripts/build-fonts.py; colour (COLR) fonts. */
 @font-face {
   font-family: 're1-text';
