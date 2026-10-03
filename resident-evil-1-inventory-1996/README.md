@@ -91,6 +91,8 @@ docs/
 e2e/                    Playwright tests, a page object and fixtures
 public/models/          CHECK's 3D model (one placeholder for every item)
 scripts/                extract-item-sprites.py: cuts item images from the sheet
+                        build-fonts.py: builds the re1-text and re1-digits
+                        colour fonts from the font and UI sprite sheets
 src/
   App.vue               Layout of the screen; connects the stores to the panels
   main.ts               Vue entry point; imports shared CSS once

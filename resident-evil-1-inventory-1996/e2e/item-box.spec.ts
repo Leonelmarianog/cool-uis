@@ -237,7 +237,7 @@ test.describe('the item box list letters', () => {
     );
   });
 
-  test('a dimmed list draws item names without an outline', async ({ inventoryPage }) => {
+  test('a dimmed list draws item names with the dimmed palette', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
       itemBox: [{ id: 'clip-9', itemId: 'clip', type: 'ammunition', amount: 9 }],
