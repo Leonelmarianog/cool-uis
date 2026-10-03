@@ -13,8 +13,8 @@ export interface ItemView {
   description: string;
   /** Loaded rounds for weapons, stack size for ammunition; other items have none. */
   amount?: number;
-  /** Shown after the amount: "%" for a weapon's fuel; rounds and stacks have none. */
-  amountSuffix?: '%';
+  /** Whether the amount is a weapon's fuel rather than rounds; it shows as a plain number either way. */
+  fuel?: true;
   /** The amount's colour: the loaded rounds' colour, else green. Missing when there is no amount. */
   amountColor?: RoundsColor;
 }

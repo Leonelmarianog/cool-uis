@@ -38,7 +38,7 @@ export interface WeaponItem extends BaseItem {
     capacity: number;
     /** IDs of the ammunition items this weapon loads. */
     ammunition: string[];
-    /** Whether its rounds are fuel, shown as a percentage. The weapon then loads no ammunition. */
+    /** Whether its rounds are fuel (the FLAMETHROWER). The weapon then loads no ammunition. */
     fuel?: boolean;
     /** How it shows each kind of rounds, keyed by ammunition item ID. Missing on weapons that load one kind. */
     rounds?: Record<string, LoadedRounds>;

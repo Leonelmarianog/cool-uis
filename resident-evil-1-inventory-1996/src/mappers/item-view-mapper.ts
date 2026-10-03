@@ -25,8 +25,8 @@ function amountOf(playerItem: PlayerItem): number | undefined {
   return undefined;
 }
 
-function amountSuffixOf(item: Item): '%' | undefined {
-  return item.type === ItemType.Weapon && item.weapon?.fuel ? '%' : undefined;
+function fuelOf(item: Item): true | undefined {
+  return item.type === ItemType.Weapon && item.weapon?.fuel ? true : undefined;
 }
 
 /** How the weapon shows the rounds it holds, when it has a look per kind of rounds. */
@@ -48,7 +48,7 @@ export const itemViewMapper = {
       sprite: imageUrl(item.sprite),
       description: loadedRounds?.description ?? item.description,
       amount,
-      amountSuffix: amountSuffixOf(item),
+      fuel: fuelOf(item),
       amountColor: amount === undefined ? undefined : (loadedRounds?.color ?? RoundsColor.Green),
     };
   },

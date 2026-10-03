@@ -163,8 +163,9 @@ until real models exist, every item uses the same very low-poly model.
   The user checked this in the game.
 - Items without an amount (the combat knife, herbs, spray, keys) show no number,
   not a hidden 1.
-- The FLAMETHROWER's fuel shows like rounds, with "%" after the number: it
-  starts at 100% (stated by the user).
+- The FLAMETHROWER's fuel shows like rounds, as a plain number with no "%":
+  it starts at 100 (stated by the user; corrected on 2026-10-03, it was "100%"
+  before).
 - The BAZOOKA's counter takes the colour of its loaded rounds, also at 0:
   explosive green, flame red, acid yellow (stated by the user). This shows in
   the slot, the box row and square, and the equipped weapon panel. Every other
@@ -184,7 +185,7 @@ until real models exist, every item uses the same very low-poly model.
 ## FLAMETHROWER and ROCKET LAUNCHER
 
 - Stated by the user: no ammunition item exists for the FLAMETHROWER. It
-  starts at 100%, and once its fuel is used up it is spent. Nothing uses fuel
+  starts at 100 (full), and once its fuel is used up it is spent. Nothing uses fuel
   yet.
 - The ROCKET LAUNCHER holds 4 rounds and has no ammunition item.
 - COMBN of either with ammunition does nothing and shows nothing, like the
