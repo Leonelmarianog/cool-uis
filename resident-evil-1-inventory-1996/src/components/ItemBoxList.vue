@@ -89,6 +89,10 @@ function rowLabel(item: ItemView | null, number: number): string {
   height: calc(48 * var(--game-pixel));
   padding-block: var(--game-pixel);
   border: var(--game-pixel) solid #2ed110;
+  /* A 16-letter name (CONTROL ROOM KEY, 128 pixels) is wider than the 127
+     pixels inside the border; its last pixels are cut off instead of painting
+     over the border. */
+  overflow: hidden;
   background: #000008;
   font-family: 're1-text';
   font-size: calc(14 * var(--game-pixel));

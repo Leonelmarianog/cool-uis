@@ -223,6 +223,20 @@ test.describe('drawing the item box list', () => {
 });
 
 test.describe('the item box list letters', () => {
+  test('a name too long for the list is cut off at its border', async ({ inventoryPage }) => {
+    await inventoryPage.open({
+      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
+      itemBox: [{ id: 'key-1', itemId: 'control-room-key', type: 'key' }],
+    });
+
+    await inventoryPage.openItemBox();
+
+    await expect(inventoryPage.itemBox, 'the list clips its rows inside the green border').toHaveCSS(
+      'overflow',
+      'hidden',
+    );
+  });
+
   test('a dimmed list draws item names without an outline', async ({ inventoryPage }) => {
     await inventoryPage.open({
       inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
