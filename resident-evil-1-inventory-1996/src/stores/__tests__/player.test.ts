@@ -339,4 +339,284 @@ describe('reload', () => {
 
     expect([reloaded, player.inventory[0]]).toEqual([false, expect.objectContaining({ amount: 15 })]);
   });
+
+  test('reloads the bazooka with the rounds it holds', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 2,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'explosive-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
+    ];
+
+    player.reload('bazooka-1', 'explosive-1');
+
+    expect(player.inventory).toEqual([
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 6,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'explosive-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 6 },
+    ]);
+  });
+
+  test('loads another kind into an empty bazooka without a swap', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 0,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
+    ];
+
+    player.reload('bazooka-1', 'flame-1');
+
+    expect(player.inventory).toEqual([
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 6,
+        loadedAmmunitionId: 'flame-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 4 },
+    ]);
+  });
+
+  test('puts the old rounds in the slot of a used-up stack', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 4,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
+    ];
+
+    player.reload('bazooka-1', 'flame-1');
+
+    expect(player.inventory).toEqual([
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 5,
+        loadedAmmunitionId: 'flame-rounds',
+      },
+      { id: 'flame-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
+    ]);
+  });
+
+  test('puts the old rounds after the last item when new rounds are left', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 4,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
+      { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
+    ];
+
+    player.reload('bazooka-1', 'flame-1');
+
+    expect(player.inventory).toEqual([
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 6,
+        loadedAmmunitionId: 'flame-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'herb-1', itemId: 'green-herb', type: ItemType.Consumable },
+      { id: expect.any(String), itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+    ]);
+  });
+
+  test('keeps the old rounds apart from a stack of their kind', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 4,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      { id: 'explosive-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
+    ];
+
+    player.reload('bazooka-1', 'flame-1');
+
+    expect(player.inventory.slice(1)).toEqual([
+      { id: 'flame-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+      { id: 'explosive-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 10 },
+    ]);
+  });
+
+  test('refuses a swap that needs a slot in a full inventory', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 4,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 10 },
+      ...['1', '2', '3', '4', '5', '6'].map(
+        n => ({ id: `herb-${n}`, itemId: 'green-herb', type: ItemType.Consumable }) as const,
+      ),
+    ];
+    const before = player.inventory.map(playerItem => ({ ...playerItem }));
+
+    const reloaded = player.reload('bazooka-1', 'flame-1');
+
+    expect([reloaded, player.inventory]).toEqual([false, before]);
+  });
+
+  test('swaps in a full inventory when the stack is used up', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 4,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      ...['1', '2', '3', '4', '5', '6'].map(
+        n => ({ id: `herb-${n}`, itemId: 'green-herb', type: ItemType.Consumable }) as const,
+      ),
+    ];
+
+    const reloaded = player.reload('bazooka-1', 'flame-1');
+
+    expect([reloaded, player.inventory[1]]).toEqual([
+      true,
+      { id: 'flame-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+    ]);
+  });
+
+  test('swaps rounds combined into the bazooka', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 4,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+    ];
+
+    player.reload('flame-1', 'bazooka-1');
+
+    expect(player.inventory).toEqual([
+      { id: 'flame-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 4 },
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 5,
+        loadedAmmunitionId: 'flame-rounds',
+      },
+    ]);
+  });
+
+  test('swaps the rounds of a full bazooka', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 6,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'acid-1', itemId: 'acid-rounds', type: ItemType.Ammunition, amount: 3 },
+    ];
+
+    player.reload('bazooka-1', 'acid-1');
+
+    expect(player.inventory).toEqual([
+      { id: 'bazooka-1', itemId: 'bazooka', type: ItemType.Weapon, loadedRounds: 3, loadedAmmunitionId: 'acid-rounds' },
+      { id: 'acid-1', itemId: 'explosive-rounds', type: ItemType.Ammunition, amount: 6 },
+    ]);
+  });
+
+  test('keeps a swapped bazooka equipped', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 4,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 5 },
+    ];
+    player.equippedItemId = 'bazooka-1';
+
+    player.reload('bazooka-1', 'flame-1');
+
+    expect(player.equippedItemId).toBe('bazooka-1');
+  });
+
+  test('gives each swapped-out stack its own ID', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      {
+        id: 'bazooka-1',
+        itemId: 'bazooka',
+        type: ItemType.Weapon,
+        loadedRounds: 4,
+        loadedAmmunitionId: 'explosive-rounds',
+      },
+      { id: 'flame-1', itemId: 'flame-rounds', type: ItemType.Ammunition, amount: 20 },
+      { id: 'acid-1', itemId: 'acid-rounds', type: ItemType.Ammunition, amount: 20 },
+    ];
+    player.reload('bazooka-1', 'flame-1');
+
+    player.reload('bazooka-1', 'acid-1');
+
+    expect(new Set(player.inventory.map(playerItem => playerItem.id)).size).toBe(5);
+  });
+
+  test('does not give the Beretta a kind of loaded rounds', () => {
+    const player = usePlayerStore();
+    player.inventory = [
+      { id: 'beretta-1', itemId: 'beretta', type: ItemType.Weapon, loadedRounds: 0 },
+      { id: 'clip-1', itemId: 'clip', type: ItemType.Ammunition, amount: 15 },
+    ];
+
+    player.reload('beretta-1', 'clip-1');
+
+    expect(player.inventory[0]).not.toHaveProperty('loadedAmmunitionId');
+  });
 });

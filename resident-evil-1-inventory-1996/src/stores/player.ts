@@ -55,6 +55,8 @@ export const usePlayerStore = defineStore('player', () => {
 
   /** The number of inventory slots, set by the character. */
   const inventorySize = computed(() => characterService.find(characterId.value).inventorySize);
+  /** How many stacks a swap has added; it numbers their IDs. */
+  let swappedStacks = 0;
 
   /** Finds the player item with the given ID in the inventory. */
   function findPlayerItem(playerItemId: string): PlayerItem | undefined {
@@ -101,17 +103,55 @@ export const usePlayerStore = defineStore('player', () => {
    * Moves rounds into the weapon up to its capacity. A full weapon still counts
    * as reloaded, with no rounds moved. A stack that reaches 0 is removed. A
    * weapon that uses no ammunition loads nothing. A weapon with no loaded
-   * rounds loads from 0.
+   * rounds loads from 0. A weapon holding another kind of rounds swaps them.
    */
   function loadWeapon(weapon: PlayerWeapon, ammunition: PlayerAmmunition): boolean {
     const item = itemService.find(weapon.itemId);
     if (item.type !== ItemType.Weapon || !item.weapon?.ammunition.includes(ammunition.itemId)) return false;
 
     const loadedRounds = weapon.loadedRounds ?? 0;
+    const loadedAmmunitionId = weapon.loadedAmmunitionId;
+    if (loadedAmmunitionId && loadedAmmunitionId !== ammunition.itemId && loadedRounds > 0) {
+      return swapRounds(weapon, ammunition, item.weapon.capacity, {
+        itemId: loadedAmmunitionId,
+        amount: loadedRounds,
+      });
+    }
+
     const rounds = Math.min(item.weapon.capacity - loadedRounds, ammunition.amount);
     weapon.loadedRounds = loadedRounds + rounds;
+    if (item.weapon.rounds) weapon.loadedAmmunitionId = ammunition.itemId;
     ammunition.amount -= rounds;
     if (ammunition.amount === 0) removeItem(ammunition.id);
+    return true;
+  }
+
+  /**
+   * Loads another kind of rounds into a weapon that holds some: the weapon takes
+   * up to its capacity of them, and its old rounds become a stack of their own.
+   * That stack takes the used-up stack's slot, or goes after the last item when
+   * new rounds are left; it never joins another stack. Returns false, changing
+   * nothing, when it needs a slot and the inventory is full.
+   */
+  function swapRounds(
+    weapon: PlayerWeapon,
+    ammunition: PlayerAmmunition,
+    capacity: number,
+    oldRounds: { itemId: string; amount: number },
+  ): boolean {
+    const rounds = Math.min(capacity, ammunition.amount);
+    const leftover = ammunition.amount - rounds;
+    if (leftover > 0 && inventory.value.length >= inventorySize.value) return false;
+
+    weapon.loadedRounds = rounds;
+    weapon.loadedAmmunitionId = ammunition.itemId;
+    if (leftover > 0) {
+      ammunition.amount = leftover;
+      inventory.value.push({ id: `swapped-rounds-${++swappedStacks}`, type: ItemType.Ammunition, ...oldRounds });
+    } else {
+      const index = inventory.value.findIndex(playerItem => playerItem.id === ammunition.id);
+      inventory.value[index] = { id: ammunition.id, type: ItemType.Ammunition, ...oldRounds };
+    }
     return true;
   }
 
