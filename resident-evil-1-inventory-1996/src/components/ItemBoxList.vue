@@ -82,24 +82,29 @@ function rowLabel(item: ItemView | null, number: number): string {
   top: calc(13 * var(--game-pixel));
   left: calc(10 * var(--game-pixel));
   display: grid;
-  /* Names are narrowed by a transform, which layout ignores; without the cap a
-     long name would widen the column, and the band, past the list. */
+  /* Without the cap a long name would widen the column, and the band, past the list. */
   grid-template-columns: minmax(0, 1fr);
   grid-auto-rows: calc(15 * var(--game-pixel));
   width: calc(129 * var(--game-pixel));
   height: calc(48 * var(--game-pixel));
   padding-block: var(--game-pixel);
   border: var(--game-pixel) solid #2ed110;
-  color: #4a4740;
+  /* A 16-letter name (CONTROL ROOM KEY, 128 pixels) is wider than the 127
+     pixels inside the border; its last pixels are cut off instead of painting
+     over the border. */
+  overflow: hidden;
   background: #000008;
-  font-family: 'Courier Prime', monospace;
-  font-size: calc(17.24 * var(--game-pixel));
-  line-height: calc(15 * var(--game-pixel));
+  font-family: 're1-text';
+  font-size: calc(14 * var(--game-pixel));
+  /* The font's own 14-row cell, at the top of each 15-row row: a 15-row line
+     would put half a game pixel above the letters. */
+  line-height: calc(14 * var(--game-pixel));
+  font-palette: --dimmed;
 }
 
 .item-box-list--active {
-  color: #c1beb2;
   background: #00003a;
+  font-palette: normal;
 }
 
 .item-box-list__row {
@@ -107,26 +112,13 @@ function rowLabel(item: ItemView | null, number: number): string {
   white-space: pre;
 }
 
-/* The description panel's letters: each character narrowed to the game's 8-pixel cell. */
-.item-box-list__name {
-  display: inline-block;
-  transform: scaleX(0.774);
-  transform-origin: left;
-}
-
 /* -Nothing- is about 65% as bright as an item name, in both states (item-box.gif). */
 .item-box-list__name--empty {
-  color: #302e2a;
+  font-palette: --nothing-dimmed;
 }
 
 .item-box-list--active .item-box-list__name--empty {
-  color: #7d7b74;
-}
-
-/* Bright letters get one game pixel of outline outside the letter face; dimmed ones have none. */
-.item-box-list--active .item-box-list__name {
-  -webkit-text-stroke: calc(2 * var(--game-pixel)) #303048;
-  paint-order: stroke fill;
+  font-palette: --nothing;
 }
 
 .item-box-list__row--band {

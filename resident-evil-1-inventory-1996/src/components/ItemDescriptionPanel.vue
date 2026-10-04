@@ -130,33 +130,24 @@ const choiceColumns = computed(() => {
   margin: 0;
   padding: 0;
   border: 0;
-  color: #c1beb2;
   background: none;
-  font-family: 'Courier Prime', monospace;
-  font-size: calc(17.24 * var(--game-pixel));
+  font-family: 're1-text';
+  font-size: calc(14 * var(--game-pixel));
   font-weight: 400;
   line-height: 1;
   white-space: pre;
-  /* Narrow each character to the game's 8-pixel cell. */
-  transform: scaleX(0.774);
-  transform-origin: left;
-
-  /* A stroke straddles the glyph edge. Paint the fill last to preserve the
-     letter face and leave one game pixel of outline visible on the outside. */
-  -webkit-text-stroke: calc(2 * var(--game-pixel)) #303048;
-  paint-order: stroke fill;
 }
 
 .item-description-panel__line {
-  /* On the first line, capitals (0.58em tall, their top 0.14em below the
-     line's top) fill rows 187–196. Each next line is 16 rows lower. */
-  top: calc((5 + 16 * var(--line)) * var(--game-pixel) - 0.14em);
+  /* The capitals' face fills rows 1–10 of the font's 14-row cell; on the
+     first line that is rows 5–14 of the panel. Each next line is 16 rows lower. */
+  top: calc((4 + 16 * var(--line)) * var(--game-pixel));
   left: calc(48 * var(--game-pixel));
 }
 
 /* The second line, 16 rows below the first. */
 .item-description-panel__choice {
-  top: calc(21 * var(--game-pixel) - 0.14em);
+  top: calc(20 * var(--game-pixel));
   left: calc(var(--choice-column) * var(--game-pixel));
 }
 
