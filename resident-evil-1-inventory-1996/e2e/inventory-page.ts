@@ -27,6 +27,14 @@ export class InventoryPage {
   readonly healthScreen: Locator;
   // The item box list; it shows three rows, the middle one in the band.
   readonly itemBox: Locator;
+  // The map: its floor selector, and the floor map over it after S.
+  readonly mapScreen: Locator;
+  // The floor in the selector's label, "1F" or "2F".
+  readonly mapFloor: Locator;
+  // The floor map's image, named after the floor ("Mansion 1F map").
+  readonly floorMap: Locator;
+  // The floor map once it has grown in; A only closes it from then on.
+  readonly openedFloorMap: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -37,6 +45,10 @@ export class InventoryPage {
     this.equippedWeaponPanel = page.getByRole('region', { name: 'Equipped weapon panel' });
     this.healthScreen = page.getByRole('img', { name: /^Health:/ });
     this.itemBox = page.getByRole('list', { name: 'Item box' });
+    this.mapScreen = page.getByRole('region', { name: 'Map' });
+    this.mapFloor = this.mapScreen.locator('.map-screen__floor');
+    this.floorMap = this.mapScreen.getByRole('img', { name: /^Mansion \dF map$/ });
+    this.openedFloorMap = this.mapScreen.locator('.map-screen__floor-map--shown');
   }
 
   // Opens the app with parts of the player's starting state replaced (see
@@ -128,6 +140,17 @@ export class InventoryPage {
   async openItemBox() {
     await this.pointAtMenuButton('BOX');
     await this.confirm();
+  }
+
+  /** Opens the map: ↑ twice from slot 1 to the MAP button, then S. */
+  async openMap() {
+    await this.pointAtMenuButton('MAP');
+    await this.confirm();
+  }
+
+  /** One of the floor selector's arrows: "above" or "below". */
+  floorArrow(side: string): Locator {
+    return this.mapScreen.getByRole('img', { name: `Floor ${side}` });
   }
 
   /** A visible row of the item box, numbered from 1, as in its label ("Row 5: SHOTGUN, 5"). */

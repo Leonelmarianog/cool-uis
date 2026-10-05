@@ -84,20 +84,6 @@ test.describe('top menu', () => {
     await expect(inventoryPage.menuButton('MAP'), 'MAP stays highlighted').toHaveClass(/menu-panel__button--pointed/);
   });
 
-  test('pressing S on MAP logs that the map screen is not built yet', async ({ inventoryPage }) => {
-    await inventoryPage.open({
-      inventory: [{ id: 'beretta-1', itemId: 'beretta', type: 'weapon', loadedRounds: 15 }],
-    });
-    const message = inventoryPage.page.waitForEvent('console', event => event.text().startsWith('MAP'));
-
-    await inventoryPage.pointAtMenuButton('MAP');
-    await inventoryPage.confirm();
-
-    expect((await message).text(), 'the console says the map is not built').toBe(
-      'MAP: the map screen is not built yet.',
-    );
-  });
-
   test('pressing ↑ while the action menu is open keeps the red frame on the selected item', async ({
     inventoryPage,
   }) => {
