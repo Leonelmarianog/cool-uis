@@ -93,6 +93,8 @@ public/models/          CHECK's 3D model (one placeholder for every item)
 scripts/                extract-item-sprites.py: cuts item images from the sheet
                         build-fonts.py: builds the re1-text and re1-digits
                         colour fonts from the font and UI sprite sheets
+                        extract-map-sprites.py: cuts the map's sprites from
+                        the map sheet
 src/
   App.vue               Layout of the screen; connects the stores to the panels
   main.ts               Vue entry point; imports shared CSS once
@@ -137,6 +139,8 @@ Unit tests live in a `__tests__` folder next to the code they test.
 
 - Item and UI sprites ripped by Badassbill, from
   [The Spriters Resource](https://www.spriters-resource.com/playstation/residentevildirectorscut/).
+- Map sprites (aerial view, floor maps, floor arrows) ripped by Badassbill from
+  Resident Evil DX; `scripts/extract-map-sprites.py` cuts them from the sheet.
 - Fonts, hosted locally with their SIL Open Font Licenses in `src/assets/fonts/`:
   - [Teko](https://fonts.google.com/specimen/Teko): the top menu and the action menu.
   - [VT323](https://fonts.google.com/specimen/VT323): the ECG label.
