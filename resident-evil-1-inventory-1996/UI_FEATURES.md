@@ -38,7 +38,7 @@ once. Touch controls for phones are planned.
 
 | Feature / action | Status | Behavior |
 | --- | --- | --- |
-| Open map — MAP | Partial | The cursor highlights the button; choosing it (S) logs that the map screen is not built yet. |
+| Open map — MAP | Done | Opens the map in the item preview panel with the floor selector on Mansion 1F; the other buttons are dimmed while it is open. ↑ and ↓ pick 1F or 2F; only the arrow that leads to another floor shows, grey for a moment after each change, then green. S grows the floor map in over the dimmed selector; A shrinks it out, and A in the selector closes the map with the cursor on MAP. ← and → do nothing. |
 | Open files — FILE | Partial | The cursor highlights the button; choosing it logs that the files screen is not built yet. |
 | Leave inventory — EXIT | Partial | The cursor highlights the button; choosing it logs that there is no game to go back to yet. |
 | Open the item box — BOX | Done | Opens the item box; the other buttons are dimmed while it is open. |
@@ -49,7 +49,7 @@ once. Touch controls for phones are planned.
 | --- | --- | --- |
 | Character portrait | Implemented | Shows Jill's portrait in its housing. No character switch is connected. |
 | Equipped weapon display | Implemented | Shows the equipped weapon's image and loaded rounds; empty when nothing is equipped. |
-| Item preview area | Implemented | Hosts the item action menu and CHECK's 3D model. |
+| Item preview area | Implemented | Hosts the item action menu, CHECK's 3D model, the item box list and the map. |
 | Animated health display | Implemented | The ECG shows the player's health status: Fine (green), Fine (yellow), Caution, Danger!, or Poison!; the last three labels blink. |
 | Cycle health status | Demo | D sets the next worse status, wrapping from Poison! to Fine, so healing can be tried. |
 | Pixel-exact layout | Implemented | The 320 × 240 layout scales by the largest whole number of screen pixels per game pixel that fits the viewport. |
@@ -59,7 +59,7 @@ once. Touch controls for phones are planned.
 
 | Feature | Status | Remaining scope |
 | --- | --- | --- |
-| Map screen | Planned | Opened by MAP. |
+| Map screen | Done | The Mansion's 1F and 2F, every room shown as visited; other areas and floors, unvisited rooms and the position marker are not built. |
 | Files screen | Planned | Opened by FILE; lists and shows the documents. |
 | Item box | Done | Takes, stores and swaps items between the inventory and an 80-row box; the list jumps from row to row (the slide comes later). |
 | Other characters | Planned | Add Chris (6 slots) with his portrait and a shorter inventory grid. |

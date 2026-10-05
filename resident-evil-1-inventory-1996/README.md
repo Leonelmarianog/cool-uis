@@ -17,6 +17,8 @@ pixel-art images and scaled by whole screen pixels, so it stays sharp.
 - **COMBN** two items: reload a weapon, stack ammunition, or mix herbs after
   "Will you mix the herbs?".
 - **Descriptions** type out and wait for S or A, as in the game.
+- **MAP** opens the Mansion's map: ↑ and ↓ pick 1F or 2F over the aerial view,
+  S opens that floor's map, and A steps back.
 
 [UI_FEATURES.md](UI_FEATURES.md) lists every feature and its status, and
 [INVENTORY_ACTIONS.md](INVENTORY_ACTIONS.md) the game rules behind each action.
@@ -34,6 +36,7 @@ The inventory uses only the keyboard; the mouse does nothing.
 | ↑ ↓ ← → | CHECK: turns the model                                                                            |
 | Z / C   | CHECK: rolls the model clockwise and counter-clockwise                                            |
 | X / V   | CHECK: zooms in and out                                                                           |
+| ↑ ↓     | MAP: picks the floor                                                                              |
 
 ## Development
 
