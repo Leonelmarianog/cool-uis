@@ -4,8 +4,10 @@ import { useInventoryStore } from '../inventory';
 import { ITEM_BOX_SIZE, usePlayerStore } from '../player';
 import { CursorArea } from '../../types/cursor-area';
 import { Direction } from '../../types/direction';
+import { FloorMapState } from '../../types/floor-map-state';
 import { InventoryMode } from '../../types/inventory-mode';
 import { ItemType } from '../../types/item';
+import { MapFloor } from '../../types/map-floor';
 import { TopMenuOption } from '../../types/top-menu-option';
 
 beforeEach(() => {
@@ -20,6 +22,13 @@ afterEach(() => {
 
 /** Opens the item box from slot 1: ↑ to the BOX button, then S. */
 function openItemBox(inventory: ReturnType<typeof useInventoryStore>) {
+  inventory.move(Direction.Up);
+  inventory.choose();
+}
+
+/** Opens the map from slot 1: ↑ twice to the MAP button, then S. */
+function openMap(inventory: ReturnType<typeof useInventoryStore>) {
+  inventory.move(Direction.Up);
   inventory.move(Direction.Up);
   inventory.choose();
 }
@@ -177,6 +186,45 @@ describe('move', () => {
     inventory.move(Direction.Left);
 
     expect(inventory.mainCursor.gridIndex).toBe(1);
+  });
+
+  test('shows 2F on the up arrow in the floor selector', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.map.floor).toBe(MapFloor.Second);
+  });
+
+  test('keeps the main cursor on MAP while the floor changes', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+
+    inventory.move(Direction.Down);
+
+    expect(inventory.mainCursor.topMenuIndex).toBe(0);
+  });
+
+  test('ignores the up arrow while the floor map opens', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.map.floor).toBe(MapFloor.First);
+  });
+
+  test('ignores the up arrow while the floor map is shown', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+    inventory.onMapOpened();
+
+    inventory.move(Direction.Up);
+
+    expect(inventory.map.floor).toBe(MapFloor.First);
   });
 });
 
@@ -370,17 +418,6 @@ describe('choose', () => {
     expect(inventory.mainCursor.index).toBe(1);
   });
 
-  test('logs that the map screen is not built yet on MAP', () => {
-    const info = vi.spyOn(console, 'info').mockImplementation(() => {});
-    const inventory = useInventoryStore();
-    inventory.move(Direction.Up);
-    inventory.move(Direction.Up);
-
-    inventory.choose();
-
-    expect(info).toHaveBeenCalledWith('MAP: the map screen is not built yet.');
-  });
-
   test('logs that the files screen is not built yet on FILE', () => {
     const info = vi.spyOn(console, 'info').mockImplementation(() => {});
     const inventory = useInventoryStore();
@@ -404,11 +441,12 @@ describe('choose', () => {
     expect(info).toHaveBeenCalledWith('EXIT: there is no game to go back to yet.');
   });
 
-  test('keeps browsing on a top menu button', () => {
+  test('keeps browsing on the FILE button', () => {
     vi.spyOn(console, 'info').mockImplementation(() => {});
     const inventory = useInventoryStore();
     inventory.move(Direction.Up);
     inventory.move(Direction.Up);
+    inventory.move(Direction.Right);
 
     inventory.choose();
 
@@ -535,6 +573,63 @@ describe('choose', () => {
     inventory.choose();
 
     expect(inventory.mode).toBe(InventoryMode.ChoosingBoxRow);
+  });
+
+  test('opens the map on S on the MAP button', () => {
+    const inventory = useInventoryStore();
+
+    openMap(inventory);
+
+    expect(inventory.mode).toBe(InventoryMode.ChoosingMapFloor);
+  });
+
+  test('opens the map on 1F', () => {
+    const inventory = useInventoryStore();
+
+    openMap(inventory);
+
+    expect(inventory.map.floor).toBe(MapFloor.First);
+  });
+
+  test('opens the map on 1F again after it was left on 2F', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.move(Direction.Up);
+    inventory.back();
+
+    inventory.choose();
+
+    expect(inventory.map.floor).toBe(MapFloor.First);
+  });
+
+  test('starts opening the floor map on S in the floor selector', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+
+    inventory.choose();
+
+    expect(inventory.mode).toBe(InventoryMode.OpeningMap);
+  });
+
+  test('ignores S while the floor map opens', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+
+    inventory.choose();
+
+    expect(inventory.mode).toBe(InventoryMode.OpeningMap);
+  });
+
+  test('ignores S while the floor map is shown', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+    inventory.onMapOpened();
+
+    inventory.choose();
+
+    expect(inventory.mode).toBe(InventoryMode.ViewingMap);
   });
 });
 
@@ -710,6 +805,57 @@ describe('back', () => {
 
     expect(inventory.mode).toBe(InventoryMode.ChoosingBoxSlot);
   });
+
+  test('closes the map on A in the floor selector', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+
+    inventory.back();
+
+    expect(inventory.mode).toBe(InventoryMode.Browsing);
+  });
+
+  test('keeps the main cursor on the MAP button when the map closes', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+
+    inventory.back();
+
+    expect(inventory.mainCursor.topMenuIndex).toBe(0);
+  });
+
+  test('ignores A while the floor map opens', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+
+    inventory.back();
+
+    expect(inventory.mode).toBe(InventoryMode.OpeningMap);
+  });
+
+  test('starts closing the floor map on A', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+    inventory.onMapOpened();
+
+    inventory.back();
+
+    expect(inventory.mode).toBe(InventoryMode.ClosingMap);
+  });
+
+  test('ignores A while the floor map closes', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+    inventory.onMapOpened();
+    inventory.back();
+
+    inventory.back();
+
+    expect(inventory.mode).toBe(InventoryMode.ClosingMap);
+  });
 });
 
 describe('onDescriptionTyped', () => {
@@ -776,6 +922,106 @@ describe('onItemPreviewExited', () => {
     inventory.onItemPreviewExited();
 
     expect(inventory.mode).toBe(InventoryMode.ChoosingAction);
+  });
+});
+
+describe('onMapOpened', () => {
+  test('shows the floor map once it has grown in', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+
+    inventory.onMapOpened();
+
+    expect(inventory.mode).toBe(InventoryMode.ViewingMap);
+  });
+});
+
+describe('onMapClosed', () => {
+  test('brings back the floor selector once the floor map is gone', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+    inventory.onMapOpened();
+    inventory.back();
+
+    inventory.onMapClosed();
+
+    expect(inventory.mode).toBe(InventoryMode.ChoosingMapFloor);
+  });
+
+  test('keeps the floor that was shown', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.move(Direction.Up);
+    inventory.choose();
+    inventory.onMapOpened();
+    inventory.back();
+
+    inventory.onMapClosed();
+
+    expect(inventory.map.floor).toBe(MapFloor.Second);
+  });
+});
+
+describe('isMapOpen', () => {
+  test('shows the map while the floor map is shown', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+
+    inventory.onMapOpened();
+
+    expect(inventory.isMapOpen).toBe(true);
+  });
+
+  test('hides the map once it is closed', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+
+    inventory.back();
+
+    expect(inventory.isMapOpen).toBe(false);
+  });
+});
+
+describe('floorMapState', () => {
+  test('hides the floor map in the floor selector', () => {
+    const inventory = useInventoryStore();
+
+    openMap(inventory);
+
+    expect(inventory.floorMapState).toBe(FloorMapState.Hidden);
+  });
+
+  test('grows the floor map in after S', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+
+    inventory.choose();
+
+    expect(inventory.floorMapState).toBe(FloorMapState.Opening);
+  });
+
+  test('shows the floor map once it has grown in', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+
+    inventory.onMapOpened();
+
+    expect(inventory.floorMapState).toBe(FloorMapState.Shown);
+  });
+
+  test('shrinks the floor map out after A', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+    inventory.choose();
+    inventory.onMapOpened();
+
+    inventory.back();
+
+    expect(inventory.floorMapState).toBe(FloorMapState.Closing);
   });
 });
 
@@ -891,5 +1137,22 @@ describe('openOption', () => {
     openItemBox(inventory);
 
     expect(inventory.openOption).toBe(TopMenuOption.ItemBox);
+  });
+
+  test('lights the MAP button while the map is open', () => {
+    const inventory = useInventoryStore();
+
+    openMap(inventory);
+
+    expect(inventory.openOption).toBe(TopMenuOption.Map);
+  });
+
+  test('lights no button once the map is closed', () => {
+    const inventory = useInventoryStore();
+    openMap(inventory);
+
+    inventory.back();
+
+    expect(inventory.openOption).toBeNull();
   });
 });
