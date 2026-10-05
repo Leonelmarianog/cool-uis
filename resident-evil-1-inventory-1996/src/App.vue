@@ -9,6 +9,7 @@ import ItemDescriptionPanel from './components/ItemDescriptionPanel.vue';
 import ItemActionMenu from './components/ItemActionMenu.vue';
 import ItemModelViewer from './components/ItemModelViewer.vue';
 import ItemBoxList from './components/ItemBoxList.vue';
+import MapScreen from './components/MapScreen.vue';
 import { useKeyboard } from './input/keyboard';
 import { useInventoryStore } from './stores/inventory';
 import { usePlayerStore } from './stores/player';
@@ -45,6 +46,15 @@ useKeyboard();
           :rows="inventory.itemBoxRows"
           :row-index="inventory.itemBoxRowIndex"
           :active="inventory.isItemBoxActive"
+        />
+        <MapScreen
+          v-if="inventory.isMapOpen"
+          :floor="inventory.map.floor"
+          :has-floor-above="inventory.map.hasFloorAbove"
+          :has-floor-below="inventory.map.hasFloorBelow"
+          :floor-map-state="inventory.floorMapState"
+          @opened="inventory.onMapOpened"
+          @closed="inventory.onMapClosed"
         />
       </ItemPreviewPanel>
       <div class="project-shell__status">

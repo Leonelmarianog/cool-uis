@@ -15,6 +15,13 @@ names, so the same code can be the base of other clones.
 - **Item preview panel**: the panel that shows the item under the cursor.
   CHECK's model viewer shows inside it.
   Code: `ItemPreviewPanel`; the model viewer is `ItemModelViewer`.
+- **Map screen**: the map, shown in the item preview panel after MAP.
+  RE1: the aerial view with the chosen area and floor, then that floor's map.
+  Code: `MapScreen`; the floor cursor is `useMap` (`elements/use-map.ts`).
+- **Floor selector**: the aerial view with the label ("Mansion 1F") and the
+  floor arrows. ↑ and ↓ change the floor.
+- **Floor map**: the chosen floor's rooms on a dark-blue grid, over the dimmed
+  floor selector.
 - **Element**: an interactive part of the screen that has its own state: the
   grid, the top menu, the action menu, the prompt, the description and the
   model viewer.
@@ -25,8 +32,9 @@ names, so the same code can be the base of other clones.
   Code: `InventoryGrid`.
 - **Top menu**: the buttons above the grid.
   RE1: MAP, FILE, the box (a dash) and EXIT.
-  Code: `MenuPanel`; the buttons are `TopMenuOption`. Choosing one only logs
-  to the console until its screen exists.
+  Code: `MenuPanel`; the buttons are `TopMenuOption`. MAP opens the map
+  screen and BOX the item box; FILE and EXIT only log to the console until
+  their screens exist.
 - **Slot**: a position in the grid.
   Code: an index, from 0.
 - **Item**: the contents of a slot. Slots stay in place; when an item goes
@@ -144,6 +152,8 @@ only with intents.
     question.
   - `onItemPreviewEntered()`: the model tumbled into the item preview panel.
   - `onItemPreviewExited()`: the model spun out of the item preview panel.
+  - `onMapOpened()`: the floor map grew in and its rooms are bright.
+  - `onMapClosed()`: the floor map shrank out; the floor selector is back.
 
 ## Modes
 
@@ -163,6 +173,10 @@ per intent. A missing handler means the intent does nothing in that mode.
 | `opening-model`       | Waiting while the model tumbles in; no input                           | —                    |
 | `viewing-model`       | Turning and zooming the item's 3D model                                | Model viewer         |
 | `closing-model`       | Waiting while the model spins out; no input                            | —                    |
+| `choosing-map-floor`  | Picking a floor in the map's floor selector                            | Floor selector       |
+| `opening-map`         | Waiting while the floor map grows in; no input                         | —                    |
+| `viewing-map`         | Looking at the floor map; A goes back                                  | —                    |
+| `closing-map`         | Waiting while the floor map shrinks out; no input                      | —                    |
 
 ## Where to look
 
@@ -175,3 +189,4 @@ per intent. A missing handler means the intent does nothing in that mode.
 | What happens after USE?           | `actions/use.ts`                                                              |
 | What does A do in each step?      | the `back` handlers in the handler table in `stores/inventory.ts`             |
 | What are the game's rules?        | `stores/player.ts`                                                            |
+| How does the map work?            | `elements/use-map.ts`, `components/MapScreen.vue`, and the map modes in `stores/inventory.ts` |

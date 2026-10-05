@@ -17,6 +17,8 @@ pixel-art images and scaled by whole screen pixels, so it stays sharp.
 - **COMBN** two items: reload a weapon, stack ammunition, or mix herbs after
   "Will you mix the herbs?".
 - **Descriptions** type out and wait for S or A, as in the game.
+- **MAP** opens the Mansion's map: ↑ and ↓ pick 1F or 2F over the aerial view,
+  S opens that floor's map, and A steps back.
 
 [UI_FEATURES.md](UI_FEATURES.md) lists every feature and its status, and
 [INVENTORY_ACTIONS.md](INVENTORY_ACTIONS.md) the game rules behind each action.
@@ -34,6 +36,7 @@ The inventory uses only the keyboard; the mouse does nothing.
 | ↑ ↓ ← → | CHECK: turns the model                                                                            |
 | Z / C   | CHECK: rolls the model clockwise and counter-clockwise                                            |
 | X / V   | CHECK: zooms in and out                                                                           |
+| ↑ ↓     | MAP: picks the floor                                                                              |
 
 ## Development
 
@@ -93,6 +96,8 @@ public/models/          CHECK's 3D model (one placeholder for every item)
 scripts/                extract-item-sprites.py: cuts item images from the sheet
                         build-fonts.py: builds the re1-text and re1-digits
                         colour fonts from the font and UI sprite sheets
+                        extract-map-sprites.py: cuts the map's sprites from
+                        the map sheet
 src/
   App.vue               Layout of the screen; connects the stores to the panels
   main.ts               Vue entry point; imports shared CSS once
@@ -137,6 +142,8 @@ Unit tests live in a `__tests__` folder next to the code they test.
 
 - Item and UI sprites ripped by Badassbill, from
   [The Spriters Resource](https://www.spriters-resource.com/playstation/residentevildirectorscut/).
+- Map sprites (aerial view, floor maps, floor arrows) ripped by Badassbill from
+  Resident Evil DX; `scripts/extract-map-sprites.py` cuts them from the sheet.
 - Fonts, hosted locally with their SIL Open Font Licenses in `src/assets/fonts/`:
   - [Teko](https://fonts.google.com/specimen/Teko): the top menu and the action menu.
   - [VT323](https://fonts.google.com/specimen/VT323): the ECG label.
