@@ -109,14 +109,15 @@ function onFloorMapAnimationEnd() {
 /* Fills the item preview panel's display (165 × 112 game pixels). Timings
    measured from map-usage.gif. */
 .map-screen {
-  /** Opening: the selector dims, then the floor map grows in, then its rooms brighten. */
+  /** Opening: the selector dims, the floor map grows in with dark rooms, they stay dark, then brighten. */
   --map-dim-duration: 0.07s;
-  --map-grow-duration: 0.2s;
-  --map-brighten-duration: 0.3s;
+  --map-grow-duration: 0.21s;
+  --map-dark-rooms-duration: 0.14s;
+  --map-brighten-duration: 0.07s;
   /** Closing: the rooms darken, the floor map squashes out, then the dimmed selector holds. */
-  --map-darken-duration: 0.1s;
-  --map-squash-duration: 0.1s;
-  --map-hold-duration: 0.2s;
+  --map-darken-duration: 0.035s;
+  --map-squash-duration: 0.105s;
+  --map-hold-duration: 0.21s;
   /** How long the floor arrows stay grey after the selector opens or the floor changes. */
   --map-arrow-grey-duration: 0.28s;
 
@@ -150,7 +151,7 @@ function onFloorMapAnimationEnd() {
   width: 100%;
   height: 100%;
   /* The areas that are not chosen are darker than the chosen one. */
-  filter: brightness(0.6);
+  filter: brightness(0.75);
 }
 
 /* The Mansion at full brightness, exactly over its place in the aerial view. */
@@ -187,13 +188,14 @@ function onFloorMapAnimationEnd() {
 /* ▲ just above the floor and ▼ just below it, over its first character. */
 .map-screen__arrow {
   position: absolute;
-  left: calc(1 * var(--game-pixel));
+  left: calc(5 * var(--game-pixel));
   width: calc(5 * var(--game-pixel));
   height: calc(3 * var(--game-pixel));
 }
 
+/* The font's cell has empty rows above the letters; the GIF's ▲ sits 3 game pixels higher. */
 .map-screen__arrow--up {
-  bottom: 100%;
+  bottom: calc(100% + 3 * var(--game-pixel));
 }
 
 .map-screen__arrow--down {
@@ -232,16 +234,16 @@ function onFloorMapAnimationEnd() {
       var(--map-grid-line) 0 var(--game-pixel),
       transparent var(--game-pixel) calc(8 * var(--game-pixel))
     ),
-    rgb(0 0 48 / 85%);
+    rgb(0 0 40 / 85%);
 }
 
 .map-screen__floor-map--opening {
-  animation: map-grow calc(var(--map-dim-duration) + var(--map-grow-duration)) ease-out both;
+  animation: map-grow calc(var(--map-dim-duration) + var(--map-grow-duration)) linear both;
 }
 
 .map-screen__floor-map--opening .map-screen__rooms {
   animation: map-rooms-brighten var(--map-brighten-duration) linear
-    calc(var(--map-dim-duration) + var(--map-grow-duration)) both;
+    calc(var(--map-dim-duration) + var(--map-grow-duration) + var(--map-dark-rooms-duration)) both;
 }
 
 .map-screen__floor-map--closing {
@@ -262,7 +264,8 @@ function onFloorMapAnimationEnd() {
   }
 }
 
-/* Waits while the selector dims, grows from a line at its centre, overshoots a little and settles. */
+/* Waits while the selector dims (25%), then grows from a line at its centre
+   to about half height (50%), overshoots (75%) and settles (0.07 s + 0.21 s). */
 @keyframes map-grow {
   0% {
     opacity: 0;
@@ -272,9 +275,12 @@ function onFloorMapAnimationEnd() {
     opacity: 0;
     transform: scale(1, 0.02);
   }
-  26% {
+  25.1% {
     opacity: 1;
     transform: scale(1, 0.02);
+  }
+  50% {
+    transform: scale(1, 0.45);
   }
   75% {
     transform: scale(1.15);
@@ -303,21 +309,25 @@ function onFloorMapAnimationEnd() {
   }
 }
 
-/* Holds while the rooms darken, squashes to a line, then stays gone while the
-   dimmed selector holds (0.1 s + 0.1 s + 0.2 s). */
+/* Holds while the rooms darken (10%), squashes to a strip (20%) and a line
+   (40%), then stays gone while the dimmed selector holds
+   (0.035 s + 0.105 s + 0.21 s). */
 @keyframes map-squash {
   0% {
     opacity: 1;
     transform: scale(1);
   }
-  25% {
+  10% {
     transform: scale(1);
   }
-  50% {
+  20% {
+    transform: scale(1, 0.15);
+  }
+  40% {
     opacity: 1;
     transform: scale(1, 0.02);
   }
-  50.1% {
+  40.1% {
     opacity: 0;
   }
   100% {
